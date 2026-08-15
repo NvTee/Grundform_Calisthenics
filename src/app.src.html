@@ -1,0 +1,1171 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Grundform</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+<!-- Vollbild beim Start vom Android-Homescreen ("Zum Startbildschirm hinzufügen") -->
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="theme-color" content="#0F1110">
+<meta name="color-scheme" content="dark">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%230F1110'/%3E%3Crect x='14' y='28' width='36' height='8' rx='4' fill='%23FF4D17'/%3E%3C/svg%3E">
+<style>
+/*@FONTS@*/
+
+/* ── Grundlagen ───────────────────────────────────────────── */
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+body{
+  background:#0F1110;color:#F1F0EC;
+  font-family:Barlow,system-ui,-apple-system,sans-serif;
+  -webkit-tap-highlight-color:transparent;
+  -webkit-text-size-adjust:100%;
+  overscroll-behavior:none;
+  touch-action:manipulation;
+  user-select:none;-webkit-user-select:none;
+}
+#app{
+  position:fixed;inset:0;display:flex;flex-direction:column;
+  padding-top:env(safe-area-inset-top);
+  padding-bottom:env(safe-area-inset-bottom);
+  overflow:hidden;
+}
+.scroll{flex:1;overflow-y:auto;min-height:0;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.scroll::-webkit-scrollbar{width:0;height:0}
+
+/* ── Typografie ───────────────────────────────────────────── */
+.cd{font-family:'Barlow Condensed',Barlow,system-ui,sans-serif}
+.kick{font-family:'Barlow Condensed',Barlow,sans-serif;font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.45)}
+.kick-a{color:#FF4D17}
+.num{font-variant-numeric:tabular-nums}
+
+/* ── Tap-Feedback (ersetzt style-hover/style-active des Prototyps) ── */
+.tap{cursor:pointer;user-select:none;-webkit-user-select:none}
+.tap:active{opacity:.72}
+.press:active{transform:scale(.985)}
+.ring:active{background:rgba(255,255,255,.08)!important;opacity:1}
+
+/* ── Bausteine ────────────────────────────────────────────── */
+.card{background:#191C19;border:1px solid rgba(255,255,255,.08);border-radius:20px}
+.primary{
+  border-radius:18px;background:#FF4D17;display:flex;align-items:center;justify-content:center;
+}
+.primary span{font-family:'Barlow Condensed',sans-serif;font-weight:700;letter-spacing:.1em;color:#0F1110}
+.stepper{
+  flex:none;display:flex;align-items:center;justify-content:center;position:relative;
+  border:1px solid rgba(255,255,255,.18);
+}
+.bar-h{width:30px;height:4px;border-radius:2px;background:#F1F0EC}
+.bar-v{width:4px;height:30px;border-radius:2px;background:#F1F0EC;position:absolute}
+</style>
+</head>
+<body>
+<div id="app"></div>
+
+<script>
+"use strict";
+/* ════════════════════════════════════════════════════════════
+   GRUNDFORM — Calisthenics-Trainingsplan, local-first.
+   Portiert aus dem Claude-Design-Prototyp (Grundform.dc.html).
+   Kein Server, kein Account: der gesamte Zustand liegt in
+   localStorage auf dem Gerät.
+   ════════════════════════════════════════════════════════════ */
+
+const ACCENT = '#FF4D17';
+const STORE  = 'grundform.session.v2';
+const HISTORY_MAX = 200; // ~ zwei Jahre bei 2x/Woche, genug für den Verlauf
+
+/* ── Übungsdatenbank ──────────────────────────────────────────
+   Kalibriert auf 30 Liegestütze / 5 Klimmzüge / 12 Dips bei
+   86 kg. Kurzhantel-Übungen unter ihrer Reiz-Schwelle
+   (Bankdrücken 30, Rudern 25, Schulterdrücken 25 kg) fehlen
+   bewusst — dort steht Calisthenics.
+   `pattern` steuert, welche Alternativen beim Tauschen
+   vorausgewählt werden. `next` ist die Last-Variante, auf die
+   die Auto-Progression springt, wenn der Wdh-Bereich oben
+   ausgereizt ist. ------------------------------------------- */
+const DB = [
+  { id:'pullup',        name:'Klimmzug Obergriff',      short:'Klimmzug OG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Brust zur Stange, Schulter tief',   rest:90,  lvl:2, next:'pullup-load' },
+  { id:'chinup',        name:'Klimmzug Kammgriff',      short:'Klimmzug KG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen nach unten ziehen',        rest:90,  lvl:2, next:'pullup-load' },
+  { id:'pullup-load',   name:'Klimmzug mit Zusatzlast', short:'KZ + Last',     pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Rucksack',   kind:'load', unit:'Wiederholungen', cue:'Erst ab 5x5 sauber sinnvoll',       rest:120, lvl:3, w:5,  step:2.5 },
+  { id:'pullup-neg',    name:'Negativ-Klimmzüge',       short:'Negativ-KZ',    pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'3–5 s langsam ablassen',            rest:90,  lvl:1 },
+  { id:'pullup-band',   name:'Klimmzug mit Expander',   short:'KZ Expander',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Expander',   kind:'bw',   unit:'Wiederholungen', cue:'Hilfe nur in der Startphase',       rest:90,  lvl:1 },
+  { id:'lat-band',      name:'Expander-Latzug',         short:'Exp. Latzug',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen zur Hüfte ziehen',         rest:60,  lvl:1 },
+
+  { id:'row-inv',       name:'Ruderzug unter Stange',   short:'Ruderzug BW',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Körper bleibt ein Brett',           rest:60,  lvl:2, next:'row-inv-feet' },
+  { id:'row-inv-feet',  name:'Ruderzug, Füße auf Bank', short:'Ruderz. Bank',  pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen + Bank',  kind:'bw',   unit:'Wiederholungen', cue:'Hüfte nicht durchhängen lassen',    rest:60,  lvl:3 },
+  { id:'row-inv-bent',  name:'Ruderzug, Knie gebeugt',  short:'Ruderz. leicht',pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Füße näher, Hebel kürzer',          rest:60,  lvl:1 },
+  { id:'row-pendlay',   name:'Pendlay Row',             short:'Pendlay Row',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Jede Wdh vom Boden neu starten',    rest:90,  lvl:3, w:40, step:5 },
+  { id:'row-band',      name:'Expander-Rudern',         short:'Exp. Rudern',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Schulterblätter zuerst',            rest:45,  lvl:1 },
+
+  { id:'pushup-feet',   name:'Liegestütze Füße erhöht', short:'LS Füße hoch',  pattern:'hpush', label:'Horizontal drücken', equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Bank ca. 40 cm, Körper gerade',     rest:60,  lvl:3, next:'pushup-load' },
+  { id:'pushup-diamond',name:'Diamant-Liegestütze',     short:'Diamant-LS',    pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hände unter der Brustmitte',        rest:60,  lvl:3, next:'pushup-load' },
+  { id:'pushup',        name:'Liegestütze',             short:'Liegestütze',   pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Rumpf fest, Ellbogen 45°',          rest:60,  lvl:2 },
+  { id:'pushup-hands',  name:'Liegestütze Hände erhöht',short:'LS Hände hoch', pattern:'hpush', label:'Horizontal drücken', equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Bank unter den Händen',             rest:60,  lvl:1 },
+  { id:'pushup-load',   name:'Liegestütze mit Rucksack',short:'LS + Rucksack', pattern:'hpush', label:'Horizontal drücken', equip:'Rucksack',            kind:'load', unit:'Wiederholungen', cue:'Last hoch am Rücken tragen',        rest:60,  lvl:3, w:8,  step:4 },
+
+  { id:'dip',           name:'Dips',                    short:'Dips',          pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Schultern weg von den Ohren',       rest:90,  lvl:2, next:'dip-load' },
+  { id:'dip-load',      name:'Dips mit Zusatzlast',     short:'Dips + Last',   pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-St. + Rucksack',  kind:'load', unit:'Wiederholungen', cue:'Erst ab 3x10 sauber',               rest:90,  lvl:3, w:5,  step:2.5 },
+  { id:'dip-bench',     name:'Bank-Dips',               short:'Bank-Dips',     pattern:'vpush', label:'Vertikal drücken',   equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Schultern nicht hochziehen',        rest:60,  lvl:1 },
+  { id:'pushup-pike',   name:'Pike-Liegestütze',        short:'Pike-LS',       pattern:'vpush', label:'Vertikal drücken',   equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hüfte hoch, Scheitel zum Boden',    rest:75,  lvl:2 },
+  { id:'pushup-pike-f', name:'Pike-LS, Füße auf Bank',  short:'Pike-LS hoch',  pattern:'vpush', label:'Vertikal drücken',   equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Fast senkrechter Oberkörper',       rest:75,  lvl:3 },
+  { id:'press-band',    name:'Expander-Überkopfdrücken',short:'Exp. Drücken',  pattern:'vpush', label:'Vertikal drücken',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Rippen unten, kein Hohlkreuz',      rest:60,  lvl:1 },
+
+  { id:'squat-bss',     name:'Bulgarian Split Squat',   short:'Bulg. Split',   pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Vorderes Knie über Mittelfuß',      rest:75,  lvl:3, w:16, step:2 },
+  { id:'squat-front',   name:'KH-Front-Rack-Kniebeuge', short:'KH Front-Sq.',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'KH auf Schultern, Rumpf fest',      rest:120, lvl:2, w:18, step:2 },
+  { id:'stepup',        name:'KH-Step-up auf Bank',     short:'Step-up KH',    pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Nicht hinten abdrücken',            rest:75,  lvl:2, w:14, step:2 },
+  { id:'squat-goblet',  name:'Goblet Squat',            short:'Goblet Squat',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wiederholungen', cue:'Hantel dicht am Brustbein',         rest:90,  lvl:1, w:20, step:4 },
+  { id:'squat-split-bw',name:'Split Squat ohne Last',   short:'Split Squat',   pattern:'squat', label:'Kniebeuge',          equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Rumpf senkrecht, tief absetzen',    rest:60,  lvl:1 },
+
+  { id:'dl',            name:'Kreuzheben',              short:'Kreuzheben',    pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Stange am Schienbein, Rücken flach',rest:150, lvl:3, w:60, step:5 },
+  { id:'rdl',           name:'Rumänisches Kreuzheben',  short:'RDL',           pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Hüfte zurück, Knie fast fest',      rest:120, lvl:3, w:50, step:5 },
+  { id:'rdl-db-1leg',   name:'Einbeiniges RDL mit KH',  short:'1-Bein RDL',    pattern:'hinge', label:'Hüftbeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wdh je Seite',   cue:'Hüfte gerade halten',               rest:75,  lvl:2, w:16, step:2 },
+  { id:'hinge-bridge',  name:'Hüftheben einbeinig',     short:'Hüftheben 1B',  pattern:'hinge', label:'Hüftbeuge',          equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Ferse drücken, Rippen unten',       rest:45,  lvl:1 },
+  { id:'hinge-band',    name:'Expander-Good-Morning',   short:'Exp. Hinge',    pattern:'hinge', label:'Hüftbeuge',          equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Spannung aus dem Gesäß',            rest:60,  lvl:1 },
+
+  { id:'core-hang-knee',name:'Hängendes Knieheben',     short:'Knieheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Becken kippen, kein Schwung',       rest:60,  lvl:2, next:'core-hang-leg' },
+  { id:'core-hang-leg', name:'Hängendes Beinheben',     short:'Beinheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Beine gestreckt, langsam zurück',   rest:60,  lvl:3 },
+  { id:'core-pallof',   name:'Pallof Press mit Expander',short:'Pallof Press', pattern:'core',  label:'Rumpf',              equip:'Expander',            kind:'bw',   unit:'Wdh je Seite',   cue:'Rumpf gegen Rotation halten',       rest:45,  lvl:2 },
+  { id:'core-hollow',   name:'Hollow-Body-Halten',      short:'Hollow Hold',   pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Rücken flach am Boden',             rest:45,  lvl:2 },
+  { id:'core-plank',    name:'Planke',                  short:'Planke',        pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Gesäß fest, Becken kippen',         rest:45,  lvl:1 },
+
+  { id:'rdelt-face',    name:'Expander Face Pull',      short:'Face Pull',     pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Hände zu den Ohren, Ellbogen hoch', rest:45,  lvl:2 },
+  { id:'rdelt-fly',     name:'KH Reverse Fly',          short:'Reverse Fly',   pattern:'rdelt', label:'Hintere Schulter',   equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Nur Schulterblätter arbeiten',      rest:45,  lvl:2, w:8,  step:2 },
+  { id:'rdelt-pullapart',name:'Expander Pull-Apart',    short:'Pull-Apart',    pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Arme fast gestreckt lassen',        rest:45,  lvl:1 },
+
+  { id:'delt-lat',      name:'KH Seitheben',            short:'Seitheben',     pattern:'delt',  label:'Seitliche Schulter', equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen führt, nicht die Hand',    rest:45,  lvl:2, w:8,  step:2 },
+  { id:'delt-band',     name:'Expander Seitheben',      short:'Exp. Seitheb.', pattern:'delt',  label:'Seitliche Schulter', equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen führt, nicht die Hand',    rest:45,  lvl:1 },
+
+  { id:'curl-db',       name:'KH Bizeps-Curl',          short:'KH Curl',       pattern:'arm',   label:'Armbeuger',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen bleibt am Rumpf',          rest:45,  lvl:2, w:14, step:2 },
+  { id:'curl-band',     name:'Expander-Curl',           short:'Exp. Curl',     pattern:'arm',   label:'Armbeuger',          equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen bleibt am Rumpf',          rest:45,  lvl:1 },
+];
+const byId = id => DB.find(e => e.id === id);
+
+/* ── Die vier Einheiten ───────────────────────────────────────
+   Rotation statt Wochentage: Ober A → Unter A → Ober B →
+   Unter B → Ober A. Es zählt die Reihenfolge, nicht der
+   Kalender. Nichts wird nachgeholt.
+   `role` ist die Ausführungsform: die erste Übung einzeln, der
+   Rest in Antagonisten-Supersätzen. `lo`/`hi` ist der
+   Wdh-Zielbereich, `reps` das aktuelle Ziel darin.
+   `short` sind die drei Übungen der Kurzversion.
+   `warm` sind die Aufwärm-Schritte. `for` bindet einen Schritt an
+   eine Übung – ist sie gestrichen, entfällt der Schritt. `ramp`
+   rechnet die aktuelle Arbeitslast dieser Übung in den Text
+   ein, statt ein Gewicht fest zu verdrahten. ---------------- */
+const SESSIONS = [
+  { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:28, shortMins:16,
+    gear:'Stange · Dip-Stangen · Bank · Expander', short:[0, 1, 2],
+    slots:[
+      { exId:'pullup',        role:'einzeln',      sets:5, lo:3,  hi:5,  reps:3,  w:0,  prog:'reps' },
+      { exId:'dip',           role:'Supersatz 1a', sets:3, lo:6,  hi:8,  reps:6,  w:0,  prog:'reps' },
+      { exId:'row-inv',       role:'Supersatz 1b', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'pushup-feet',   role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'rdelt-face',    role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:0,  prog:'reps' },
+    ],
+    warm:[
+      { text:'10 Armkreise vor und zurück, dann 15 Pull-Apart mit dem Expander' },
+      { text:'30 s an der Stange hängen, Schultern aktiv nach unten', for:'pullup' },
+      { text:'8 langsame Liegestütze mit Händen auf der Bank', for:'pushup-feet' },
+      { text:'2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
+    ]},
+  { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18,
+    gear:'Langhantel · Kurzhanteln · Bank · Stange', short:[0, 1, 3],
+    slots:[
+      { exId:'dl',            role:'einzeln',      sets:4, lo:5,  hi:5,  reps:5,  w:60, prog:'weight' },
+      { exId:'squat-bss',     role:'Supersatz 1a', sets:3, lo:8,  hi:10, reps:8,  w:16, prog:'weight' },
+      { exId:'rdelt-fly',     role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
+      { exId:'core-hang-knee',role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'delt-lat',      role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
+    ],
+    warm:[
+      { text:'10 Hüftheben zweibeinig, dann 10 Hüftkreise je Seite' },
+      { text:'8 Split Squats ohne Last je Seite', for:'squat-bss' },
+      { text:'Kreuzheben-Aufbausätze: 5 Wdh leere Stange', ramp:'dl' },
+      { text:'20 s toter Hang zur Vorbereitung des Kniehebens', for:'core-hang-knee' },
+    ]},
+  { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:29, shortMins:16,
+    gear:'Stange · Langhantel · Kurzhanteln', short:[0, 1, 2],
+    slots:[
+      { exId:'chinup',        role:'einzeln',      sets:5, lo:4,  hi:6,  reps:4,  w:0,  prog:'reps' },
+      { exId:'pushup-pike',   role:'Supersatz 1a', sets:3, lo:6,  hi:10, reps:6,  w:0,  prog:'reps' },
+      { exId:'row-pendlay',   role:'Supersatz 1b', sets:3, lo:5,  hi:8,  reps:5,  w:40, prog:'weight' },
+      { exId:'pushup-diamond',role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'curl-db',       role:'Supersatz 2b', sets:3, lo:8,  hi:12, reps:8,  w:14, prog:'weight' },
+    ],
+    warm:[
+      { text:'15 Pull-Apart mit dem Expander, dann 10 Wandengel' },
+      { text:'30 s hängen, dann 3 Scapula Pull-ups', for:'chinup' },
+      { text:'8 Liegestütze Hände erhöht, dann 5 Pike-Liegestütze halber Weg', for:'pushup-pike' },
+      { text:'Pendlay-Aufbausätze: 8 Wdh leere Stange', ramp:'row-pendlay' },
+    ]},
+  { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17,
+    gear:'Kurzhanteln · Langhantel · Bank · Expander', short:[0, 1, 4],
+    slots:[
+      { exId:'squat-front',   role:'einzeln',      sets:4, lo:6,  hi:8,  reps:6,  w:18, prog:'weight' },
+      { exId:'rdl',           role:'Supersatz 1a', sets:3, lo:8,  hi:10, reps:8,  w:50, prog:'weight' },
+      { exId:'rdelt-face',    role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:0,  prog:'reps' },
+      { exId:'stepup',        role:'Supersatz 2a', sets:3, lo:8,  hi:10, reps:8,  w:14, prog:'weight' },
+      { exId:'core-pallof',   role:'Supersatz 2b', sets:3, lo:10, hi:12, reps:10, w:0,  prog:'reps' },
+    ],
+    warm:[
+      { text:'10 Hüftkreise je Seite, dann 10 Knöchel-Wippen je Seite' },
+      { text:'10 Kniebeugen ohne Last, 3 s abwärts', for:'squat-front' },
+      { text:'8 Hüftheben zweibeinig, dann 5 RDL mit leerer Stange', for:'rdl' },
+      { text:'Front-Rack-Kniebeugen zum Einfühlen', ramp:'squat-front', join:': 5 Wdh mit ' },
+    ]},
+];
+const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
+
+/* ── Zustand ──────────────────────────────────────────────────
+   `rot` ist die Position in der Rotation, `plans` hält die
+   angepassten Slots aller vier Einheiten. ------------------- */
+let S = {
+  tab:'heute', rot:0, live:null, sheet:null, draft:null, pick:null,
+  plans: freshPlans(), history:[],
+};
+const sess      = () => SESSIONS[S.rot];
+const curSlots  = () => S.plans[S.rot];
+const nextSess  = () => SESSIONS[(S.rot + 1) % SESSIONS.length];
+let timer = null;
+let wakeLock = null;
+const scrollMemo = {};
+
+function screenKey(){ return S.live ? 'live' : S.tab; }
+
+function persist(){
+  try {
+    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, live:S.live, plans:S.plans, pick:S.pick, history:S.history }));
+  } catch(e){}
+}
+function restore(){
+  try {
+    const raw = localStorage.getItem(STORE);
+    if (!raw) return;
+    const s = JSON.parse(raw);
+    if (!s) return;
+    S.tab   = s.tab || 'heute';
+    S.rot   = (typeof s.rot === 'number' && s.rot >= 0 && s.rot < SESSIONS.length) ? s.rot : 0;
+    S.plans = (Array.isArray(s.plans) && s.plans.length === SESSIONS.length
+               && s.plans.every(p => Array.isArray(p) && p.length))
+              ? s.plans : freshPlans();
+    S.pick  = Array.isArray(s.pick) && s.pick.length
+              ? s.pick.filter(i => Number.isInteger(i) && i >= 0 && i < S.plans[S.rot].length)
+              : null;
+    S.history = Array.isArray(s.history) ? s.history.slice(-HISTORY_MAX) : [];
+    S.live  = s.live || null;
+    /* Einheit von vor dem Aufwärm-Update: kein `phase` gespeichert.
+       Nicht ins Aufwärmen zurückwerfen. */
+    if (S.live && !S.live.phase) { S.live.phase = 'work'; S.live.warm = S.live.warm || []; }
+    if (S.live && S.live.resting) {
+      // Pause läuft nach Wall-Clock weiter – auch wenn Android die App
+      // zwischendurch eingefroren oder der Nutzer neu geladen hat.
+      const left = Math.ceil(((S.live.restEnd || 0) - Date.now()) / 1000);
+      if (left > 0) { S.live.rest = left; startTimer(); }
+      else { S.live.resting = false; S.live.rest = 0; }
+    }
+  } catch(e){}
+}
+
+function set(patch){
+  Object.assign(S, patch);
+  persist();
+  render();
+}
+
+/* ── Bildschirm wachhalten + Haptik ───────────────────────── */
+async function acquireWakeLock(){
+  try {
+    if ('wakeLock' in navigator && !wakeLock) {
+      wakeLock = await navigator.wakeLock.request('screen');
+      wakeLock.addEventListener('release', () => { wakeLock = null; });
+    }
+  } catch(e){}
+}
+function releaseWakeLock(){
+  try { if (wakeLock) { wakeLock.release(); wakeLock = null; } } catch(e){}
+}
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') {
+    if (S.live) acquireWakeLock();
+    if (S.live && S.live.resting) tick();   // nach dem Aufwachen sofort korrigieren
+  }
+});
+function buzz(p){ try { navigator.vibrate && navigator.vibrate(p); } catch(e){} }
+
+/* ── Ableitungen ──────────────────────────────────────────── */
+const num = v => String(v).replace('.', ',');
+const range = s => (s.lo === s.hi ? String(s.lo) : s.lo + '–' + s.hi);
+
+function slotView(s){
+  const ex = byId(s.exId);
+  const load = ex.kind === 'load'
+    ? num(s.w) + ' kg'
+    : (s.w > 0 ? '+' + num(s.w) + ' kg Rucksack' : 'Körpergewicht');
+  return {
+    ...ex, sets:s.sets, target:s.reps, lo:s.lo, hi:s.hi, w:s.w, prog:s.prog, role:s.role,
+    scheme: s.sets + ' × ' + range(s) +
+            (ex.kind === 'load' ? ' · ' + num(s.w) + ' kg' : (s.w > 0 ? ' · +' + num(s.w) + ' kg' : '')),
+    detail: load + ' · ' + ex.cue,
+  };
+}
+/* `slotIdx` ist der Index der Übung in der Einheit – nicht im
+   Live-Plan. Nur damit findet die Progression nach einer
+   gekürzten Einheit die richtige Übung wieder. */
+function buildPlan(idx){
+  const sl = curSlots();
+  return idx.map(i => ({ ...slotView(sl[i]), slotIdx:i }));
+}
+/* Gewählte Übungen der nächsten Einheit, Default alle. */
+function pickIdx(){
+  const n = curSlots().length;
+  const p = (S.pick || []).filter(i => i >= 0 && i < n);
+  return p.length ? [...p].sort((a, b) => a - b) : curSlots().map((_, i) => i);
+}
+const sameIdx = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
+const setsOf  = idx => idx.reduce((a, i) => a + curSlots()[i].sets, 0);
+
+/* Zeitbudget: die dokumentierten Werte für die volle Einheit und
+   die Kurzversion stehen fest, freie Auswahl wird über die
+   Satzzahl geschätzt. */
+function estMins(idx){
+  const se = sess(), all = curSlots().map((_, i) => i);
+  if (sameIdx(idx, all))              return se.mins;
+  if (sameIdx(idx, [...se.short].sort((a, b) => a - b))) return se.shortMins;
+  return 5 + Math.round((se.mins - 5) * setsOf(idx) / Math.max(1, setsOf(all)));
+}
+/* Echter Meilenstein einer Übung: wo im Zielbereich sie steht und
+   was als nächstes ansteht. Ersetzt die früher fest verdrahteten
+   Ladder-/Chart-Daten – dieselbe Logik wie der „auto"-Hinweis auf
+   dem Heute-Screen, nur für die Kachel-Darstellung. */
+function milestoneOf(slot){
+  const ex = byId(slot.exId);
+  if (slot.reps < slot.hi) {
+    return {
+      name: ex.name,
+      big: slot.reps + ' von ' + slot.hi,
+      sub: 'noch ' + (slot.hi - slot.reps) + ' Wdh bis zur nächsten Stufe',
+      pct: Math.round((slot.reps - slot.lo) / Math.max(1, slot.hi - slot.lo) * 100),
+    };
+  }
+  const nx = ex.next ? byId(ex.next) : null;
+  return {
+    name: ex.name,
+    big: ex.kind === 'load' ? num(slot.w) + ' kg' : slot.reps + ' Wdh',
+    sub: slot.prog === 'weight' ? 'nächste Einheit +' + num(ex.step || 2.5) + ' kg'
+         : nx ? 'nächste Einheit: ' + nx.name
+         : 'Bereich ausgereizt',
+    pct: 100,
+  };
+}
+
+/* Verlaufseintrag beim Abschluss einer Einheit. Übungen werden per
+   `exId` statt Plan-/Slot-Index gespeichert – der Verlauf muss auch
+   dann lesbar bleiben, wenn sich der Katalog später ändert. */
+function historyEntry(l){
+  const skipped = new Set(l.skipped || []);
+  const exs = l.plan.map((p, i) => {
+    if (skipped.has(i)) return null;
+    const reps = l.log.filter(x => x.ex === i).map(x => x.reps);
+    if (!reps.length) return null;
+    return { short:p.short, kind:p.kind, w:p.w, reps, slotIdx:p.slotIdx };
+  }).filter(Boolean);
+  return {
+    ts: Date.now(), session: sess().name,
+    doneSets: l.log.length, totalSets: l.plan.reduce((a, p) => a + p.sets, 0),
+    exCount: exs.length, planCount: l.plan.length,
+    skipped: [...skipped].map(i => l.plan[i].short),
+    anchor: exs.find(e => e.slotIdx === 0) || null,
+  };
+}
+
+/* ── Aufwärmen ────────────────────────────────────────────────
+   Aufbausätze werden aus der heutigen Arbeitslast gerechnet, nicht
+   fest hinterlegt: Langhantel 65 % (auf 2,5 kg), Kurzhantel 45 %
+   (auf 2 kg). Das reproduziert die Werte aus dem Trainingsplan
+   (60→40, 40→25, 18→8) und bleibt korrekt, wenn die Progression
+   die Lasten verschiebt. Landet der Aufbausatz auf oder unter dem
+   Stangengewicht, entfällt er – die leere Stange steht schon im
+   Schritt-Text. */
+const BAR_KG = 20;
+function rampLoad(plan, exId){
+  /* Plan-Einträge kommen aus slotView() und tragen die Katalog-`id`,
+     nicht `exId`. */
+  const p = plan.find(x => x.id === exId);
+  if (!p || p.kind !== 'load' || !p.w) return null;
+  const bar = /Langhantel/.test(p.equip);
+  const grid = bar ? 2.5 : 2;
+  const val  = Math.round(p.w * (bar ? 0.65 : 0.45) / grid) * grid;
+  if (bar && val <= BAR_KG) return null;
+  if (!val) return null;
+  return bar ? num(val) + ' kg' : '2 × ' + num(val) + ' kg';
+}
+
+/* Aufwärm-Schritte für den tatsächlich gewählten Plan. Schritte zu
+   gestrichenen Übungen fallen weg. */
+function buildWarm(plan){
+  const steps = sess().warm || [];
+  return steps.map(s => {
+    const link = s.for || s.ramp;
+    if (link && !plan.some(p => p.id === link)) return null;
+    if (!s.ramp) return { text:s.text, done:false };
+    const r = rampLoad(plan, s.ramp);
+    return { text: s.text + (r ? (s.join || ', dann 5 Wdh mit ') + r : ''), done:false };
+  }).filter(Boolean);
+}
+
+/* ── Training ─────────────────────────────────────────────── */
+function startTimer(){
+  clearInterval(timer);
+  timer = setInterval(tick, 250);
+}
+function tick(){
+  if (!S.live || !S.live.resting) { clearInterval(timer); return; }
+  const left = Math.ceil((S.live.restEnd - Date.now()) / 1000);
+  if (left <= 0) {
+    clearInterval(timer);
+    S.live.resting = false; S.live.rest = 0;
+    buzz([90, 70, 90]);
+    persist(); render();
+    return;
+  }
+  if (left !== S.live.rest) { S.live.rest = left; render(); }
+}
+
+const A = {
+  goHeute:       () => set({ tab:'heute' }),
+  goPlan:        () => set({ tab:'plan' }),
+  goFortschritt: () => set({ tab:'fortschritt' }),
+
+  startFull:  () => start(pickIdx(), false),
+  startShort: () => { S.pick = null; start([...sess().short].sort((a, b) => a - b), true); },
+
+  /* Übung für heute streichen bzw. zurückholen. Die letzte
+     verbleibende lässt sich nicht abwählen. */
+  togglePick: i => {
+    const cur = pickIdx();
+    const next = cur.includes(i) ? cur.filter(k => k !== i) : [...cur, i].sort((a, b) => a - b);
+    if (!next.length) return;
+    buzz(15);
+    set({ pick: next });
+  },
+
+  tapEx:   i => set({ sheet:{ type:'swap', i } }),
+  tapLoad: i => set({ sheet:{ type:'load', i }, draft:{ ...curSlots()[i] } }),
+  closeSheet: () => set({ sheet:null, draft:null }),
+
+  /* Rotation von Hand setzen – z. B. wenn eine Einheit im Garten
+     an der Reihenfolge vorbei gelaufen ist. */
+  pickRot: i => set({ tab:'heute', rot:i, pick:null }),
+
+  pickEx: id => {
+    const i = S.sheet.i, ex = byId(id);
+    const slots = curSlots().map((s, k) => {
+      if (k !== i) return s;
+      const w = ex.kind === 'load' ? (ex.w || 0) : 0;
+      return { ...s, exId:id, reps:s.lo, w, prog: ex.kind === 'load' ? 'weight' : 'reps' };
+    });
+    set({ plans: S.plans.map((p, k) => (k === S.rot ? slots : p)), sheet:null, draft:null });
+  },
+
+  wUp:       () => draftBump('w',    draftStep(),  0),
+  wDown:     () => draftBump('w',   -draftStep(),  0),
+  setsUp:    () => draftBump('sets',  1, 1),
+  setsDown:  () => draftBump('sets', -1, 1),
+  repsUp:    () => draftBump('reps',  1, 1),
+  repsDown:  () => draftBump('reps', -1, 1),
+  setProgWeight: () => set({ draft:{ ...S.draft, prog:'weight' } }),
+  setProgReps:   () => set({ draft:{ ...S.draft, prog:'reps'   } }),
+  applyDraft: () => {
+    const i = S.sheet.i, d = S.draft;
+    const slots = curSlots().map((x, k) => (k === i ? { ...d } : x));
+    set({ plans: S.plans.map((p, k) => (k === S.rot ? slots : p)), sheet:null, draft:null });
+  },
+
+  inc: () => bump(1),
+  dec: () => bump(-1),
+
+  /* Aufwärmen: Abhaken ist Gedächtnisstütze, keine Pflicht – „Los"
+     geht auch mit offenen Schritten. */
+  warmToggle: i => {
+    const warm = S.live.warm.map((w, k) => (k === i ? { ...w, done: !w.done } : w));
+    buzz(15);
+    set({ live:{ ...S.live, warm } });
+  },
+  warmGo: () => { buzz(20); set({ live:{ ...S.live, phase:'work' } }); },
+
+  completeSet, skipRest, skipEx, endHere, abort, finish,
+};
+
+function draftStep(){ const dex = byId(S.draft.exId); return dex.step || 1; }
+function draftBump(key, d, min){
+  S.draft = { ...S.draft, [key]: Math.max(min, Math.round((S.draft[key] + d) * 10) / 10) };
+  set({});
+}
+
+function start(idx, short){
+  clearInterval(timer);
+  const plan = buildPlan(idx);
+  const warm = buildWarm(plan);
+  acquireWakeLock();
+  buzz(20);
+  set({ live:{ plan, short, mins: estMins(idx), phase: warm.length ? 'warm' : 'work', warm,
+               ex:0, set:0, reps:plan[0].target,
+               resting:false, rest:0, restMax:1, restEnd:0, done:false, log:[], skipped:[] } });
+}
+
+function abort(){
+  clearInterval(timer); releaseWakeLock();
+  set({ live:null, pick:null });
+}
+
+/* Doppelte Progression: erst Wiederholungen im Zielbereich hoch,
+   am oberen Ende dann Gewicht bzw. Last-Variante – und im Bereich
+   unten wieder einsteigen. Gilt je Übung: was vollständig
+   durchgezogen wurde, steigert – auch an gekürzten Tagen.
+   Gestrichene Übungen bleiben stehen. */
+function progress(slot, reached){
+  if (!reached) return slot;
+  const ex = byId(slot.exId);
+  if (slot.reps < slot.hi) return { ...slot, reps: slot.reps + 1 };
+
+  if (slot.prog === 'weight')
+    return { ...slot, w: Math.round((slot.w + (ex.step || 2.5)) * 10) / 10, reps: slot.lo };
+
+  /* Körpergewicht am oberen Ende: auf die dokumentierte nächste
+     Stufe wechseln – schwerere Variante oder Zusatzlast – und im
+     Bereich unten wieder einsteigen. Ohne nächste Stufe bleibt
+     der Bereich stehen. */
+  const nx = ex.next ? byId(ex.next) : null;
+  if (!nx) return slot;
+  return { ...slot, exId:nx.id, w: nx.w || 0, reps: slot.lo,
+           prog: nx.kind === 'load' ? 'weight' : 'reps' };
+}
+
+/* Zuordnung Protokoll → Übung der Einheit. `slotIdx` fehlt nur in
+   einer Einheit, die vor diesem Update schon lief – dann greift
+   der Plan-Index wie früher. */
+const logSlot = (x, plan) =>
+  (x.slotIdx !== undefined ? x.slotIdx
+   : (plan && plan[x.ex] && plan[x.ex].slotIdx !== undefined) ? plan[x.ex].slotIdx : x.ex);
+
+function finish(){
+  clearInterval(timer); releaseWakeLock();
+  const l = S.live;
+  const slots = curSlots().map((slot, i) => {
+    if (!l) return slot;
+    const hit = l.log.filter(x => logSlot(x, l.plan) === i);
+    return progress(slot, hit.length === slot.sets && hit.every(x => x.reps >= slot.reps));
+  });
+  const history = l ? [...S.history, historyEntry(l)].slice(-HISTORY_MAX) : S.history;
+  set({
+    live:null, tab:'fortschritt', pick:null, history,
+    plans: S.plans.map((p, k) => (k === S.rot ? slots : p)),
+    rot: (S.rot + 1) % SESSIONS.length,
+  });
+}
+
+function bump(d){
+  S.live.reps = Math.max(0, S.live.reps + d);
+  set({});
+}
+
+function completeSet(){
+  const l = S.live; if (!l) return;
+  const ex = l.plan[l.ex];
+  const log = [...l.log, { ex:l.ex, slotIdx:ex.slotIdx, set:l.set, reps:l.reps }];
+  const lastSet = l.set + 1 >= ex.sets;
+  const lastEx  = l.ex  + 1 >= l.plan.length;
+  buzz(35);
+
+  if (lastSet && lastEx) {
+    clearInterval(timer); releaseWakeLock();
+    set({ live:{ ...l, log, done:true, resting:false } });
+    return;
+  }
+  const nx   = lastSet ? { ex:l.ex + 1, set:0 } : { ex:l.ex, set:l.set + 1 };
+  const rest = ex.rest;
+  startTimer();
+  set({ live:{ ...l, log, ...nx, reps: l.plan[nx.ex].target,
+               resting:true, rest, restMax:rest, restEnd: Date.now() + rest * 1000 } });
+}
+
+/* Übung streichen und zur nächsten springen. Angefangene Sätze
+   bleiben im Protokoll, die Übung steigert dann nur nicht. */
+function skipEx(){
+  const l = S.live; if (!l || l.done) return;
+  clearInterval(timer);
+  const skipped = [...(l.skipped || []), l.ex];
+  buzz(20);
+  if (l.ex + 1 >= l.plan.length) {
+    releaseWakeLock();
+    set({ live:{ ...l, skipped, done:true, resting:false, rest:0, restEnd:0 } });
+    return;
+  }
+  set({ live:{ ...l, skipped, ex:l.ex + 1, set:0, reps: l.plan[l.ex + 1].target,
+               resting:false, rest:0, restEnd:0 } });
+}
+
+/* Einheit hier beenden: der Rest fällt weg, das Protokoll bleibt.
+   Anders als Abbrechen zählt die Einheit und die Rotation rückt vor. */
+function endHere(){
+  const l = S.live; if (!l || l.done) return;
+  clearInterval(timer); releaseWakeLock();
+  const rest = l.plan.map((_, i) => i).filter(i => i >= l.ex);
+  buzz(35);
+  set({ live:{ ...l, skipped: [...new Set([...(l.skipped || []), ...rest])],
+               done:true, resting:false, rest:0, restEnd:0 } });
+}
+
+function skipRest(){
+  clearInterval(timer);
+  set({ live:{ ...S.live, resting:false, rest:0, restEnd:0 } });
+}
+
+/* ── Rendering ────────────────────────────────────────────── */
+const act = (name, arg) =>
+  `data-act="${name}"` + (arg !== undefined ? ` data-arg="${arg}"` : '');
+
+function today(){
+  try {
+    return new Date().toLocaleDateString('de-DE',
+      { weekday:'long', day:'numeric', month:'long' });
+  } catch(e){ return 'Heute'; }
+}
+function fmtDate(ts){
+  try { return new Date(ts).toLocaleDateString('de-DE', { weekday:'short', day:'numeric', month:'short' }); }
+  catch(e){ return ''; }
+}
+
+function viewHeute(){
+  const se = sess();
+  const pick = pickIdx();
+  const preview = curSlots().map((s, i) => {
+    const x = slotView(s);
+    const on = pick.includes(i);
+    const auto = s.reps < s.hi ? '+1 Wdh'
+      : x.prog === 'weight'    ? '+' + num(x.step || 2.5) + ' kg'
+      : x.next                 ? 'dann ' + byId(x.next).short
+                               : 'Bereich oben';
+    return { i, on, name:x.name, scheme:x.scheme, role:x.role,
+             prog: on ? x.role + ' · Ziel ' + s.reps + ' Wdh · ' + auto
+                      : 'gestrichen · zählt heute nicht' };
+  });
+  const mins = estMins(pick);
+  const segs = SESSIONS.map((s, i) =>
+    `<div style="flex:1;height:6px;border-radius:3px;background:${i === S.rot ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
+
+  return `
+<div style="padding:14px 22px 28px">
+  <div style="display:flex;align-items:baseline;justify-content:space-between">
+    <div class="kick">${today()}</div>
+    <div class="kick kick-a">Rotation ${S.rot + 1}/${SESSIONS.length}</div>
+  </div>
+
+  <div style="display:flex;align-items:center;gap:10px;margin-top:16px">${segs}</div>
+  <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:9px">Es zählt die Reihenfolge, nicht der Kalender · nichts wird nachgeholt</div>
+
+  <div class="card" style="margin-top:26px;overflow:hidden">
+    <div style="padding:22px 22px 18px">
+      <div class="kick kick-a">Als nächstes · ${se.kick}</div>
+      <div class="cd" style="font-weight:700;font-size:46px;line-height:1;margin-top:6px">${se.name}</div>
+      <div style="font:500 15px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px">${pick.length} von ${curSlots().length} Übungen · ca. ${mins} min · ${se.gear}</div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+    <div style="padding:6px 22px 14px">
+      ${preview.map(ex => `
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+        <div class="tap" ${act('togglePick', ex.i)} style="flex:none;width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center">
+          <div style="width:22px;height:22px;border-radius:11px;border:2px solid ${ex.on ? ACCENT : 'rgba(255,255,255,.22)'};background:${ex.on ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+            ${ex.on ? '<div style="width:9px;height:9px;border-radius:5px;background:#0F1110"></div>' : ''}
+          </div>
+        </div>
+        <div class="tap" ${act('tapEx', ex.i)} style="flex:1;min-width:0;padding:6px 0">
+          <div style="font:500 16px/1.25 Barlow,sans-serif;color:${ex.on ? '#F1F0EC' : 'rgba(241,240,236,.34)'};${ex.on ? '' : 'text-decoration:line-through'}">${ex.name}</div>
+          <div style="font:500 12px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:2px">${ex.prog}</div>
+        </div>
+        <div class="tap" ${act('tapLoad', ex.i)} style="flex:none;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,${ex.on ? '.16' : '.07'})">
+          <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.02em;color:rgba(241,240,236,${ex.on ? '.8' : '.3'});white-space:nowrap">${ex.scheme}</span>
+        </div>
+      </div>`).join('')}
+      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">Punkt antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
+    </div>
+  </div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
+    <div class="tap press primary" ${act('startFull')} style="height:78px">
+      <span style="font-size:28px">${pick.length === curSlots().length ? 'TRAINING STARTEN'
+        : pick.length === 1 ? '1 ÜBUNG STARTEN' : pick.length + ' ÜBUNGEN STARTEN'}</span>
+    </div>
+    <div class="tap" ${act('startShort')} style="height:60px;border-radius:16px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
+      <span class="cd" style="font-weight:600;font-size:19px;letter-spacing:.1em;color:rgba(241,240,236,.72)">KURZVERSION · ${se.shortMins} MIN</span>
+    </div>
+  </div>
+
+  ${(() => { const m = milestoneOf(curSlots()[0]); return `
+  <div class="tap" ${act('goFortschritt')} style="margin-top:26px;padding:18px 20px;border-radius:18px;border:1px dashed rgba(255,255,255,.16)">
+    <div class="kick">${m.name}</div>
+    <div class="cd" style="font-weight:700;font-size:32px;line-height:1;margin-top:6px">${m.big}</div>
+    <div style="font:500 13px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">${m.sub}</div>
+    <div style="height:5px;border-radius:3px;background:rgba(255,255,255,.1);margin-top:12px;overflow:hidden">
+      <div style="height:100%;width:${m.pct}%;background:${ACCENT};border-radius:3px"></div>
+    </div>
+  </div>`; })()}
+</div>`;
+}
+
+function viewPlan(){
+  return `
+<div style="padding:14px 22px 28px">
+  <div class="kick">Ober A → Unter A → Ober B → Unter B</div>
+  <div class="cd" style="font-weight:700;font-size:44px;line-height:1;margin-top:4px">ROTATION</div>
+  <div style="font:500 15px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px;max-width:320px">Keine Wochentage. Bei 3–4 Einheiten pro Woche dauert ein Durchlauf 7–9 Tage.</div>
+
+  <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
+    ${SESSIONS.map((s, i) => {
+      const on   = i === S.rot;
+      const sl   = S.plans[i];
+      const list = sl.map(x => byId(x.exId).short).join(' · ');
+      const kurz = s.short.map(k => byId(sl[k].exId).short).join(' · ');
+      return `
+    <div class="tap" ${act('pickRot', i)} style="background:#191C19;border:1px solid ${on ? 'rgba(255,77,23,.5)' : 'rgba(255,255,255,.08)'};border-radius:18px;padding:18px 20px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
+        <div class="cd" style="font-weight:700;font-size:26px;line-height:1;color:${on ? '#F1F0EC' : 'rgba(241,240,236,.7)'}">${s.name}</div>
+        <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${on ? ACCENT : 'rgba(241,240,236,.35)'};white-space:nowrap">${on ? 'Als nächstes' : 'Position ' + (i + 1)}</div>
+      </div>
+      <div style="font:500 13.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${list}</div>
+      <div style="display:flex;gap:12px;margin-top:10px">
+        <div style="flex:none;white-space:nowrap;font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.45)">ca. ${s.mins} min</div>
+        <div style="flex:1;min-width:0;font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.35)">Kurz ${s.shortMins} min: ${kurz}</div>
+      </div>
+    </div>`;
+    }).join('')}
+  </div>
+
+  <div style="margin-top:22px;padding:16px 18px;border-radius:16px;background:rgba(255,77,23,.09);border:1px solid rgba(255,77,23,.22)">
+    <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.8)">Termin geplatzt? Die nächste Einheit ist trotzdem die nächste in dieser Liste – nichts wird nachgeholt. Einheit antippen, um die Position von Hand zu setzen.</div>
+  </div>
+
+  <div class="kick" style="margin-top:28px">Aufbau jeder Einheit</div>
+  <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:8px">Übung 1 einzeln und frisch, danach zwei Antagonisten-Supersätze. 1–2 Wiederholungen bleiben immer im Tank – kein Satz bis zum Versagen.</div>
+</div>`;
+}
+
+function viewFortschritt(){
+  const anchors = SESSIONS.map((s, i) => ({ s, m: milestoneOf(S.plans[i][0]) }));
+  const next = anchors[S.rot];
+  const hist = [...S.history].reverse();
+
+  return `
+<div style="padding:14px 22px 28px">
+  <div class="kick">Seit Start · ${S.history.length} ${S.history.length === 1 ? 'Einheit' : 'Einheiten'}</div>
+  <div class="cd" style="font-weight:700;font-size:44px;line-height:1;margin-top:4px">FORTSCHRITT</div>
+
+  <div style="margin-top:22px;background:${ACCENT};border-radius:20px;padding:22px">
+    <div class="cd" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(15,17,16,.6)">Nächster Meilenstein · ${next.s.name}</div>
+    <div class="cd" style="font-weight:700;font-size:44px;line-height:1;color:#0F1110;margin-top:6px">${next.m.big}</div>
+    <div style="font:600 15px Barlow,sans-serif;color:rgba(15,17,16,.72);margin-top:8px">${next.m.name} · ${next.m.sub}</div>
+    <div style="height:8px;border-radius:4px;background:rgba(15,17,16,.22);margin-top:14px;overflow:hidden">
+      <div style="height:100%;width:${next.m.pct}%;background:#0F1110;border-radius:4px"></div>
+    </div>
+  </div>
+
+  <div class="kick" style="margin-top:30px">Aktueller Stand · alle Einheiten</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+    ${anchors.map(({ s, m }) => `
+    <div class="card" style="border-radius:16px;padding:14px 16px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+        <div class="cd" style="font-weight:700;font-size:16px">${s.name}</div>
+        <div class="cd" style="font-weight:700;font-size:20px;white-space:nowrap">${m.big}</div>
+      </div>
+      <div style="font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.4);margin-top:2px">${m.name} · ${m.sub}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="kick" style="margin-top:30px">Verlauf</div>
+  <div style="display:flex;flex-direction:column;gap:10px;margin-top:14px">
+    ${hist.length ? hist.slice(0, 12).map(h => `
+    <div class="card" style="border-radius:16px;padding:14px 16px">
+      <div style="display:flex;align-items:baseline;justify-content:space-between;gap:10px">
+        <div class="cd" style="font-weight:700;font-size:16px">${h.session}</div>
+        <div style="font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.4);white-space:nowrap">${fmtDate(h.ts)}</div>
+      </div>
+      <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">${h.doneSets} von ${h.totalSets} Sätzen · ${h.exCount} von ${h.planCount} Übungen${h.skipped.length ? ' · gestrichen: ' + h.skipped.join(', ') : ''}</div>
+      ${h.anchor ? `<div style="font:500 13px Barlow,sans-serif;color:rgba(241,240,236,.65);margin-top:6px">${h.anchor.short}: ${h.anchor.kind === 'load' ? num(h.anchor.w) + ' kg · ' : ''}${h.anchor.reps.join(' · ')} Wdh</div>` : ''}
+    </div>`).join('')
+    : `<div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.4)">Noch keine abgeschlossene Einheit.</div>`}
+  </div>
+</div>`;
+}
+
+function viewTabs(){
+  const pill = (on) => on ? 'rgba(255,77,23,.18)' : 'transparent';
+  const col  = (on) => on ? '#F1F0EC' : 'rgba(241,240,236,.4)';
+  const tab = (name, label, action) => `
+    <div class="tap" ${act(action)} style="flex:1;height:44px;border-radius:22px;display:flex;align-items:center;justify-content:center;background:${pill(S.tab === name)}">
+      <span class="cd" style="font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;color:${col(S.tab === name)}">${label}</span>
+    </div>`;
+  return `
+<div style="flex:none;display:flex;align-items:center;gap:6px;border-top:1px solid rgba(255,255,255,.09);background:#141614;padding:10px 12px 12px">
+  ${tab('heute','Heute','goHeute')}
+  ${tab('plan','Plan','goPlan')}
+  ${tab('fortschritt','Fortschritt','goFortschritt')}
+</div>`;
+}
+
+function viewLive(){
+  const live = S.live, plan = live.plan, ex = plan[live.ex];
+  const totalSets = plan.reduce((a, e) => a + e.sets, 0);
+  const doneSets  = live.log.length;
+
+  const skipped = live.skipped || [];
+  const segs = plan.map((e, i) => {
+    const color = skipped.includes(i) ? 'rgba(255,255,255,.3)'
+      : i < live.ex ? ACCENT
+      : (i === live.ex && !live.done) ? 'rgba(255,77,23,.35)'
+      : live.done ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.11)';
+    return `<div style="flex:${e.sets};height:4px;border-radius:2px;background:${color}"></div>`;
+  }).join('');
+
+  const warming = live.phase === 'warm';
+  const lastEx = live.ex + 1 >= plan.length;
+  const cutStyle = 'font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:rgba(241,240,236,.38);padding:6px 0';
+  const cut = live.done ? '' : warming ? `
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
+    <div class="tap cd" ${act('warmGo')} style="${cutStyle}">Aufwärmen überspringen</div>
+  </div>` : `
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+    ${lastEx ? '<div></div>' : `<div class="tap cd" ${act('skipEx')} style="${cutStyle}">Übung überspringen</div>`}
+    <div class="tap cd" ${act('endHere')} style="${cutStyle}">Einheit beenden</div>
+  </div>`;
+
+  const header = `
+<div style="flex:none;padding:10px 22px 0">
+  <div style="display:flex;align-items:center;justify-content:space-between">
+    <div class="tap cd" ${act('abort')} style="font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4);padding:6px 0">Abbrechen</div>
+    <div class="cd" style="font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4)">${sess().name}${live.short ? ' · Kurz' : ''}</div>
+  </div>
+  <div style="display:flex;gap:5px;margin-top:12px">${segs}</div>
+  ${cut}
+</div>`;
+
+  let body;
+  if (warming && !live.done) {
+    const warm = live.warm || [];
+    const offen = warm.filter(w => !w.done).length;
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
+  <div style="padding-top:24px;flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Aufwärmen · ${sess().name}</div>
+    <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${warm.length} SCHRITTE</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 5 min · zählt nicht als Satz</div>
+  </div>
+
+  <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
+    ${warm.map((w, i) => `
+    <div class="tap" ${act('warmToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+      <div style="flex:none;width:26px;height:26px;margin-top:1px;border-radius:13px;border:2px solid ${w.done ? ACCENT : 'rgba(255,255,255,.22)'};background:${w.done ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+        ${w.done ? '<div style="width:10px;height:10px;border-radius:5px;background:#0F1110"></div>' : ''}
+      </div>
+      <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${w.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${w.done ? 'text-decoration:line-through' : ''}">${w.text}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="tap press primary" ${act('warmGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
+    <span style="font-size:28px">${offen ? 'LOS' : 'AUFWÄRMEN FERTIG'}</span>
+  </div>
+</div>`;
+  } else if (live.done) {
+    const base    = live.mins || sess().mins;
+    const doneMin = Math.max(5, 5 + Math.round((base - 5) * doneSets / Math.max(1, totalSets)));
+
+    /* Gestrichenes offen benennen – sonst liest sich eine halbe
+       Einheit wie eine ganze. */
+    const cutNames = skipped.map(i => plan[i].short);
+    const summary = doneSets + ' von ' + totalSets + ' Sätzen · '
+      + (plan.length - skipped.length) + ' von ' + plan.length + ' Übungen'
+      + (cutNames.length ? ' · gestrichen: ' + cutNames.join(', ') : '')
+      + ' · als nächstes ' + nextSess().name;
+
+    /* Meilenstein-Zeile für die erste vollständig gemachte Übung. */
+    const iDone = plan.findIndex((e, i) =>
+      live.log.filter(x => x.ex === i).length === e.sets);
+    let milestone = 'Nichts vollständig durchgezogen · Lasten bleiben, wo sie sind';
+    if (iDone >= 0) {
+      const p   = plan[iDone];
+      const got = live.log.filter(x => x.ex === iDone).map(x => x.reps);
+      const low = Math.min(...got);
+      const nx  = p.next ? byId(p.next) : null;
+      milestone = p.short + ': ' + got.join(' · ') + (
+          low < p.target        ? ' — Ziel ' + p.target + ' Wdh, Bereich ' + p.lo + '–' + p.hi
+          : low < p.hi          ? ' — nächste Einheit ' + (p.target + 1) + ' Wdh'
+          : p.prog === 'weight' ? ' — Bereich oben, nächste Einheit schwerer'
+          : nx                  ? ' — Bereich oben, nächste Stufe: ' + nx.name
+                                : ' — Bereich oben');
+    }
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 26px 40px;overflow-y:auto">
+  <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Einheit abgeschlossen</div>
+  <div class="cd" style="font-weight:700;font-size:76px;line-height:.92;margin-top:10px">${doneMin}<span style="font-size:38px"> min</span></div>
+  <div style="font:500 16px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:10px">${summary}</div>
+  <div class="card" style="margin-top:28px;padding:20px;border-radius:18px">
+    <div class="kick">Meilenstein</div>
+    <div class="cd" style="font-weight:700;font-size:30px;line-height:1.05;margin-top:6px">${milestone}</div>
+  </div>
+  <div class="tap press primary" ${act('finish')} style="height:74px;margin-top:26px">
+    <span style="font-size:26px">FERTIG</span>
+  </div>
+</div>`;
+  } else if (live.resting) {
+    const m = Math.floor(live.rest / 60), s = live.rest % 60;
+    const clock = m + ':' + String(s).padStart(2, '0');
+    const pct = Math.round((live.rest / Math.max(1, live.restMax)) * 100) + '%';
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 26px 16px;min-height:0">
+  <div class="cd" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:rgba(241,240,236,.4)">Pause</div>
+  <div class="cd num" style="font-weight:700;font-size:min(140px,32vw);line-height:.9;letter-spacing:-.02em;margin-top:8px">${clock}</div>
+  <div style="width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.1);margin-top:18px;overflow:hidden">
+    <div style="height:100%;background:${ACCENT};border-radius:3px;width:${pct}"></div>
+  </div>
+  <div style="margin-top:34px;text-align:center">
+    <div class="cd" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.4)">Als nächstes</div>
+    <div class="cd" style="font-weight:700;font-size:30px;line-height:1.1;margin-top:6px">${ex.short}</div>
+    <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">Satz ${live.set + 1} · Ziel ${ex.target} Wdh</div>
+  </div>
+  <div class="tap press" ${act('skipRest')} style="width:100%;height:74px;border-radius:18px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-top:auto;flex:none">
+    <span class="cd" style="font-weight:700;font-size:24px;letter-spacing:.1em;color:rgba(241,240,236,.8)">WEITER</span>
+  </div>
+</div>`;
+  } else {
+    const chips = Array.from({ length: ex.sets }, (_, i) => {
+      const rec = live.log.find(l => l.ex === live.ex && l.set === i);
+      let c;
+      if (rec)                 c = { label:String(rec.reps), bg:'rgba(255,77,23,.16)', border:'rgba(255,77,23,.4)',  color:ACCENT };
+      else if (i === live.set) c = { label:'–', bg:'rgba(255,255,255,.06)', border:'rgba(255,255,255,.28)', color:'#F1F0EC' };
+      else                     c = { label:'–', bg:'transparent',           border:'rgba(255,255,255,.1)',  color:'rgba(241,240,236,.3)' };
+      return `<div style="flex:1;height:44px;border-radius:12px;background:${c.bg};border:1px solid ${c.border};display:flex;align-items:center;justify-content:center">
+                <span class="cd" style="font-weight:700;font-size:19px;color:${c.color}">${c.label}</span>
+              </div>`;
+    }).join('');
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
+  <div style="padding-top:26px;flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Satz ${live.set + 1} von ${ex.sets}</div>
+    <div class="cd" style="font-weight:700;font-size:44px;line-height:1;margin-top:6px">${ex.name}</div>
+    <div style="font:500 15.5px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${ex.detail}</div>
+  </div>
+
+  <div style="flex:1;display:flex;align-items:center;justify-content:center;gap:18px;min-height:0">
+    <div class="tap ring stepper" ${act('dec')} style="width:82px;height:82px;border-radius:41px">
+      <div class="bar-h"></div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div class="cd num" style="font-weight:700;font-size:min(118px,26vw);line-height:.85">${live.reps}</div>
+      <div class="cd" style="font-weight:600;font-size:14px;letter-spacing:.2em;text-transform:uppercase;color:rgba(241,240,236,.4);margin-top:8px">${ex.unit}</div>
+    </div>
+    <div class="tap ring stepper" ${act('inc')} style="width:82px;height:82px;border-radius:41px">
+      <div class="bar-h"></div><div class="bar-v"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:8px;margin-bottom:16px;flex:none">${chips}</div>
+
+  <div class="tap press primary" ${act('completeSet')} style="height:86px;border-radius:20px;flex:none">
+    <span style="font-size:30px">SATZ FERTIG</span>
+  </div>
+</div>`;
+  }
+
+  return `<div style="flex:1;display:flex;flex-direction:column;min-height:0">${header}${body}</div>`;
+}
+
+function viewSheet(){
+  if (!S.sheet) return '';
+  const slot = curSlots()[S.sheet.i], cur = byId(slot.exId);
+  let inner;
+
+  if (S.sheet.type === 'swap') {
+    const rank = e => (e.id === cur.id ? -1 : Math.abs(e.lvl - cur.lvl) + (e.equip === cur.equip ? 0 : 0.5));
+    const same  = DB.filter(e => e.pattern === cur.pattern).sort((a, b) => rank(a) - rank(b));
+    const other = DB.filter(e => e.pattern !== cur.pattern && e.equip === cur.equip).slice(0, 3);
+
+    inner = `
+<div style="display:flex;flex-direction:column;min-height:0">
+  <div style="flex:none;padding:16px 0 4px">
+    <div class="cd kick-a" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase">${cur.label}</div>
+    <div class="cd" style="font-weight:700;font-size:34px;line-height:1.05;margin-top:4px">Übung tauschen</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:4px">Vorausgewählt: gleiches Bewegungsmuster wie ${cur.name}.</div>
+  </div>
+  <div class="scroll" style="padding:14px 0 4px;display:flex;flex-direction:column;gap:8px">
+    ${same.map(e => {
+      const isCur = e.id === cur.id;
+      const badge = isCur ? 'Aktuell' : (Math.abs(e.lvl - cur.lvl) <= 1 ? 'Ähnlich' : '');
+      return `
+    <div class="tap" ${act('pickEx', e.id)} style="border:1px solid ${isCur ? 'rgba(255,77,23,.45)' : 'rgba(255,255,255,.09)'};background:${isCur ? 'rgba(255,77,23,.08)' : 'transparent'};border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex:none">
+      <div style="flex:1;min-width:0">
+        <div style="font:600 16px/1.25 Barlow,sans-serif;color:#F1F0EC">${e.name}</div>
+        <div style="font:500 13px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.42);margin-top:2px">${e.equip} · ${e.cue}</div>
+      </div>
+      ${badge ? `<div style="flex:none;padding:4px 9px;border-radius:7px;background:${isCur ? ACCENT : 'rgba(255,77,23,.14)'}">
+        <span class="cd" style="font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${isCur ? '#0F1110' : ACCENT}">${badge}</span>
+      </div>` : ''}
+    </div>`;
+    }).join('')}
+    <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.35);padding:10px 2px 2px;flex:none">Anderes Muster, gleiches Gerät</div>
+    ${other.map(e => `
+    <div class="tap" ${act('pickEx', e.id)} style="border:1px solid rgba(255,255,255,.07);border-radius:14px;padding:12px 16px;display:flex;align-items:baseline;justify-content:space-between;gap:12px;flex:none">
+      <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.72)">${e.name}</div>
+      <div style="font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.35)">${e.label}</div>
+    </div>`).join('')}
+  </div>
+</div>`;
+
+  } else {
+    const d = S.draft, dex = byId(d.exId), step = dex.step || 1;
+    const loadLabel = dex.kind === 'load' ? 'Gewicht' : 'Zusatzlast Rucksack';
+    const loadValue = (d.w > 0 || dex.kind === 'load') ? num(d.w) : '0';
+    const atTop = d.reps >= d.hi;
+    const progNote = !atTop
+      ? 'Alle ' + d.sets + ' Sätze mit ' + d.reps + ' Wdh geschafft → nächste Einheit ' + (d.reps + 1) + ' Wdh. Zielbereich ' + range(d) + '.'
+      : (d.prog === 'weight'
+          ? 'Oberes Ende von ' + range(d) + ' erreicht → nächste Einheit ' + num(Math.round((d.w + step) * 10) / 10) + ' kg bei ' + d.lo + ' Wdh.'
+          : (dex.next
+              ? 'Oberes Ende von ' + range(d) + ' erreicht → nächste Einheit ' + byId(dex.next).name + ' mit ' + num(byId(dex.next).w || 0) + ' kg bei ' + d.lo + ' Wdh.'
+              : 'Oberes Ende von ' + range(d) + ' erreicht. Nächste Stufe von Hand wählen – Übung antippen.'));
+
+    const miniStepper = (action, plus) => `
+      <div class="tap" ${act(action)} style="width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;flex:none">
+        <div style="width:18px;height:3px;border-radius:2px;background:#F1F0EC"></div>
+        ${plus ? '<div style="width:3px;height:18px;border-radius:2px;background:#F1F0EC;position:absolute"></div>' : ''}
+      </div>`;
+
+    inner = `
+<div style="padding:16px 0 0;overflow-y:auto">
+  <div class="cd kick-a" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase">Last anpassen</div>
+  <div class="cd" style="font-weight:700;font-size:34px;line-height:1.05;margin-top:4px">${cur.name}</div>
+
+  <div style="margin-top:20px;display:flex;align-items:center;gap:14px">
+    <div class="tap ring stepper" ${act('wDown')} style="width:64px;height:64px;border-radius:32px">
+      <div style="width:24px;height:4px;border-radius:2px;background:#F1F0EC"></div>
+    </div>
+    <div style="flex:1;text-align:center">
+      <div class="cd" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.4)">${loadLabel}</div>
+      <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;margin-top:2px">
+        <span class="cd num" style="font-weight:700;font-size:62px;line-height:1">${loadValue}</span>
+        <span class="cd" style="font-weight:600;font-size:22px;color:rgba(241,240,236,.5)">kg</span>
+      </div>
+      <div style="font:500 12px Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:2px">± ${String(step).replace('.', ',')} kg</div>
+    </div>
+    <div class="tap ring stepper" ${act('wUp')} style="width:64px;height:64px;border-radius:32px">
+      <div style="width:24px;height:4px;border-radius:2px;background:#F1F0EC"></div>
+      <div style="width:4px;height:24px;border-radius:2px;background:#F1F0EC;position:absolute"></div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:18px">
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Sätze</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('setsDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:32px;line-height:1">${d.sets}</span>
+        ${miniStepper('setsUp', true)}
+      </div>
+    </div>
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Ziel · Bereich ${range(d)}</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('repsDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:32px;line-height:1">${d.reps}</span>
+        ${miniStepper('repsUp', true)}
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:18px">
+    <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Am oberen Ende steigern über</div>
+    <div style="display:flex;gap:8px;margin-top:8px">
+      <div class="tap" ${act('setProgWeight')} style="flex:1;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:${d.prog === 'weight' ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+        <span class="cd" style="font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:${d.prog === 'weight' ? '#0F1110' : 'rgba(241,240,236,.6)'}">Gewicht</span>
+      </div>
+      <div class="tap" ${act('setProgReps')} style="flex:1;height:46px;border-radius:12px;border:1px solid rgba(255,255,255,.14);background:${d.prog === 'reps' ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+        <span class="cd" style="font-weight:700;font-size:16px;letter-spacing:.1em;text-transform:uppercase;color:${d.prog === 'reps' ? '#0F1110' : 'rgba(241,240,236,.6)'}">Wiederholungen</span>
+      </div>
+    </div>
+    <div style="font:500 13px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:9px">${progNote}</div>
+  </div>
+
+  <div class="tap press primary" ${act('applyDraft')} style="height:66px;margin-top:18px">
+    <span style="font-size:24px">ÜBERNEHMEN</span>
+  </div>
+</div>`;
+  }
+
+  return `
+<div style="position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(5,6,5,.72);display:flex;flex-direction:column;justify-content:flex-end;z-index:50">
+  <div class="tap" ${act('closeSheet')} style="flex:1"></div>
+  <div style="background:#191C19;border-top:1px solid rgba(255,255,255,.1);border-radius:26px 26px 0 0;padding:14px 20px calc(18px + env(safe-area-inset-bottom));max-height:82dvh;display:flex;flex-direction:column">
+    <div style="width:44px;height:4px;border-radius:2px;background:rgba(255,255,255,.22);align-self:center;flex:none"></div>
+    ${inner}
+  </div>
+</div>`;
+}
+
+function render(){
+  const app = document.getElementById('app');
+  const prev = app.querySelector('.scroll');
+  if (prev && prev.dataset.key) scrollMemo[prev.dataset.key] = prev.scrollTop;
+
+  const key = screenKey();
+  const main = S.live
+    ? viewLive()
+    : `<div style="flex:1;display:flex;flex-direction:column;min-height:0">
+         <div class="scroll" data-key="${key}">${
+           S.tab === 'heute' ? viewHeute() : S.tab === 'plan' ? viewPlan() : viewFortschritt()
+         }</div>
+         ${viewTabs()}
+       </div>`;
+
+  app.innerHTML = main + viewSheet();
+
+  const next = app.querySelector('.scroll[data-key]');
+  if (next) next.scrollTop = scrollMemo[key] || 0;
+}
+
+/* ── Eingabe ──────────────────────────────────────────────── */
+document.getElementById('app').addEventListener('click', e => {
+  const el = e.target.closest('[data-act]');
+  if (!el) return;
+  const fn = A[el.dataset.act];
+  if (!fn) return;
+  e.preventDefault();
+  const arg = el.dataset.arg;
+  fn(arg === undefined ? undefined : (/^\d+$/.test(arg) ? Number(arg) : arg));
+});
+
+/* Android-Zurück-Taste: schließt Sheet bzw. verlässt das Training,
+   statt die Seite zu verlassen. */
+history.replaceState({ gf:0 }, '');
+history.pushState({ gf:1 }, '');
+window.addEventListener('popstate', () => {
+  history.pushState({ gf:1 }, '');
+  if (S.sheet)      A.closeSheet();
+  else if (S.live)  A.abort();
+  else if (S.tab !== 'heute') A.goHeute();
+});
+
+/* Doppeltipp-Zoom unterbinden – bei nassen Händen sonst nervig. */
+let lastTouch = 0;
+document.addEventListener('touchend', e => {
+  const now = Date.now();
+  if (now - lastTouch < 300) e.preventDefault();
+  lastTouch = now;
+}, { passive:false });
+
+restore();
+if (S.live) acquireWakeLock();
+render();
+</script>
+</body>
+</html>

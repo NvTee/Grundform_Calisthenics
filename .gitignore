@@ -1,0 +1,6 @@
+# Build-Artefakt für das Hosting als Claude-Artefakt, per
+# build_artifact.py jederzeit neu erzeugbar.
+Grundform.artifact.html
+
+.DS_Store
+__pycache__/
