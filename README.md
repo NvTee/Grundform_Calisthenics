@@ -58,6 +58,25 @@ Alles aus dem Prototyp, plus das, was auf einem echten Gerät dazugehört:
   aus der heutigen Arbeitslast gerechnet (Langhantel 65 %, Kurzhantel 45 %),
   damit sie mit der Progression mitwandern. Schritte zu gestrichenen Übungen
   fallen weg.
+- **Progression mit Bestätigung** — Wiederholungen steigen sofort im
+  Zielbereich; die Schwierigkeit springt erst nach N Einheiten am oberen Ende
+  (Default 2, im Plan-Tab einstellbar). Fällt man N-mal unter den Bereich,
+  kommt ein **Vorschlag** zum Reduzieren statt einer stillen Änderung — mit
+  Begründung, zum Übernehmen oder Behalten. Reduktionen respektieren die
+  Reiz-Schwellen: statt unter 12 kg Curls zu gehen, wird die leichtere
+  Variante vorgeschlagen (`prev`-Kette im Katalog).
+- **Fortschritts-Charts** — Score je Übung (Wiederholungen × Schwierigkeit,
+  Zusatzlast am Körpergewicht relativiert) als Zeitreihe, mit Marker beim
+  Stufenwechsel. Dazu ein Workout-Score: prozentuale Abweichung jeder Übung
+  von ihrem Schnitt der letzten 4 Wochen, gemittelt über die Einheit — damit
+  sind unterschiedlich zusammengesetzte Einheiten vergleichbar. Beide Reihen
+  hängen am **Slot**, nicht an der Übungs-ID, sonst reißt die Linie genau
+  dort ab, wo die Progression eine Stufe zieht.
+- **Gesamt-Timer** — läuft ab „Training starten" in der Kopfzeile, nach
+  Wall-Clock (übersteht Einfrieren und Neuladen). Die gemessene Dauer landet
+  im Verlauf statt einer Schätzung.
+- **Cool-Down** — 2–3 Schritte am Ende jeder Einheit, abhakbar und
+  überspringbar, ohne Tracking. Schritte zu gestrichenen Übungen entfallen.
 - **Echter Verlauf statt Demo-Daten** — jede abgeschlossene Einheit landet im
   Verlauf (`grundform.session.v2` → `history`): Datum, Sätze, gestrichene
   Übungen, die tatsächlichen Zahlen der Erstübung. Der Fortschritt-Tab zeigt

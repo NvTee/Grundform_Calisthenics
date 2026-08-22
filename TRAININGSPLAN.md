@@ -241,6 +241,8 @@ Alle acht geforderten Muster sind abgedeckt. Zusätzlich: seitliche Schulter (1x
 
 Innerhalb des Zielbereichs erst Wiederholungen aufbauen, bis **alle** Sätze am oberen Ende liegen und die letzte Wdh noch 1–2 im Tank hat. Dann eine Stufe hoch (Gewicht `step` oder nächste `lvl`) und am unteren Ende des Bereichs neu einsteigen. Nie ein Satz bis zum Versagen.
 
+**Schwierigkeitssprung erst nach zwei Einheiten.** Wiederholungen steigen sofort, sobald das Tagesziel in allen Sätzen stand. Die Stufe (Gewicht bzw. schwerere Variante) wechselt erst, wenn **zwei aufeinanderfolgende Einheiten** am oberen Ende des Bereichs lagen — bei der Rotation sind das rund 2–3 Wochen je Stufe. Umgekehrt: zweimal in Folge unter dem unteren Ende ist das Signal zum Reduzieren. Reduziert wird nie unter die Reiz-Schwellen aus Abschnitt 1 — liegt das nächstkleinere Gewicht darunter, ist die leichtere Variante die richtige Antwort.
+
 Die Regel gilt **je Übung, nicht je Einheit**: Wer eine Übung wegen Zeitmangel streicht, verliert nur deren Fortschritt — jede vollständig durchgezogene Übung steigert normal, die gestrichene bleibt beim alten Wert stehen. Eine gekürzte Einheit zählt trotzdem als Einheit; die Rotation rückt vor.
 
 | Übungstyp | Zielbereich | Auslösekriterium | Steigerungsschritt |

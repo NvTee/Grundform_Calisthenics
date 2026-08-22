@@ -2,7 +2,7 @@ Du erweiterst die Trainings-App **Grundform** um Cool-Down-Programme. Die App ha
 
 ## Kontext
 
-Ein Wiedereinsteiger, 40+, trainiert 3–4× pro Woche im Garten. Verfügbar: Klimmzugstange, Dip-Stangen, Langhantel, Kurzhanteln, Bank, Expander, Rucksack, Boden/Wiese, Hauswand. Kein Studio, keine Faszienrolle, keine Matte.
+Heimtraining ohne Studio, 3–4× pro Woche. Verfügbar: Klimmzugstange, Dip-Stangen, Langhantel, Kurzhanteln, Bank, Expander, Rucksack, Boden/Wiese, Hauswand. Keine Faszienrolle, keine Matte.
 
 Die App rotiert vier Einheiten (Ober A → Unter A → Ober B → Unter B), ohne Wochentage. Nichts wird nachgeholt.
 
