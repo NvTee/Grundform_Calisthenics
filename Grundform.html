@@ -159,7 +159,12 @@ const byId = id => DB.find(e => e.id === id);
    `warm` sind die Aufwärm-Schritte. `for` bindet einen Schritt an
    eine Übung – ist sie gestrichen, entfällt der Schritt. `ramp`
    rechnet die aktuelle Arbeitslast dieser Übung in den Text
-   ein, statt ein Gewicht fest zu verdrahten. ---------------- */
+   ein, statt ein Gewicht fest zu verdrahten.
+   `cool` sind die Cool-Down-Schritte nach dem letzten Satz –
+   gleiches `for`-Prinzip, kein `ramp`, kein Tracking, kein
+   Ziel. Kürzer als das Aufwärmen und optional (Link zum
+   Überspringen), weil es als erstes weichen soll, wenn die
+   Zeit knapp wird. ------------------------------------------ */
 const SESSIONS = [
   { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:28, shortMins:16,
     gear:'Stange · Dip-Stangen · Bank · Expander', short:[0, 1, 2],
@@ -175,6 +180,11 @@ const SESSIONS = [
       { text:'30 s an der Stange hängen, Schultern aktiv nach unten', for:'pullup' },
       { text:'8 langsame Liegestütze mit Händen auf der Bank', for:'pushup-feet' },
       { text:'2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
+    ],
+    cool:[
+      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'pullup' },
+      { text:'30 s Brust-Dehnung an der Dip-Stange je Seite', for:'dip' },
+      { text:'40 s ruhig atmen, 4 s ein, 6 s aus' },
     ]},
   { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18,
     gear:'Langhantel · Kurzhanteln · Bank · Stange', short:[0, 1, 3],
@@ -190,6 +200,11 @@ const SESSIONS = [
       { text:'8 Split Squats ohne Last je Seite', for:'squat-bss' },
       { text:'Kreuzheben-Aufbausätze: 5 Wdh leere Stange', ramp:'dl' },
       { text:'20 s toter Hang zur Vorbereitung des Kniehebens', for:'core-hang-knee' },
+    ],
+    cool:[
+      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'dl' },
+      { text:'30 s Hüftbeuger-Dehnung im Ausfallschritt je Seite', for:'squat-bss' },
+      { text:'45 s liegen, ruhig ausatmen, Puls senken' },
     ]},
   { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:29, shortMins:16,
     gear:'Stange · Langhantel · Kurzhanteln', short:[0, 1, 2],
@@ -205,6 +220,11 @@ const SESSIONS = [
       { text:'30 s hängen, dann 3 Scapula Pull-ups', for:'chinup' },
       { text:'8 Liegestütze Hände erhöht, dann 5 Pike-Liegestütze halber Weg', for:'pushup-pike' },
       { text:'Pendlay-Aufbausätze: 8 Wdh leere Stange', ramp:'row-pendlay' },
+    ],
+    cool:[
+      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'chinup' },
+      { text:'30 s Schulterdehnung über Kopf, Arm quer, je Seite', for:'pushup-pike' },
+      { text:'40 s Schultern kreisen, dann ruhig ausatmen' },
     ]},
   { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17,
     gear:'Kurzhanteln · Langhantel · Bank · Expander', short:[0, 1, 4],
@@ -220,6 +240,11 @@ const SESSIONS = [
       { text:'10 Kniebeugen ohne Last, 3 s abwärts', for:'squat-front' },
       { text:'8 Hüftheben zweibeinig, dann 5 RDL mit leerer Stange', for:'rdl' },
       { text:'Front-Rack-Kniebeugen zum Einfühlen', ramp:'squat-front', join:': 5 Wdh mit ' },
+    ],
+    cool:[
+      { text:'30 s Quadrizeps-Dehnung im Stand je Seite', for:'squat-front' },
+      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'rdl' },
+      { text:'45 s stehen, ruhig durchatmen, Puls senken' },
     ]},
 ];
 const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
@@ -421,6 +446,29 @@ function buildWarm(plan){
   }).filter(Boolean);
 }
 
+/* Cool-Down-Schritte für den tatsächlich gewählten Plan. Gleiches
+   `for`-Prinzip wie beim Aufwärmen, kein `ramp` – das Cool-Down
+   trägt keine Last. */
+function buildCool(plan){
+  const steps = sess().cool || [];
+  return steps.map(s => {
+    if (s.for && !plan.some(p => p.id === s.for)) return null;
+    return { text:s.text, done:false };
+  }).filter(Boolean);
+}
+
+/* Nach der letzten Übung: ins Cool-Down, wenn die Einheit welche
+   hat, sonst direkt in den Abschluss-Screen. Nur im zweiten Fall
+   wird das Wake Lock schon hier freigegeben – während des
+   Cool-Downs soll der Bildschirm an bleiben, auch ohne Berührung
+   (40-s-Halten liest sich sonst nicht ab). */
+function coolOrDone(plan, extra){
+  const cool = buildCool(plan);
+  if (cool.length) return { ...extra, phase:'cool', cool, resting:false };
+  releaseWakeLock();
+  return { ...extra, done:true, resting:false };
+}
+
 /* ── Training ─────────────────────────────────────────────── */
 function startTimer(){
   clearInterval(timer);
@@ -500,6 +548,16 @@ const A = {
     set({ live:{ ...S.live, warm } });
   },
   warmGo: () => { buzz(20); set({ live:{ ...S.live, phase:'work' } }); },
+
+  /* Cool-Down: gleiches Prinzip wie Aufwärmen – Abhaken ist
+     Gedächtnisstütze, "Fertig" geht auch mit offenen Schritten.
+     Der Skip-Link oben führt zur selben Aktion. */
+  coolToggle: i => {
+    const cool = S.live.cool.map((c, k) => (k === i ? { ...c, done: !c.done } : c));
+    buzz(15);
+    set({ live:{ ...S.live, cool } });
+  },
+  coolGo: () => { buzz(20); releaseWakeLock(); set({ live:{ ...S.live, done:true } }); },
 
   completeSet, skipRest, skipEx, endHere, abort, finish,
 };
@@ -586,8 +644,8 @@ function completeSet(){
   buzz(35);
 
   if (lastSet && lastEx) {
-    clearInterval(timer); releaseWakeLock();
-    set({ live:{ ...l, log, done:true, resting:false } });
+    clearInterval(timer);
+    set({ live:{ ...l, log, ...coolOrDone(l.plan, {}) } });
     return;
   }
   const nx   = lastSet ? { ex:l.ex + 1, set:0 } : { ex:l.ex, set:l.set + 1 };
@@ -605,8 +663,7 @@ function skipEx(){
   const skipped = [...(l.skipped || []), l.ex];
   buzz(20);
   if (l.ex + 1 >= l.plan.length) {
-    releaseWakeLock();
-    set({ live:{ ...l, skipped, done:true, resting:false, rest:0, restEnd:0 } });
+    set({ live:{ ...l, skipped, ...coolOrDone(l.plan, { rest:0, restEnd:0 }) } });
     return;
   }
   set({ live:{ ...l, skipped, ex:l.ex + 1, set:0, reps: l.plan[l.ex + 1].target,
@@ -621,7 +678,7 @@ function endHere(){
   const rest = l.plan.map((_, i) => i).filter(i => i >= l.ex);
   buzz(35);
   set({ live:{ ...l, skipped: [...new Set([...(l.skipped || []), ...rest])],
-               done:true, resting:false, rest:0, restEnd:0 } });
+               ...coolOrDone(l.plan, { rest:0, restEnd:0 }) } });
 }
 
 function skipRest(){
@@ -835,11 +892,15 @@ function viewLive(){
   }).join('');
 
   const warming = live.phase === 'warm';
+  const cooling = live.phase === 'cool';
   const lastEx = live.ex + 1 >= plan.length;
   const cutStyle = 'font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:rgba(241,240,236,.38);padding:6px 0';
   const cut = live.done ? '' : warming ? `
   <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
     <div class="tap cd" ${act('warmGo')} style="${cutStyle}">Aufwärmen überspringen</div>
+  </div>` : cooling ? `
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
+    <div class="tap cd" ${act('coolGo')} style="${cutStyle}">Cool-Down überspringen</div>
   </div>` : `
   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
     ${lastEx ? '<div></div>' : `<div class="tap cd" ${act('skipEx')} style="${cutStyle}">Übung überspringen</div>`}
@@ -880,6 +941,31 @@ function viewLive(){
 
   <div class="tap press primary" ${act('warmGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
     <span style="font-size:28px">${offen ? 'LOS' : 'AUFWÄRMEN FERTIG'}</span>
+  </div>
+</div>`;
+  } else if (cooling && !live.done) {
+    const cool = live.cool || [];
+    const offen = cool.filter(c => !c.done).length;
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
+  <div style="padding-top:24px;flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Cool-Down · ${sess().name}</div>
+    <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${cool.length} SCHRITTE</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 3 min · zählt nicht als Satz</div>
+  </div>
+
+  <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
+    ${cool.map((c, i) => `
+    <div class="tap" ${act('coolToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+      <div style="flex:none;width:26px;height:26px;margin-top:1px;border-radius:13px;border:2px solid ${c.done ? ACCENT : 'rgba(255,255,255,.22)'};background:${c.done ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+        ${c.done ? '<div style="width:10px;height:10px;border-radius:5px;background:#0F1110"></div>' : ''}
+      </div>
+      <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${c.done ? 'text-decoration:line-through' : ''}">${c.text}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="tap press primary" ${act('coolGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
+    <span style="font-size:28px">${offen ? 'WEITER' : 'FERTIG'}</span>
   </div>
 </div>`;
   } else if (live.done) {
