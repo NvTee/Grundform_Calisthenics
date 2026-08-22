@@ -87,58 +87,58 @@ const HISTORY_MAX = 200; // ~ zwei Jahre bei 2x/Woche, genug für den Verlauf
    die Auto-Progression springt, wenn der Wdh-Bereich oben
    ausgereizt ist. ------------------------------------------- */
 const DB = [
-  { id:'pullup',        name:'Klimmzug Obergriff',      short:'Klimmzug OG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Brust zur Stange, Schulter tief',   rest:90,  lvl:2, next:'pullup-load' },
-  { id:'chinup',        name:'Klimmzug Kammgriff',      short:'Klimmzug KG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen nach unten ziehen',        rest:90,  lvl:2, next:'pullup-load' },
-  { id:'pullup-load',   name:'Klimmzug mit Zusatzlast', short:'KZ + Last',     pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Rucksack',   kind:'load', unit:'Wiederholungen', cue:'Erst ab 5x5 sauber sinnvoll',       rest:120, lvl:3, w:5,  step:2.5 },
-  { id:'pullup-neg',    name:'Negativ-Klimmzüge',       short:'Negativ-KZ',    pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'3–5 s langsam ablassen',            rest:90,  lvl:1 },
-  { id:'pullup-band',   name:'Klimmzug mit Expander',   short:'KZ Expander',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Expander',   kind:'bw',   unit:'Wiederholungen', cue:'Hilfe nur in der Startphase',       rest:90,  lvl:1 },
+  { id:'pullup',        name:'Klimmzug Obergriff',      short:'Klimmzug OG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Brust zur Stange, Schulter tief',   rest:90,  lvl:2, next:'pullup-load', prev:'pullup-band' },
+  { id:'chinup',        name:'Klimmzug Kammgriff',      short:'Klimmzug KG',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen nach unten ziehen',        rest:90,  lvl:2, next:'pullup-load', prev:'pullup-band' },
+  { id:'pullup-load',   name:'Klimmzug mit Zusatzlast', short:'KZ + Last',     pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Rucksack',   kind:'load', unit:'Wiederholungen', cue:'Erst ab 5x5 sauber sinnvoll',       rest:120, lvl:3, w:5,  step:2.5, prev:'pullup' },
+  { id:'pullup-neg',    name:'Negativ-Klimmzüge',       short:'Negativ-KZ',    pattern:'vpull', label:'Vertikal ziehen',    equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'3–5 s langsam ablassen',            rest:90,  lvl:1, prev:'lat-band' },
+  { id:'pullup-band',   name:'Klimmzug mit Expander',   short:'KZ Expander',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Stange + Expander',   kind:'bw',   unit:'Wiederholungen', cue:'Hilfe nur in der Startphase',       rest:90,  lvl:1, prev:'pullup-neg' },
   { id:'lat-band',      name:'Expander-Latzug',         short:'Exp. Latzug',   pattern:'vpull', label:'Vertikal ziehen',    equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen zur Hüfte ziehen',         rest:60,  lvl:1 },
 
-  { id:'row-inv',       name:'Ruderzug unter Stange',   short:'Ruderzug BW',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Körper bleibt ein Brett',           rest:60,  lvl:2, next:'row-inv-feet' },
-  { id:'row-inv-feet',  name:'Ruderzug, Füße auf Bank', short:'Ruderz. Bank',  pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen + Bank',  kind:'bw',   unit:'Wiederholungen', cue:'Hüfte nicht durchhängen lassen',    rest:60,  lvl:3 },
-  { id:'row-inv-bent',  name:'Ruderzug, Knie gebeugt',  short:'Ruderz. leicht',pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Füße näher, Hebel kürzer',          rest:60,  lvl:1 },
-  { id:'row-pendlay',   name:'Pendlay Row',             short:'Pendlay Row',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Jede Wdh vom Boden neu starten',    rest:90,  lvl:3, w:40, step:5 },
+  { id:'row-inv',       name:'Ruderzug unter Stange',   short:'Ruderzug BW',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Körper bleibt ein Brett',           rest:60,  lvl:2, next:'row-inv-feet', prev:'row-inv-bent' },
+  { id:'row-inv-feet',  name:'Ruderzug, Füße auf Bank', short:'Ruderz. Bank',  pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen + Bank',  kind:'bw',   unit:'Wiederholungen', cue:'Hüfte nicht durchhängen lassen',    rest:60,  lvl:3, prev:'row-inv' },
+  { id:'row-inv-bent',  name:'Ruderzug, Knie gebeugt',  short:'Ruderz. leicht',pattern:'hpull', label:'Horizontal ziehen',  equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Füße näher, Hebel kürzer',          rest:60,  lvl:1, prev:'row-band' },
+  { id:'row-pendlay',   name:'Pendlay Row',             short:'Pendlay Row',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Jede Wdh vom Boden neu starten',    rest:90,  lvl:3, w:40, step:5, prev:'row-inv' },
   { id:'row-band',      name:'Expander-Rudern',         short:'Exp. Rudern',   pattern:'hpull', label:'Horizontal ziehen',  equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Schulterblätter zuerst',            rest:45,  lvl:1 },
 
-  { id:'pushup-feet',   name:'Liegestütze Füße erhöht', short:'LS Füße hoch',  pattern:'hpush', label:'Horizontal drücken', equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Bank ca. 40 cm, Körper gerade',     rest:60,  lvl:3, next:'pushup-load' },
-  { id:'pushup-diamond',name:'Diamant-Liegestütze',     short:'Diamant-LS',    pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hände unter der Brustmitte',        rest:60,  lvl:3, next:'pushup-load' },
-  { id:'pushup',        name:'Liegestütze',             short:'Liegestütze',   pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Rumpf fest, Ellbogen 45°',          rest:60,  lvl:2 },
+  { id:'pushup-feet',   name:'Liegestütze Füße erhöht', short:'LS Füße hoch',  pattern:'hpush', label:'Horizontal drücken', equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Bank ca. 40 cm, Körper gerade',     rest:60,  lvl:3, next:'pushup-load', prev:'pushup' },
+  { id:'pushup-diamond',name:'Diamant-Liegestütze',     short:'Diamant-LS',    pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hände unter der Brustmitte',        rest:60,  lvl:3, next:'pushup-load', prev:'pushup' },
+  { id:'pushup',        name:'Liegestütze',             short:'Liegestütze',   pattern:'hpush', label:'Horizontal drücken', equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Rumpf fest, Ellbogen 45°',          rest:60,  lvl:2, prev:'pushup-hands' },
   { id:'pushup-hands',  name:'Liegestütze Hände erhöht',short:'LS Hände hoch', pattern:'hpush', label:'Horizontal drücken', equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Bank unter den Händen',             rest:60,  lvl:1 },
-  { id:'pushup-load',   name:'Liegestütze mit Rucksack',short:'LS + Rucksack', pattern:'hpush', label:'Horizontal drücken', equip:'Rucksack',            kind:'load', unit:'Wiederholungen', cue:'Last hoch am Rücken tragen',        rest:60,  lvl:3, w:8,  step:4 },
+  { id:'pushup-load',   name:'Liegestütze mit Rucksack',short:'LS + Rucksack', pattern:'hpush', label:'Horizontal drücken', equip:'Rucksack',            kind:'load', unit:'Wiederholungen', cue:'Last hoch am Rücken tragen',        rest:60,  lvl:3, w:8,  step:4, prev:'pushup-feet' },
 
-  { id:'dip',           name:'Dips',                    short:'Dips',          pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Schultern weg von den Ohren',       rest:90,  lvl:2, next:'dip-load' },
-  { id:'dip-load',      name:'Dips mit Zusatzlast',     short:'Dips + Last',   pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-St. + Rucksack',  kind:'load', unit:'Wiederholungen', cue:'Erst ab 3x10 sauber',               rest:90,  lvl:3, w:5,  step:2.5 },
+  { id:'dip',           name:'Dips',                    short:'Dips',          pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-Stangen',         kind:'bw',   unit:'Wiederholungen', cue:'Schultern weg von den Ohren',       rest:90,  lvl:2, next:'dip-load', prev:'dip-bench' },
+  { id:'dip-load',      name:'Dips mit Zusatzlast',     short:'Dips + Last',   pattern:'vpush', label:'Vertikal drücken',   equip:'Dip-St. + Rucksack',  kind:'load', unit:'Wiederholungen', cue:'Erst ab 3x10 sauber',               rest:90,  lvl:3, w:5,  step:2.5, prev:'dip' },
   { id:'dip-bench',     name:'Bank-Dips',               short:'Bank-Dips',     pattern:'vpush', label:'Vertikal drücken',   equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Schultern nicht hochziehen',        rest:60,  lvl:1 },
-  { id:'pushup-pike',   name:'Pike-Liegestütze',        short:'Pike-LS',       pattern:'vpush', label:'Vertikal drücken',   equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hüfte hoch, Scheitel zum Boden',    rest:75,  lvl:2 },
-  { id:'pushup-pike-f', name:'Pike-LS, Füße auf Bank',  short:'Pike-LS hoch',  pattern:'vpush', label:'Vertikal drücken',   equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Fast senkrechter Oberkörper',       rest:75,  lvl:3 },
+  { id:'pushup-pike',   name:'Pike-Liegestütze',        short:'Pike-LS',       pattern:'vpush', label:'Vertikal drücken',   equip:'–',                   kind:'bw',   unit:'Wiederholungen', cue:'Hüfte hoch, Scheitel zum Boden',    rest:75,  lvl:2, prev:'press-band' },
+  { id:'pushup-pike-f', name:'Pike-LS, Füße auf Bank',  short:'Pike-LS hoch',  pattern:'vpush', label:'Vertikal drücken',   equip:'Bank',                kind:'bw',   unit:'Wiederholungen', cue:'Fast senkrechter Oberkörper',       rest:75,  lvl:3, prev:'pushup-pike' },
   { id:'press-band',    name:'Expander-Überkopfdrücken',short:'Exp. Drücken',  pattern:'vpush', label:'Vertikal drücken',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Rippen unten, kein Hohlkreuz',      rest:60,  lvl:1 },
 
-  { id:'squat-bss',     name:'Bulgarian Split Squat',   short:'Bulg. Split',   pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Vorderes Knie über Mittelfuß',      rest:75,  lvl:3, w:16, step:2 },
-  { id:'squat-front',   name:'KH-Front-Rack-Kniebeuge', short:'KH Front-Sq.',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'KH auf Schultern, Rumpf fest',      rest:120, lvl:2, w:18, step:2 },
-  { id:'stepup',        name:'KH-Step-up auf Bank',     short:'Step-up KH',    pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Nicht hinten abdrücken',            rest:75,  lvl:2, w:14, step:2 },
-  { id:'squat-goblet',  name:'Goblet Squat',            short:'Goblet Squat',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wiederholungen', cue:'Hantel dicht am Brustbein',         rest:90,  lvl:1, w:20, step:4 },
+  { id:'squat-bss',     name:'Bulgarian Split Squat',   short:'Bulg. Split',   pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Vorderes Knie über Mittelfuß',      rest:75,  lvl:3, w:16, step:2, prev:'squat-split-bw' },
+  { id:'squat-front',   name:'KH-Front-Rack-Kniebeuge', short:'KH Front-Sq.',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'KH auf Schultern, Rumpf fest',      rest:120, lvl:2, w:18, step:2, prev:'squat-goblet' },
+  { id:'stepup',        name:'KH-Step-up auf Bank',     short:'Step-up KH',    pattern:'squat', label:'Kniebeuge',          equip:'Kurzhanteln + Bank',  kind:'load', unit:'Wdh je Seite',   cue:'Nicht hinten abdrücken',            rest:75,  lvl:2, w:14, step:2, prev:'squat-split-bw' },
+  { id:'squat-goblet',  name:'Goblet Squat',            short:'Goblet Squat',  pattern:'squat', label:'Kniebeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wiederholungen', cue:'Hantel dicht am Brustbein',         rest:90,  lvl:1, w:20, step:4, prev:'squat-split-bw' },
   { id:'squat-split-bw',name:'Split Squat ohne Last',   short:'Split Squat',   pattern:'squat', label:'Kniebeuge',          equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Rumpf senkrecht, tief absetzen',    rest:60,  lvl:1 },
 
-  { id:'dl',            name:'Kreuzheben',              short:'Kreuzheben',    pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Stange am Schienbein, Rücken flach',rest:150, lvl:3, w:60, step:5 },
-  { id:'rdl',           name:'Rumänisches Kreuzheben',  short:'RDL',           pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Hüfte zurück, Knie fast fest',      rest:120, lvl:3, w:50, step:5 },
-  { id:'rdl-db-1leg',   name:'Einbeiniges RDL mit KH',  short:'1-Bein RDL',    pattern:'hinge', label:'Hüftbeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wdh je Seite',   cue:'Hüfte gerade halten',               rest:75,  lvl:2, w:16, step:2 },
+  { id:'dl',            name:'Kreuzheben',              short:'Kreuzheben',    pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Stange am Schienbein, Rücken flach',rest:150, lvl:3, w:60, step:5, prev:'rdl-db-1leg' },
+  { id:'rdl',           name:'Rumänisches Kreuzheben',  short:'RDL',           pattern:'hinge', label:'Hüftbeuge',          equip:'Langhantel',          kind:'load', unit:'Wiederholungen', cue:'Hüfte zurück, Knie fast fest',      rest:120, lvl:3, w:50, step:5, prev:'rdl-db-1leg' },
+  { id:'rdl-db-1leg',   name:'Einbeiniges RDL mit KH',  short:'1-Bein RDL',    pattern:'hinge', label:'Hüftbeuge',          equip:'Kurzhantel',          kind:'load', unit:'Wdh je Seite',   cue:'Hüfte gerade halten',               rest:75,  lvl:2, w:16, step:2, prev:'hinge-bridge' },
   { id:'hinge-bridge',  name:'Hüftheben einbeinig',     short:'Hüftheben 1B',  pattern:'hinge', label:'Hüftbeuge',          equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Ferse drücken, Rippen unten',       rest:45,  lvl:1 },
   { id:'hinge-band',    name:'Expander-Good-Morning',   short:'Exp. Hinge',    pattern:'hinge', label:'Hüftbeuge',          equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Spannung aus dem Gesäß',            rest:60,  lvl:1 },
 
-  { id:'core-hang-knee',name:'Hängendes Knieheben',     short:'Knieheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Becken kippen, kein Schwung',       rest:60,  lvl:2, next:'core-hang-leg' },
-  { id:'core-hang-leg', name:'Hängendes Beinheben',     short:'Beinheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Beine gestreckt, langsam zurück',   rest:60,  lvl:3 },
+  { id:'core-hang-knee',name:'Hängendes Knieheben',     short:'Knieheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Becken kippen, kein Schwung',       rest:60,  lvl:2, next:'core-hang-leg', prev:'core-plank' },
+  { id:'core-hang-leg', name:'Hängendes Beinheben',     short:'Beinheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Beine gestreckt, langsam zurück',   rest:60,  lvl:3, prev:'core-hang-knee' },
   { id:'core-pallof',   name:'Pallof Press mit Expander',short:'Pallof Press', pattern:'core',  label:'Rumpf',              equip:'Expander',            kind:'bw',   unit:'Wdh je Seite',   cue:'Rumpf gegen Rotation halten',       rest:45,  lvl:2 },
-  { id:'core-hollow',   name:'Hollow-Body-Halten',      short:'Hollow Hold',   pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Rücken flach am Boden',             rest:45,  lvl:2 },
+  { id:'core-hollow',   name:'Hollow-Body-Halten',      short:'Hollow Hold',   pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Rücken flach am Boden',             rest:45,  lvl:2, prev:'core-plank' },
   { id:'core-plank',    name:'Planke',                  short:'Planke',        pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Gesäß fest, Becken kippen',         rest:45,  lvl:1 },
 
-  { id:'rdelt-face',    name:'Expander Face Pull',      short:'Face Pull',     pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Hände zu den Ohren, Ellbogen hoch', rest:45,  lvl:2 },
-  { id:'rdelt-fly',     name:'KH Reverse Fly',          short:'Reverse Fly',   pattern:'rdelt', label:'Hintere Schulter',   equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Nur Schulterblätter arbeiten',      rest:45,  lvl:2, w:8,  step:2 },
+  { id:'rdelt-face',    name:'Expander Face Pull',      short:'Face Pull',     pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Hände zu den Ohren, Ellbogen hoch', rest:45,  lvl:2, prev:'rdelt-pullapart' },
+  { id:'rdelt-fly',     name:'KH Reverse Fly',          short:'Reverse Fly',   pattern:'rdelt', label:'Hintere Schulter',   equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Nur Schulterblätter arbeiten',      rest:45,  lvl:2, w:8,  step:2, prev:'rdelt-face' },
   { id:'rdelt-pullapart',name:'Expander Pull-Apart',    short:'Pull-Apart',    pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Arme fast gestreckt lassen',        rest:45,  lvl:1 },
 
-  { id:'delt-lat',      name:'KH Seitheben',            short:'Seitheben',     pattern:'delt',  label:'Seitliche Schulter', equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen führt, nicht die Hand',    rest:45,  lvl:2, w:8,  step:2 },
+  { id:'delt-lat',      name:'KH Seitheben',            short:'Seitheben',     pattern:'delt',  label:'Seitliche Schulter', equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen führt, nicht die Hand',    rest:45,  lvl:2, w:8,  step:2, prev:'delt-band' },
   { id:'delt-band',     name:'Expander Seitheben',      short:'Exp. Seitheb.', pattern:'delt',  label:'Seitliche Schulter', equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen führt, nicht die Hand',    rest:45,  lvl:1 },
 
-  { id:'curl-db',       name:'KH Bizeps-Curl',          short:'KH Curl',       pattern:'arm',   label:'Armbeuger',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen bleibt am Rumpf',          rest:45,  lvl:2, w:14, step:2 },
+  { id:'curl-db',       name:'KH Bizeps-Curl',          short:'KH Curl',       pattern:'arm',   label:'Armbeuger',          equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Ellbogen bleibt am Rumpf',          rest:45,  lvl:2, w:14, step:2, prev:'curl-band' },
   { id:'curl-band',     name:'Expander-Curl',           short:'Exp. Curl',     pattern:'arm',   label:'Armbeuger',          equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Ellbogen bleibt am Rumpf',          rest:45,  lvl:1 },
 ];
 const byId = id => DB.find(e => e.id === id);
@@ -154,7 +154,12 @@ const byId = id => DB.find(e => e.id === id);
    `warm` sind die Aufwärm-Schritte. `for` bindet einen Schritt an
    eine Übung – ist sie gestrichen, entfällt der Schritt. `ramp`
    rechnet die aktuelle Arbeitslast dieser Übung in den Text
-   ein, statt ein Gewicht fest zu verdrahten. ---------------- */
+   ein, statt ein Gewicht fest zu verdrahten.
+   `cool` sind die Cool-Down-Schritte nach dem letzten Satz –
+   gleiches `for`-Prinzip, kein `ramp`, kein Tracking, kein
+   Ziel. Kürzer als das Aufwärmen und optional (Link zum
+   Überspringen), weil es als erstes weichen soll, wenn die
+   Zeit knapp wird. ------------------------------------------ */
 const SESSIONS = [
   { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:28, shortMins:16,
     gear:'Stange · Dip-Stangen · Bank · Expander', short:[0, 1, 2],
@@ -170,6 +175,11 @@ const SESSIONS = [
       { text:'30 s an der Stange hängen, Schultern aktiv nach unten', for:'pullup' },
       { text:'8 langsame Liegestütze mit Händen auf der Bank', for:'pushup-feet' },
       { text:'2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
+    ],
+    cool:[
+      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'pullup' },
+      { text:'30 s Brust-Dehnung an der Dip-Stange je Seite', for:'dip' },
+      { text:'40 s ruhig atmen, 4 s ein, 6 s aus' },
     ]},
   { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18,
     gear:'Langhantel · Kurzhanteln · Bank · Stange', short:[0, 1, 3],
@@ -185,6 +195,11 @@ const SESSIONS = [
       { text:'8 Split Squats ohne Last je Seite', for:'squat-bss' },
       { text:'Kreuzheben-Aufbausätze: 5 Wdh leere Stange', ramp:'dl' },
       { text:'20 s toter Hang zur Vorbereitung des Kniehebens', for:'core-hang-knee' },
+    ],
+    cool:[
+      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'dl' },
+      { text:'30 s Hüftbeuger-Dehnung im Ausfallschritt je Seite', for:'squat-bss' },
+      { text:'40 s liegen, ruhig ausatmen, Puls senken' },
     ]},
   { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:29, shortMins:16,
     gear:'Stange · Langhantel · Kurzhanteln', short:[0, 1, 2],
@@ -200,6 +215,11 @@ const SESSIONS = [
       { text:'30 s hängen, dann 3 Scapula Pull-ups', for:'chinup' },
       { text:'8 Liegestütze Hände erhöht, dann 5 Pike-Liegestütze halber Weg', for:'pushup-pike' },
       { text:'Pendlay-Aufbausätze: 8 Wdh leere Stange', ramp:'row-pendlay' },
+    ],
+    cool:[
+      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'chinup' },
+      { text:'30 s Schulterdehnung über Kopf, Arm quer, je Seite', for:'pushup-pike' },
+      { text:'40 s Schultern kreisen, dann ruhig ausatmen' },
     ]},
   { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17,
     gear:'Kurzhanteln · Langhantel · Bank · Expander', short:[0, 1, 4],
@@ -215,6 +235,11 @@ const SESSIONS = [
       { text:'10 Kniebeugen ohne Last, 3 s abwärts', for:'squat-front' },
       { text:'8 Hüftheben zweibeinig, dann 5 RDL mit leerer Stange', for:'rdl' },
       { text:'Front-Rack-Kniebeugen zum Einfühlen', ramp:'squat-front', join:': 5 Wdh mit ' },
+    ],
+    cool:[
+      { text:'30 s Quadrizeps-Dehnung im Stand je Seite', for:'squat-front' },
+      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'rdl' },
+      { text:'40 s stehen, ruhig durchatmen, Puls senken' },
     ]},
 ];
 const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
@@ -222,9 +247,14 @@ const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
 /* ── Zustand ──────────────────────────────────────────────────
    `rot` ist die Position in der Rotation, `plans` hält die
    angepassten Slots aller vier Einheiten. ------------------- */
+/* `cfg.n` ist die Zahl aufeinanderfolgender Einheiten am Rand des
+   Zielbereichs, ab der die Schwierigkeit springt. `cfg.bw` ist das
+   Körpergewicht – es geht NUR in den Fortschritts-Score ein, nie in
+   die Trainingslasten. */
+const CFG_DEFAULT = { n:2, bw:86 };
 let S = {
   tab:'heute', rot:0, live:null, sheet:null, draft:null, pick:null,
-  plans: freshPlans(), history:[],
+  plans: freshPlans(), history:[], suggest:[], notes:[], cfg:{ ...CFG_DEFAULT },
 };
 const sess      = () => SESSIONS[S.rot];
 const curSlots  = () => S.plans[S.rot];
@@ -237,7 +267,8 @@ function screenKey(){ return S.live ? 'live' : S.tab; }
 
 function persist(){
   try {
-    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, live:S.live, plans:S.plans, pick:S.pick, history:S.history }));
+    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, live:S.live, plans:S.plans,
+      pick:S.pick, history:S.history, suggest:S.suggest, notes:S.notes, cfg:S.cfg }));
   } catch(e){}
 }
 function restore(){
@@ -255,6 +286,9 @@ function restore(){
               ? s.pick.filter(i => Number.isInteger(i) && i >= 0 && i < S.plans[S.rot].length)
               : null;
     S.history = Array.isArray(s.history) ? s.history.slice(-HISTORY_MAX) : [];
+    S.suggest = Array.isArray(s.suggest) ? s.suggest : [];
+    S.notes   = Array.isArray(s.notes) ? s.notes : [];
+    S.cfg = { ...CFG_DEFAULT, ...(s.cfg && typeof s.cfg === 'object' ? s.cfg : {}) };
     S.live  = s.live || null;
     /* Einheit von vor dem Aufwärm-Update: kein `phase` gespeichert.
        Nicht ins Aufwärmen zurückwerfen. */
@@ -263,9 +297,11 @@ function restore(){
       // Pause läuft nach Wall-Clock weiter – auch wenn Android die App
       // zwischendurch eingefroren oder der Nutzer neu geladen hat.
       const left = Math.ceil(((S.live.restEnd || 0) - Date.now()) / 1000);
-      if (left > 0) { S.live.rest = left; startTimer(); }
+      if (left > 0) { S.live.rest = left; }
       else { S.live.resting = false; S.live.rest = 0; }
     }
+    // Gesamtzeit läuft ebenfalls weiter, also Timer wieder anwerfen.
+    if (S.live && !S.live.done) startTimer();
   } catch(e){}
 }
 
@@ -370,13 +406,19 @@ function historyEntry(l){
     if (skipped.has(i)) return null;
     const reps = l.log.filter(x => x.ex === i).map(x => x.reps);
     if (!reps.length) return null;
-    return { short:p.short, kind:p.kind, w:p.w, reps, slotIdx:p.slotIdx };
+    return { id:p.id, short:p.short, kind:p.kind, lvl:p.lvl, w:p.w, reps, slotIdx:p.slotIdx };
   }).filter(Boolean);
   return {
-    ts: Date.now(), session: sess().name,
+    ts: Date.now(), session: sess().name, sessionId: sess().id,
+    /* Die beim Abschluss eingefrorene Dauer – nicht neu rechnen,
+       sonst zählt die Zeit auf dem Abschluss-Screen mit. */
+    durMs: l.durMs != null ? l.durMs : (l.startedAt ? Date.now() - l.startedAt : null),
     doneSets: l.log.length, totalSets: l.plan.reduce((a, p) => a + p.sets, 0),
     exCount: exs.length, planCount: l.plan.length,
     skipped: [...skipped].map(i => l.plan[i].short),
+    /* `ex` trägt jede gemachte Übung – Voraussetzung für die
+       Zeitreihen. Früher wurde alles außer `anchor` verworfen. */
+    ex: exs,
     anchor: exs.find(e => e.slotIdx === 0) || null,
   };
 }
@@ -416,23 +458,173 @@ function buildWarm(plan){
   }).filter(Boolean);
 }
 
+/* Cool-Down-Schritte für den tatsächlich gewählten Plan. Gleiches
+   `for`-Prinzip wie beim Aufwärmen, kein `ramp` – das Cool-Down
+   trägt keine Last. */
+function buildCool(plan){
+  const steps = sess().cool || [];
+  return steps.map(s => {
+    if (s.for && !plan.some(p => p.id === s.for)) return null;
+    return { text:s.text, done:false };
+  }).filter(Boolean);
+}
+
+/* Nach der letzten Übung: ins Cool-Down, wenn die Einheit welche
+   hat, sonst direkt in den Abschluss-Screen. Nur im zweiten Fall
+   wird das Wake Lock schon hier freigegeben – während des
+   Cool-Downs soll der Bildschirm an bleiben, auch ohne Berührung
+   (40-s-Halten liest sich sonst nicht ab). */
+function coolOrDone(plan, extra, l){
+  const cool = buildCool(plan);
+  if (cool.length) return { ...extra, phase:'cool', cool, resting:false };
+  releaseWakeLock();
+  return { ...extra, done:true, resting:false, durMs: l && l.startedAt ? Date.now() - l.startedAt : null };
+}
+
+/* ── Fortschritt: Score, Baseline, Chart ──────────────────────
+   Score je Übung und Session: Wiederholungen mal Schwierigkeit.
+   Die Zusatzlast wird am Körpergewicht relativiert, damit
+   Körpergewichts- und Lastübungen auf einer Skala liegen; der
+   Stufenfaktor fängt Variantenwechsel auf (Liegestütze → Füße
+   erhöht ist mehr Arbeit bei gleicher Wdh-Zahl). */
+const LVL_F = { 1:0.85, 2:1.0, 3:1.15 };
+const BASE_DAYS = 28;
+
+function exScore(e, cfg){
+  const reps = (e.reps || []).reduce((a, b) => a + b, 0);
+  const bw = (cfg && cfg.bw) || 86;
+  return reps * (1 + (e.w || 0) / bw) * (LVL_F[e.lvl] || 1);
+}
+
+/* Nur Einträge mit `ex` taugen für Zeitreihen – alles von vor der
+   Umstellung wird übersprungen. */
+const histEx = () => S.history.filter(h => Array.isArray(h.ex) && h.ex.length);
+
+/* Reihen hängen am SLOT (Einheit + Position), nicht an der
+   Übungs-ID: sonst reißt die Linie genau dort ab, wo die
+   Progression eine Stufe zieht – aus Klimmzug wird
+   Klimmzug-mit-Zusatzlast und damit eine neue ID. Der Slot bleibt
+   derselbe, also bleibt die Reihe zusammenhängend und der
+   Stufenwechsel wird als Marker sichtbar statt als Abbruch. */
+const slotKey = (h, e) => h.sessionId + '#' + e.slotIdx;
+
+function exSeries(key, cfg){
+  const out = [];
+  histEx().forEach(h => {
+    (h.ex || []).forEach(e => {
+      if (slotKey(h, e) !== key) return;
+      const prev = out[out.length - 1];
+      out.push({
+        ts: h.ts, y: exScore(e, cfg), w: e.w, id: e.id, short: e.short,
+        mark: !!prev && (prev.w !== e.w || prev.id !== e.id),
+      });
+    });
+  });
+  return out;
+}
+
+/* Alle Slots mit Historie, neueste zuerst. Label ist der Name der
+   Übung, die dort zuletzt stand. */
+function chartSlots(){
+  const seen = new Map();
+  [...histEx()].reverse().forEach(h => (h.ex || []).forEach(e => {
+    const k = slotKey(h, e);
+    if (!seen.has(k)) seen.set(k, { key:k, label:e.short, session:h.session });
+  }));
+  return [...seen.values()];
+}
+
+/* Workout-Proxy: je Slot die prozentuale Abweichung von seiner
+   rollierenden 4-Wochen-Baseline, dann der Mittelwert darüber.
+   Baseline ebenfalls über den Slot – ein Stufenwechsel soll den
+   Score nicht als Einbruch verfälschen. */
+function proxySeries(cfg){
+  const hs = histEx();
+  const out = [];
+  hs.forEach((h, i) => {
+    const pcts = [];
+    (h.ex || []).forEach(e => {
+      const k = slotKey(h, e);
+      const vals = [];
+      hs.slice(0, i).forEach(x => {
+        if (x.ts < h.ts - BASE_DAYS * 864e5) return;
+        (x.ex || []).forEach(y => { if (slotKey(x, y) === k) vals.push(exScore(y, cfg)); });
+      });
+      if (!vals.length) return;
+      const base = vals.reduce((a, b) => a + b, 0) / vals.length;
+      if (base > 0) pcts.push((exScore(e, cfg) - base) / base * 100);
+    });
+    if (pcts.length) out.push({ ts: h.ts, y: pcts.reduce((a, b) => a + b, 0) / pcts.length, n: pcts.length });
+  });
+  return out;
+}
+
+/* Inline-SVG-Liniendiagramm. Skaliert über viewBox, deshalb ohne
+   Breitenmessung im JS. `zero` zeichnet eine Nulllinie, wenn die
+   Reihe negative Werte haben kann. */
+function chart(pts, opts){
+  const o = opts || {};
+  if (!pts.length) return '<div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.4)">Noch keine Daten.</div>';
+  const W = 300, H = 90, pad = 6;
+  const xs = pts.map(p => p.ts);
+  const ys = pts.map(p => p.y);
+  let lo = Math.min(...ys), hi = Math.max(...ys);
+  if (o.zero) { lo = Math.min(lo, 0); hi = Math.max(hi, 0); }
+  if (hi - lo < 1e-6) { lo -= 1; hi += 1; }
+  const x0 = Math.min(...xs), x1 = Math.max(...xs);
+  const px = t => pad + (x1 === x0 ? (W - 2 * pad) / 2 : (t - x0) / (x1 - x0) * (W - 2 * pad));
+  const py = v => H - pad - (v - lo) / (hi - lo) * (H - 2 * pad);
+  const line = pts.map(p => px(p.ts).toFixed(1) + ',' + py(p.y).toFixed(1)).join(' ');
+  const zeroY = py(0).toFixed(1);
+  return `
+<svg viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" style="width:100%;height:90px;display:block" aria-hidden="true">
+  ${o.zero ? `<line x1="${pad}" x2="${W - pad}" y1="${zeroY}" y2="${zeroY}" stroke="rgba(255,255,255,.22)" stroke-width="1" stroke-dasharray="4 4"/>` : ''}
+  <polyline points="${line}" fill="none" stroke="${ACCENT}" stroke-width="2" stroke-linejoin="round" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  ${pts.map(p => {
+    const c = o.zero && p.y < 0 ? 'rgba(241,240,236,.45)' : ACCENT;
+    return p.mark
+      ? `<rect x="${(px(p.ts) - 4).toFixed(1)}" y="${(py(p.y) - 4).toFixed(1)}" width="8" height="8" fill="#0F1110" stroke="${c}" stroke-width="2" vector-effect="non-scaling-stroke"/>`
+      : `<circle cx="${px(p.ts).toFixed(1)}" cy="${py(p.y).toFixed(1)}" r="3" fill="${c}"/>`;
+  }).join('')}
+</svg>
+<div style="display:flex;justify-content:space-between;font:500 11.5px Barlow,sans-serif;color:rgba(241,240,236,.35);margin-top:4px">
+  <span>${fmtDate(x0)}</span><span>${fmtDate(x1)}</span>
+</div>`;
+}
+
 /* ── Training ─────────────────────────────────────────────── */
 function startTimer(){
   clearInterval(timer);
   timer = setInterval(tick, 250);
 }
+/* Läuft während der ganzen Einheit, nicht nur in der Pause: er
+   bedient den Pausen-Countdown UND die verstrichene Gesamtzeit.
+   Beide Werte kommen aus absoluten Zeitstempeln (`restEnd`,
+   `startedAt`), damit ein eingefrorener Hintergrund-Timer unter
+   Android nichts verfälscht. Gerendert wird nur, wenn sich eine
+   angezeigte Sekunde ändert – sonst viermal pro Sekunde. */
 function tick(){
-  if (!S.live || !S.live.resting) { clearInterval(timer); return; }
-  const left = Math.ceil((S.live.restEnd - Date.now()) / 1000);
-  if (left <= 0) {
-    clearInterval(timer);
-    S.live.resting = false; S.live.rest = 0;
-    buzz([90, 70, 90]);
-    persist(); render();
-    return;
+  const l = S.live;
+  if (!l || l.done) { clearInterval(timer); return; }
+  let dirty = false;
+
+  if (l.resting) {
+    const left = Math.ceil((l.restEnd - Date.now()) / 1000);
+    if (left <= 0) {
+      l.resting = false; l.rest = 0;
+      buzz([90, 70, 90]);
+      dirty = true;
+    } else if (left !== l.rest) { l.rest = left; dirty = true; }
   }
-  if (left !== S.live.rest) { S.live.rest = left; render(); }
+
+  const el = elapsed(l);
+  if (el !== l.elapsed) { l.elapsed = el; dirty = true; }
+
+  if (dirty) { persist(); render(); }
 }
+
+const elapsed = l => (l && l.startedAt ? Math.floor((Date.now() - l.startedAt) / 1000) : 0);
+const mmss = sec => Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 
 const A = {
   goHeute:       () => set({ tab:'heute' }),
@@ -475,6 +667,10 @@ const A = {
   setsUp:    () => draftBump('sets',  1, 1),
   setsDown:  () => draftBump('sets', -1, 1),
   repsUp:    () => draftBump('reps',  1, 1),
+  loUp:   () => draftRange('lo',  1),
+  loDown: () => draftRange('lo', -1),
+  hiUp:   () => draftRange('hi',  1),
+  hiDown: () => draftRange('hi', -1),
   repsDown:  () => draftBump('reps', -1, 1),
   setProgWeight: () => set({ draft:{ ...S.draft, prog:'weight' } }),
   setProgReps:   () => set({ draft:{ ...S.draft, prog:'reps'   } }),
@@ -496,10 +692,59 @@ const A = {
   },
   warmGo: () => { buzz(20); set({ live:{ ...S.live, phase:'work' } }); },
 
+  /* Cool-Down: gleiches Prinzip wie Aufwärmen – Abhaken ist
+     Gedächtnisstütze, "Fertig" geht auch mit offenen Schritten.
+     Der Skip-Link oben führt zur selben Aktion. */
+  coolToggle: i => {
+    const cool = S.live.cool.map((c, k) => (k === i ? { ...c, done: !c.done } : c));
+    buzz(15);
+    set({ live:{ ...S.live, cool } });
+  },
+  coolGo: () => { buzz(20); releaseWakeLock();
+    set({ live:{ ...S.live, done:true,
+                 durMs: S.live.startedAt ? Date.now() - S.live.startedAt : null } }); },
+
+  /* Reduktion wird nur auf Tipp angewandt – nie von selbst. */
+  applySuggest: i => {
+    const sg = S.suggest[i]; if (!sg) return;
+    buzz(25);
+    set({
+      plans: S.plans.map((pl, k) => k === sg.rot
+        ? pl.map((sl, j) => (j === sg.slotIdx ? { ...sg.to } : sl)) : pl),
+      suggest: S.suggest.filter((_, k) => k !== i),
+    });
+  },
+  dropSuggest: i => {
+    const sg = S.suggest[i]; if (!sg) return;
+    /* Verworfen heißt: Streak zurücksetzen, sonst kommt der
+       Vorschlag nach der nächsten Einheit sofort wieder. */
+    set({
+      plans: S.plans.map((pl, k) => k === sg.rot
+        ? pl.map((sl, j) => (j === sg.slotIdx ? { ...sl, loStreak:0 } : sl)) : pl),
+      suggest: S.suggest.filter((_, k) => k !== i),
+    });
+  },
+
+  cfgNUp:   () => set({ cfg:{ ...S.cfg, n: Math.min(5, S.cfg.n + 1) } }),
+  cfgNDown: () => set({ cfg:{ ...S.cfg, n: Math.max(1, S.cfg.n - 1) } }),
+  cfgBwUp:   () => set({ cfg:{ ...S.cfg, bw: Math.min(200, S.cfg.bw + 1) } }),
+  cfgBwDown: () => set({ cfg:{ ...S.cfg, bw: Math.max(40, S.cfg.bw - 1) } }),
+  pickChart: id => set({ chartEx: id }),
+
   completeSet, skipRest, skipEx, endHere, abort, finish,
 };
 
 function draftStep(){ const dex = byId(S.draft.exId); return dex.step || 1; }
+/* Zielbereich verschieben. `hi` darf nie unter `lo` rutschen, und
+   das Tagesziel wird in den neuen Bereich zurückgeholt. */
+function draftRange(key, d){
+  const dr = { ...S.draft };
+  dr[key] = Math.max(1, dr[key] + d);
+  if (dr.hi < dr.lo) { if (key === 'lo') dr.lo = dr.hi; else dr.hi = dr.lo; }
+  dr.reps = Math.min(dr.hi, Math.max(dr.lo, dr.reps));
+  S.draft = dr;
+  set({});
+}
 function draftBump(key, d, min){
   S.draft = { ...S.draft, [key]: Math.max(min, Math.round((S.draft[key] + d) * 10) / 10) };
   set({});
@@ -511,7 +756,9 @@ function start(idx, short){
   const warm = buildWarm(plan);
   acquireWakeLock();
   buzz(20);
-  set({ live:{ plan, short, mins: estMins(idx), phase: warm.length ? 'warm' : 'work', warm,
+  startTimer();
+  set({ live:{ plan, short, mins: estMins(idx), startedAt: Date.now(),
+               phase: warm.length ? 'warm' : 'work', warm,
                ex:0, set:0, reps:plan[0].target,
                resting:false, rest:0, restMax:1, restEnd:0, done:false, log:[], skipped:[] } });
 }
@@ -526,23 +773,95 @@ function abort(){
    unten wieder einsteigen. Gilt je Übung: was vollständig
    durchgezogen wurde, steigert – auch an gekürzten Tagen.
    Gestrichene Übungen bleiben stehen. */
-function progress(slot, reached){
-  if (!reached) return slot;
+/* Untergrenzen für Last-Reduktionen. Kurzhantel-Werte sind die
+   Reiz-Schwellen aus dem Trainingsplan – darunter ist der Reiz bei
+   86 kg Körpergewicht zu klein, dann ist die leichtere Variante die
+   richtige Antwort und nicht weniger Gewicht. Langhantel-Übungen
+   sind durch das Stangengewicht begrenzt. */
+const FLOOR = {
+  'curl-db':12, 'delt-lat':6, 'rdelt-fly':6,
+  'dl':20, 'rdl':20, 'row-pendlay':20,
+  'pullup-load':2.5, 'dip-load':2.5, 'pushup-load':4,
+};
+
+const r1 = v => Math.round(v * 10) / 10;
+
+/* Eine Stufe schwerer: erst Gewicht, bei Körpergewicht die
+   `next`-Variante. Gibt null zurück, wenn es nach oben nicht
+   weitergeht. */
+function harder(slot){
   const ex = byId(slot.exId);
-  if (slot.reps < slot.hi) return { ...slot, reps: slot.reps + 1 };
-
   if (slot.prog === 'weight')
-    return { ...slot, w: Math.round((slot.w + (ex.step || 2.5)) * 10) / 10, reps: slot.lo };
-
-  /* Körpergewicht am oberen Ende: auf die dokumentierte nächste
-     Stufe wechseln – schwerere Variante oder Zusatzlast – und im
-     Bereich unten wieder einsteigen. Ohne nächste Stufe bleibt
-     der Bereich stehen. */
+    return { ...slot, w: r1(slot.w + (ex.step || 2.5)), reps: slot.lo, hiStreak:0, loStreak:0 };
   const nx = ex.next ? byId(ex.next) : null;
-  if (!nx) return slot;
-  return { ...slot, exId:nx.id, w: nx.w || 0, reps: slot.lo,
+  if (!nx) return null;
+  return { ...slot, exId:nx.id, w: nx.w || 0, reps: slot.lo, hiStreak:0, loStreak:0,
            prog: nx.kind === 'load' ? 'weight' : 'reps' };
 }
+
+/* Eine Stufe leichter: Gewicht runter, solange die Untergrenze das
+   erlaubt – sonst die `prev`-Variante. */
+function easier(slot){
+  const ex = byId(slot.exId);
+  if (slot.prog === 'weight') {
+    const step = ex.step || 2.5;
+    const floor = FLOOR[slot.exId] != null ? FLOOR[slot.exId] : step;
+    const w = r1(slot.w - step);
+    if (w >= floor)
+      return { ...slot, w, reps: slot.lo, hiStreak:0, loStreak:0 };
+  }
+  const pv = ex.prev ? byId(ex.prev) : null;
+  if (!pv) return null;
+  return { ...slot, exId:pv.id, w: pv.w || 0, reps: slot.lo, hiStreak:0, loStreak:0,
+           prog: pv.kind === 'load' ? 'weight' : 'reps' };
+}
+
+/* Doppelte Progression mit Streak: Wiederholungen steigen sofort,
+   die Schwierigkeit erst nach `cfg.n` Einheiten am Rand des
+   Zielbereichs. Nach oben wird angewandt, nach unten nur
+   vorgeschlagen – ein Rückschritt soll nie ungefragt passieren.
+   Rückgabe: { slot, suggest } */
+function progress(slot, logged, cfg){
+  const base = { ...slot, hiStreak: slot.hiStreak || 0, loStreak: slot.loStreak || 0 };
+  if (!logged || !logged.length) return { slot: base, suggest: null };
+
+  const min = Math.min(...logged);
+  const n = Math.max(1, (cfg && cfg.n) || 2);
+
+  if (min >= base.hi)      { base.hiStreak++; base.loStreak = 0; }
+  else if (min < base.lo)  { base.loStreak++; base.hiStreak = 0; }
+  else                     { base.hiStreak = 0; base.loStreak = 0; }
+
+  /* Wiederholungen im Bereich hochziehen, sobald das Tagesziel
+     stand – unabhängig von der Streak-Zählung. */
+  if (min >= base.reps && base.reps < base.hi) base.reps = base.reps + 1;
+
+  if (base.hiStreak >= n) {
+    const up = harder(base);
+    if (up) return {
+      slot: up,
+      suggest: null,
+      note: base.hiStreak + '× am oberen Ende (' + base.hi + ' Wdh) → eine Stufe schwerer',
+    };
+    base.hiStreak = 0;   // nach oben zu Ende, nicht endlos weiterzählen
+  }
+
+  if (base.loStreak >= n) {
+    const down = easier(base);
+    if (down) return {
+      slot: base,
+      suggest: {
+        exId: base.exId, to: down,
+        why: base.loStreak + '× unter ' + base.lo + ' Wdh (zuletzt ' + min + ') — Vorschlag: '
+             + (down.exId === base.exId
+                ? num(down.w) + ' kg statt ' + num(base.w) + ' kg'
+                : byId(down.exId).name),
+      },
+    };
+  }
+  return { slot: base, suggest: null };
+}
+
 
 /* Zuordnung Protokoll → Übung der Einheit. `slotIdx` fehlt nur in
    einer Einheit, die vor diesem Update schon lief – dann greift
@@ -554,16 +873,28 @@ const logSlot = (x, plan) =>
 function finish(){
   clearInterval(timer); releaseWakeLock();
   const l = S.live;
+  const rot = S.rot;
+  const notes = [], fresh = [];
   const slots = curSlots().map((slot, i) => {
     if (!l) return slot;
     const hit = l.log.filter(x => logSlot(x, l.plan) === i);
-    return progress(slot, hit.length === slot.sets && hit.every(x => x.reps >= slot.reps));
+    /* Nur vollständig durchgezogene Übungen zählen für die
+       Progression – halbe Übungen verändern nichts. */
+    const logged = hit.length === slot.sets ? hit.map(x => x.reps) : null;
+    const out = progress(slot, logged, S.cfg);
+    if (out.note) notes.push(byId(slot.exId).short + ': ' + out.note);
+    if (out.suggest) fresh.push({ rot, slotIdx:i, ...out.suggest });
+    return out.slot;
   });
   const history = l ? [...S.history, historyEntry(l)].slice(-HISTORY_MAX) : S.history;
+  /* Alte Vorschläge zum selben Slot ersetzen, nicht stapeln. */
+  const keep = S.suggest.filter(x => !fresh.some(f => f.rot === x.rot && f.slotIdx === x.slotIdx));
   set({
     live:null, tab:'fortschritt', pick:null, history,
-    plans: S.plans.map((p, k) => (k === S.rot ? slots : p)),
-    rot: (S.rot + 1) % SESSIONS.length,
+    suggest: [...keep, ...fresh],
+    notes,
+    plans: S.plans.map((p, k) => (k === rot ? slots : p)),
+    rot: (rot + 1) % SESSIONS.length,
   });
 }
 
@@ -581,8 +912,8 @@ function completeSet(){
   buzz(35);
 
   if (lastSet && lastEx) {
-    clearInterval(timer); releaseWakeLock();
-    set({ live:{ ...l, log, done:true, resting:false } });
+    clearInterval(timer);
+    set({ live:{ ...l, log, ...coolOrDone(l.plan, {}, l) } });
     return;
   }
   const nx   = lastSet ? { ex:l.ex + 1, set:0 } : { ex:l.ex, set:l.set + 1 };
@@ -600,8 +931,7 @@ function skipEx(){
   const skipped = [...(l.skipped || []), l.ex];
   buzz(20);
   if (l.ex + 1 >= l.plan.length) {
-    releaseWakeLock();
-    set({ live:{ ...l, skipped, done:true, resting:false, rest:0, restEnd:0 } });
+    set({ live:{ ...l, skipped, ...coolOrDone(l.plan, { rest:0, restEnd:0 }, l) } });
     return;
   }
   set({ live:{ ...l, skipped, ex:l.ex + 1, set:0, reps: l.plan[l.ex + 1].target,
@@ -616,7 +946,7 @@ function endHere(){
   const rest = l.plan.map((_, i) => i).filter(i => i >= l.ex);
   buzz(35);
   set({ live:{ ...l, skipped: [...new Set([...(l.skipped || []), ...rest])],
-               done:true, resting:false, rest:0, restEnd:0 } });
+               ...coolOrDone(l.plan, { rest:0, restEnd:0 }, l) } });
 }
 
 function skipRest(){
@@ -627,6 +957,14 @@ function skipRest(){
 /* ── Rendering ────────────────────────────────────────────── */
 const act = (name, arg) =>
   `data-act="${name}"` + (arg !== undefined ? ` data-arg="${arg}"` : '');
+
+/* Kleiner Plus/Minus-Stepper. Liegt global, weil ihn Last-Sheet und
+   Einstellungen im Plan-Tab benutzen. */
+const miniStepper = (action, plus) => `
+      <div class="tap" ${act(action)} style="width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;flex:none">
+        <div style="width:18px;height:3px;border-radius:2px;background:#F1F0EC"></div>
+        ${plus ? '<div style="width:3px;height:18px;border-radius:2px;background:#F1F0EC;position:absolute"></div>' : ''}
+      </div>`;
 
 function today(){
   try {
@@ -666,6 +1004,21 @@ function viewHeute(){
 
   <div style="display:flex;align-items:center;gap:10px;margin-top:16px">${segs}</div>
   <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:9px">Es zählt die Reihenfolge, nicht der Kalender · nichts wird nachgeholt</div>
+
+  ${S.suggest.map((sg, i) => `
+  <div class="card" style="margin-top:18px;border:1px solid rgba(255,77,23,.45);padding:16px 18px">
+    <div class="kick kick-a">Vorschlag · ${SESSIONS[sg.rot].name}</div>
+    <div class="cd" style="font-weight:700;font-size:22px;line-height:1.1;margin-top:5px">${byId(sg.exId).name}</div>
+    <div style="font:500 13.5px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.6);margin-top:5px">${sg.why}</div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <div class="tap" ${act('applySuggest', i)} style="flex:1;height:48px;border-radius:12px;background:${ACCENT};display:flex;align-items:center;justify-content:center">
+        <span class="cd" style="font-weight:700;font-size:16px;letter-spacing:.1em;color:#0F1110">ÜBERNEHMEN</span>
+      </div>
+      <div class="tap" ${act('dropSuggest', i)} style="flex:none;padding:0 18px;height:48px;border-radius:12px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
+        <span class="cd" style="font-weight:700;font-size:16px;letter-spacing:.1em;color:rgba(241,240,236,.6)">BEHALTEN</span>
+      </div>
+    </div>
+  </div>`).join('')}
 
   <div class="card" style="margin-top:26px;overflow:hidden">
     <div style="padding:22px 22px 18px">
@@ -750,6 +1103,27 @@ function viewPlan(){
 
   <div class="kick" style="margin-top:28px">Aufbau jeder Einheit</div>
   <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:8px">Übung 1 einzeln und frisch, danach zwei Antagonisten-Supersätze. 1–2 Wiederholungen bleiben immer im Tank – kein Satz bis zum Versagen.</div>
+
+  <div class="kick" style="margin-top:28px">Einstellungen</div>
+  <div style="display:flex;gap:10px;margin-top:12px">
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Einheiten bis Stufe</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('cfgNDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:28px;line-height:1">${S.cfg.n}</span>
+        ${miniStepper('cfgNUp', true)}
+      </div>
+    </div>
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Körpergewicht</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('cfgBwDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:28px;line-height:1">${S.cfg.bw}</span>
+        ${miniStepper('cfgBwUp', true)}
+      </div>
+    </div>
+  </div>
+  <div style="font:500 13px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:9px">So viele Einheiten am oberen Ende des Zielbereichs, bevor die Schwierigkeit steigt. Das Körpergewicht geht nur in den Fortschritts-Score ein, nie in die Trainingslasten.</div>
 </div>`;
 }
 
@@ -757,6 +1131,10 @@ function viewFortschritt(){
   const anchors = SESSIONS.map((s, i) => ({ s, m: milestoneOf(S.plans[i][0]) }));
   const next = anchors[S.rot];
   const hist = [...S.history].reverse();
+  const slots = chartSlots();
+  const curSlot = slots.find(x => x.key === S.chartEx) || slots[0];
+  const series = curSlot ? exSeries(curSlot.key, S.cfg) : [];
+  const proxy = proxySeries(S.cfg);
 
   return `
 <div style="padding:14px 22px 28px">
@@ -782,6 +1160,41 @@ function viewFortschritt(){
       </div>
       <div style="font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.4);margin-top:2px">${m.name} · ${m.sub}</div>
     </div>`).join('')}
+  </div>
+
+  ${S.notes.length ? `
+  <div class="card" style="margin-top:22px;padding:14px 16px">
+    <div class="kick">Letzte Einheit · Progression</div>
+    ${S.notes.map(n => `<div style="font:500 13.5px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.7);margin-top:5px">${n}</div>`).join('')}
+  </div>` : ''}
+
+  <div class="kick" style="margin-top:30px">Score je Übung</div>
+  <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.35);margin-top:5px">Wiederholungen × Schwierigkeit · Kästchen = Stufenwechsel</div>
+  ${slots.length ? `
+  <div class="scroll" style="display:flex;gap:8px;margin-top:12px;overflow-x:auto;padding-bottom:2px">
+    ${slots.map(sl => `
+    <div class="tap" ${act('pickChart', sl.key)} style="flex:none;padding:7px 12px;border-radius:10px;border:1px solid ${sl.key === curSlot.key ? 'rgba(255,77,23,.5)' : 'rgba(255,255,255,.12)'};background:${sl.key === curSlot.key ? 'rgba(255,77,23,.1)' : 'transparent'}">
+      <span class="cd" style="font-weight:700;font-size:13px;white-space:nowrap;color:${sl.key === curSlot.key ? '#F1F0EC' : 'rgba(241,240,236,.5)'}">${sl.label}</span>
+    </div>`).join('')}
+  </div>
+  <div class="card" style="margin-top:12px;padding:14px 14px 10px">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
+      <div style="font:600 14px Barlow,sans-serif;color:rgba(241,240,236,.62)">${curSlot.session} · ${series.length ? series[series.length - 1].short : curSlot.label}</div>
+      <div class="cd num" style="font-weight:700;font-size:22px">${series.length ? Math.round(series[series.length - 1].y) : '–'}</div>
+    </div>
+    ${chart(series, {})}
+  </div>` : `
+  <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.4);margin-top:10px">Noch keine Einheit mit Übungsdaten abgeschlossen.</div>`}
+
+  <div class="kick" style="margin-top:30px">Workout-Score</div>
+  <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.35);margin-top:5px">Abweichung vom Schnitt der letzten 4 Wochen, gemittelt über alle Übungen der Einheit</div>
+  <div class="card" style="margin-top:12px;padding:14px 14px 10px">
+    ${proxy.length ? `
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px">
+      <div style="font:600 14px Barlow,sans-serif;color:rgba(241,240,236,.62)">letzte Einheit</div>
+      <div class="cd num" style="font-weight:700;font-size:22px;color:${proxy[proxy.length - 1].y >= 0 ? ACCENT : 'rgba(241,240,236,.6)'}">${proxy[proxy.length - 1].y >= 0 ? '+' : ''}${Math.round(proxy[proxy.length - 1].y)} %</div>
+    </div>` : ''}
+    ${chart(proxy, { zero:true })}
   </div>
 
   <div class="kick" style="margin-top:30px">Verlauf</div>
@@ -830,11 +1243,15 @@ function viewLive(){
   }).join('');
 
   const warming = live.phase === 'warm';
+  const cooling = live.phase === 'cool';
   const lastEx = live.ex + 1 >= plan.length;
   const cutStyle = 'font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:rgba(241,240,236,.38);padding:6px 0';
   const cut = live.done ? '' : warming ? `
   <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
     <div class="tap cd" ${act('warmGo')} style="${cutStyle}">Aufwärmen überspringen</div>
+  </div>` : cooling ? `
+  <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
+    <div class="tap cd" ${act('coolGo')} style="${cutStyle}">Cool-Down überspringen</div>
   </div>` : `
   <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
     ${lastEx ? '<div></div>' : `<div class="tap cd" ${act('skipEx')} style="${cutStyle}">Übung überspringen</div>`}
@@ -845,7 +1262,10 @@ function viewLive(){
 <div style="flex:none;padding:10px 22px 0">
   <div style="display:flex;align-items:center;justify-content:space-between">
     <div class="tap cd" ${act('abort')} style="font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4);padding:6px 0">Abbrechen</div>
-    <div class="cd" style="font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4)">${sess().name}${live.short ? ' · Kurz' : ''}</div>
+    <div style="display:flex;align-items:baseline;gap:10px">
+      <div class="cd num" style="font-weight:700;font-size:15px;color:${live.done ? 'rgba(241,240,236,.4)' : ACCENT}">${mmss(live.done && live.durMs ? Math.round(live.durMs / 1000) : elapsed(live))}</div>
+      <div class="cd" style="font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4)">${sess().name}${live.short ? ' · Kurz' : ''}</div>
+    </div>
   </div>
   <div style="display:flex;gap:5px;margin-top:12px">${segs}</div>
   ${cut}
@@ -877,9 +1297,39 @@ function viewLive(){
     <span style="font-size:28px">${offen ? 'LOS' : 'AUFWÄRMEN FERTIG'}</span>
   </div>
 </div>`;
+  } else if (cooling && !live.done) {
+    const cool = live.cool || [];
+    const offen = cool.filter(c => !c.done).length;
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
+  <div style="padding-top:24px;flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Cool-Down · ${sess().name}</div>
+    <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${cool.length} SCHRITTE</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 3 min · zählt nicht als Satz</div>
+  </div>
+
+  <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
+    ${cool.map((c, i) => `
+    <div class="tap" ${act('coolToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+      <div style="flex:none;width:26px;height:26px;margin-top:1px;border-radius:13px;border:2px solid ${c.done ? ACCENT : 'rgba(255,255,255,.22)'};background:${c.done ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
+        ${c.done ? '<div style="width:10px;height:10px;border-radius:5px;background:#0F1110"></div>' : ''}
+      </div>
+      <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${c.done ? 'text-decoration:line-through' : ''}">${c.text}</div>
+    </div>`).join('')}
+  </div>
+
+  <div class="tap press primary" ${act('coolGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
+    <span style="font-size:28px">${offen ? 'WEITER' : 'FERTIG'}</span>
+  </div>
+</div>`;
   } else if (live.done) {
+    /* Gemessene Dauer, wenn vorhanden – die Schätzung aus dem
+       Zeitbudget dient nur noch als Rückfall für Einheiten, die vor
+       dem Timer gestartet wurden. */
     const base    = live.mins || sess().mins;
-    const doneMin = Math.max(5, 5 + Math.round((base - 5) * doneSets / Math.max(1, totalSets)));
+    const doneMin = live.durMs
+      ? Math.max(1, Math.round(live.durMs / 60000))
+      : Math.max(5, 5 + Math.round((base - 5) * doneSets / Math.max(1, totalSets)));
 
     /* Gestrichenes offen benennen – sonst liest sich eine halbe
        Einheit wie eine ganze. */
@@ -1035,12 +1485,6 @@ function viewSheet(){
               ? 'Oberes Ende von ' + range(d) + ' erreicht → nächste Einheit ' + byId(dex.next).name + ' mit ' + num(byId(dex.next).w || 0) + ' kg bei ' + d.lo + ' Wdh.'
               : 'Oberes Ende von ' + range(d) + ' erreicht. Nächste Stufe von Hand wählen – Übung antippen.'));
 
-    const miniStepper = (action, plus) => `
-      <div class="tap" ${act(action)} style="width:44px;height:44px;border-radius:22px;background:rgba(255,255,255,.07);display:flex;align-items:center;justify-content:center;position:relative;flex:none">
-        <div style="width:18px;height:3px;border-radius:2px;background:#F1F0EC"></div>
-        ${plus ? '<div style="width:3px;height:18px;border-radius:2px;background:#F1F0EC;position:absolute"></div>' : ''}
-      </div>`;
-
     inner = `
 <div style="padding:16px 0 0;overflow-y:auto">
   <div class="cd kick-a" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase">Last anpassen</div>
@@ -1074,11 +1518,30 @@ function viewSheet(){
       </div>
     </div>
     <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
-      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Ziel · Bereich ${range(d)}</div>
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Ziel heute</div>
       <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
         ${miniStepper('repsDown', false)}
         <span class="cd num" style="font-weight:700;font-size:32px;line-height:1">${d.reps}</span>
         ${miniStepper('repsUp', true)}
+      </div>
+    </div>
+  </div>
+
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Bereich von</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('loDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:28px;line-height:1">${d.lo}</span>
+        ${miniStepper('loUp', true)}
+      </div>
+    </div>
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">bis</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('hiDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:28px;line-height:1">${d.hi}</span>
+        ${miniStepper('hiUp', true)}
       </div>
     </div>
   </div>
