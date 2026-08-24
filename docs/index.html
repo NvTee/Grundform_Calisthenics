@@ -652,6 +652,26 @@ const A = {
     set({ pick: next });
   },
 
+  /* Export: der komplette Zustand als JSON. Auf dem iPhone ist die
+     Zwischenablage im Standalone-Modus unzuverlässig, deshalb immer
+     auch als markierbarer Text plus Teilen-Dialog. */
+  tapExport: () => set({ sheet:{ type:'export' } }),
+  copyExport: () => {
+    const t = document.getElementById('exp');
+    if (t) { t.focus(); t.select(); t.setSelectionRange(0, t.value.length); }
+    const done = () => { buzz(20); set({ sheet:{ type:'export', copied:true } }); };
+    try {
+      if (navigator.clipboard && navigator.clipboard.writeText)
+        navigator.clipboard.writeText(exportJSON()).then(done, () => { try { document.execCommand('copy'); done(); } catch(e){} });
+      else { document.execCommand('copy'); done(); }
+    } catch(e){}
+  },
+  shareExport: () => {
+    try {
+      if (navigator.share) navigator.share({ title:'Grundform Export', text: exportJSON() }).catch(() => {});
+    } catch(e){}
+  },
+
   tapEx:   i => set({ sheet:{ type:'swap', i } }),
   tapLoad: i => set({ sheet:{ type:'load', i }, draft:{ ...curSlots()[i] } }),
   closeSheet: () => set({ sheet:null, draft:null }),
@@ -870,6 +890,15 @@ function progress(slot, logged, cfg){
   return { slot: base, suggest: null };
 }
 
+
+/* Vollständiger Zustand als JSON – dasselbe, was in localStorage
+   liegt, plus App-Version und Zeitstempel für die Zuordnung. */
+function exportJSON(){
+  return JSON.stringify({
+    app: 'grundform', store: STORE, exportedAt: new Date().toISOString(),
+    rot: S.rot, cfg: S.cfg, plans: S.plans, history: S.history,
+  }, null, 1);
+}
 
 /* Zuordnung Protokoll → Übung der Einheit. `slotIdx` fehlt nur in
    einer Einheit, die vor diesem Update schon lief – dann greift
@@ -1218,6 +1247,11 @@ function viewFortschritt(){
     </div>`).join('')
     : `<div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.4)">Noch keine abgeschlossene Einheit.</div>`}
   </div>
+
+  <div class="tap" ${act('tapExport')} style="margin-top:26px;height:56px;border-radius:16px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
+    <span class="cd" style="font-weight:600;font-size:17px;letter-spacing:.1em;color:rgba(241,240,236,.72)">DATEN EXPORTIEREN</span>
+  </div>
+  <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);margin-top:8px">${S.history.length} ${S.history.length === 1 ? 'Einheit' : 'Einheiten'} · Lasten, Verlauf und Einstellungen als JSON</div>
 </div>`;
 }
 
@@ -1441,7 +1475,10 @@ function viewLive(){
 
 function viewSheet(){
   if (!S.sheet) return '';
-  const slot = curSlots()[S.sheet.i], cur = byId(slot.exId);
+  /* Das Export-Sheet hängt an keiner Übung – erst auflösen, wenn ein
+     Slot-Index da ist. */
+  const slot = S.sheet.i !== undefined ? curSlots()[S.sheet.i] : null;
+  const cur = slot ? byId(slot.exId) : null;
   let inner;
 
   if (S.sheet.type === 'swap') {
@@ -1478,6 +1515,30 @@ function viewSheet(){
       <div style="font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.35)">${e.label}</div>
     </div>`).join('')}
   </div>
+</div>`;
+
+  } else if (S.sheet.type === 'export') {
+    const json = exportJSON();
+    const kb = (new Blob([json]).size / 1024).toFixed(1).replace('.', ',');
+    inner = `
+<div style="display:flex;flex-direction:column;min-height:0;padding:16px 0 0">
+  <div style="flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase">Daten exportieren</div>
+    <div class="cd" style="font-weight:700;font-size:32px;line-height:1.05;margin-top:4px">${S.history.length} ${S.history.length === 1 ? 'Einheit' : 'Einheiten'}</div>
+    <div style="font:500 13.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:4px">${kb} KB · Lasten, Verlauf, Einstellungen. Enthält keine Namen oder Kontaktdaten.</div>
+  </div>
+
+  <textarea id="exp" readonly style="flex:1;min-height:120px;margin-top:14px;padding:12px;border-radius:12px;border:1px solid rgba(255,255,255,.12);background:rgba(0,0,0,.35);color:rgba(241,240,236,.75);font:400 12px/1.45 ui-monospace,Menlo,monospace;resize:none;-webkit-user-select:text;user-select:text">${json.replace(/&/g, '&amp;').replace(/</g, '&lt;')}</textarea>
+
+  <div style="display:flex;gap:10px;margin-top:12px;flex:none">
+    <div class="tap press primary" ${act('copyExport')} style="flex:1;height:60px;border-radius:16px">
+      <span style="font-size:20px">${S.sheet.copied ? 'KOPIERT' : 'KOPIEREN'}</span>
+    </div>
+    <div class="tap" ${act('shareExport')} style="flex:1;height:60px;border-radius:16px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
+      <span class="cd" style="font-weight:700;font-size:20px;letter-spacing:.08em;color:rgba(241,240,236,.72)">TEILEN</span>
+    </div>
+  </div>
+  <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);margin-top:10px;flex:none">Falls Kopieren nicht greift: Text antippen, alles markieren, kopieren.</div>
 </div>`;
 
   } else {
