@@ -360,7 +360,12 @@ function slotView(s){
    gekürzten Einheit die richtige Übung wieder. */
 function buildPlan(idx){
   const sl = curSlots();
-  return idx.map(i => ({ ...slotView(sl[i]), slotIdx:i }));
+  return idx.map(i => {
+    /* „Supersatz 1a" → pair '1', pos 'a'. Einzelübungen haben kein
+       Paar und laufen wie bisher Satz für Satz durch. */
+    const m = /Supersatz\s*(\d+)([ab])/i.exec(sl[i].role || '');
+    return { ...slotView(sl[i]), slotIdx:i, pair: m ? m[1] : null, pos: m ? m[2] : null };
+  });
 }
 /* Gewählte Übungen der nächsten Einheit, Default alle. */
 function pickIdx(){
@@ -940,24 +945,59 @@ function bump(d){
   set({});
 }
 
+/* Kurzer Wechsel zwischen den Partnern eines Supersatzes; die volle
+   Pause steht erst am Ende der Runde. */
+const SS_SWAP = 45;
+
+function pairIdx(plan, pair){
+  return plan.reduce((a, p, i) => (p.pair === pair ? [...a, i] : a), []);
+}
+
+/* Nächster Schritt im Ablauf – der einzige Ort, der die Reihenfolge
+   bestimmt. Innerhalb eines Paars wird nach jedem Satz gewechselt
+   (1a → 1b → 1a …), gestrichene Übungen fallen raus. Rückgabe `null`
+   heißt: Einheit durch. */
+function nextStep(l, ex, set){
+  const plan = l.plan, skip = new Set(l.skipped || []);
+  const live = i => !skip.has(i) && plan[i].sets > 0;
+  const cur = plan[ex];
+
+  if (cur.pair) {
+    const all = pairIdx(plan, cur.pair);
+    const pos = all.indexOf(ex);
+    /* Rest der laufenden Runde */
+    for (let k = pos + 1; k < all.length; k++)
+      if (live(all[k]) && plan[all[k]].sets > set) return { ex:all[k], set, rest:SS_SWAP, swap:true };
+    /* nächste Runde von vorn */
+    for (let k = 0; k < all.length; k++)
+      if (live(all[k]) && plan[all[k]].sets > set + 1) return { ex:all[k], set:set + 1, rest:cur.rest, swap:false };
+    /* Paar durch – hinter das Paar springen */
+    for (let i = Math.max(...all) + 1; i < plan.length; i++)
+      if (live(i)) return { ex:i, set:0, rest:cur.rest, swap:false };
+    return null;
+  }
+
+  if (set + 1 < cur.sets) return { ex, set:set + 1, rest:cur.rest, swap:false };
+  for (let i = ex + 1; i < plan.length; i++)
+    if (live(i)) return { ex:i, set:0, rest:cur.rest, swap:false };
+  return null;
+}
+
 function completeSet(){
   const l = S.live; if (!l) return;
   const ex = l.plan[l.ex];
   const log = [...l.log, { ex:l.ex, slotIdx:ex.slotIdx, set:l.set, reps:l.reps }];
-  const lastSet = l.set + 1 >= ex.sets;
-  const lastEx  = l.ex  + 1 >= l.plan.length;
   buzz(35);
 
-  if (lastSet && lastEx) {
+  const nx = nextStep(l, l.ex, l.set);
+  if (!nx) {
     clearInterval(timer);
     set({ live:{ ...l, log, ...coolOrDone(l.plan, {}, l) } });
     return;
   }
-  const nx   = lastSet ? { ex:l.ex + 1, set:0 } : { ex:l.ex, set:l.set + 1 };
-  const rest = ex.rest;
   startTimer();
-  set({ live:{ ...l, log, ...nx, reps: l.plan[nx.ex].target,
-               resting:true, rest, restMax:rest, restEnd: Date.now() + rest * 1000 } });
+  set({ live:{ ...l, log, ex:nx.ex, set:nx.set, reps: l.plan[nx.ex].target, swap:nx.swap,
+               resting:true, rest:nx.rest, restMax:nx.rest, restEnd: Date.now() + nx.rest * 1000 } });
 }
 
 /* Übung streichen und zur nächsten springen. Angefangene Sätze
@@ -967,11 +1007,12 @@ function skipEx(){
   clearInterval(timer);
   const skipped = [...(l.skipped || []), l.ex];
   buzz(20);
-  if (l.ex + 1 >= l.plan.length) {
+  const nx = nextStep({ ...l, skipped }, l.ex, l.set);
+  if (!nx) {
     set({ live:{ ...l, skipped, ...coolOrDone(l.plan, { rest:0, restEnd:0 }, l) } });
     return;
   }
-  set({ live:{ ...l, skipped, ex:l.ex + 1, set:0, reps: l.plan[l.ex + 1].target,
+  set({ live:{ ...l, skipped, ex:nx.ex, set:nx.set, reps: l.plan[nx.ex].target, swap:false,
                resting:false, rest:0, restEnd:0 } });
 }
 
@@ -980,7 +1021,10 @@ function skipEx(){
 function endHere(){
   const l = S.live; if (!l || l.done) return;
   clearInterval(timer); releaseWakeLock();
-  const rest = l.plan.map((_, i) => i).filter(i => i >= l.ex);
+  /* Bei Supersätzen kann eine frühere Übung noch offene Sätze haben –
+     deshalb über die Vollständigkeit gehen, nicht über den Index. */
+  const rest = l.plan.map((_, i) => i)
+    .filter(i => l.log.filter(x => x.ex === i).length < l.plan[i].sets);
   buzz(35);
   set({ live:{ ...l, skipped: [...new Set([...(l.skipped || []), ...rest])],
                ...coolOrDone(l.plan, { rest:0, restEnd:0 }, l) } });
@@ -1276,11 +1320,15 @@ function viewLive(){
   const doneSets  = live.log.length;
 
   const skipped = live.skipped || [];
+  /* Supersätze springen zwischen den Übungen hin und her – „erledigt"
+     ergibt sich deshalb aus den abgehakten Sätzen, nicht daraus, ob
+     der Index kleiner ist als der aktuelle. */
+  const doneOf = i => live.log.filter(x => x.ex === i).length;
   const segs = plan.map((e, i) => {
-    const color = skipped.includes(i) ? 'rgba(255,255,255,.3)'
-      : i < live.ex ? ACCENT
-      : (i === live.ex && !live.done) ? 'rgba(255,77,23,.35)'
-      : live.done ? 'rgba(255,255,255,.11)' : 'rgba(255,255,255,.11)';
+    const color = skipped.includes(i)          ? 'rgba(255,255,255,.3)'
+      : doneOf(i) >= e.sets                    ? ACCENT
+      : (i === live.ex && !live.done)          ? 'rgba(255,77,23,.35)'
+      :                                          'rgba(255,255,255,.11)';
     return `<div style="flex:${e.sets};height:4px;border-radius:2px;background:${color}"></div>`;
   }).join('');
 
@@ -1416,7 +1464,7 @@ function viewLive(){
     const pct = Math.round((live.rest / Math.max(1, live.restMax)) * 100) + '%';
     body = `
 <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:22px 26px 16px;min-height:0">
-  <div class="cd" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:rgba(241,240,236,.4)">Pause</div>
+  <div class="cd" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase;color:${live.swap ? ACCENT : 'rgba(241,240,236,.4)'}">${live.swap ? 'Wechsel · Supersatz' : 'Pause'}</div>
   <div class="cd num" style="font-weight:700;font-size:min(140px,32vw);line-height:.9;letter-spacing:-.02em;margin-top:8px">${clock}</div>
   <div style="width:100%;height:6px;border-radius:3px;background:rgba(255,255,255,.1);margin-top:18px;overflow:hidden">
     <div style="height:100%;background:${ACCENT};border-radius:3px;width:${pct}"></div>
@@ -1444,7 +1492,7 @@ function viewLive(){
     body = `
 <div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
   <div style="padding-top:26px;flex:none">
-    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Satz ${live.set + 1} von ${ex.sets}</div>
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Satz ${live.set + 1} von ${ex.sets}${ex.pair ? ' · Supersatz ' + ex.pair + ex.pos : ''}</div>
     <div class="cd" style="font-weight:700;font-size:44px;line-height:1;margin-top:6px">${ex.name}</div>
     <div style="font:500 15.5px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${ex.detail}</div>
   </div>
