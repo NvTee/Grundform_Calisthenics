@@ -1044,6 +1044,20 @@ const miniStepper = (action, plus) => `
         ${plus ? '<div style="width:3px;height:18px;border-radius:2px;background:#F1F0EC;position:absolute"></div>' : ''}
       </div>`;
 
+/* Kästchen mit Haken. Quadratisch, nicht rund: Kreise lesen sich wie
+   eine Einfachauswahl, hier ist aber jede Zeile unabhängig an/aus.
+   Der leere Zustand hat eine sichtbare Kontur, damit erkennbar
+   bleibt, dass man überhaupt tippen kann. */
+function checkbox(on, size){
+  const s = size || 24, r = Math.round(s * 0.3), g = Math.round(s * 0.6);
+  return `<div style="flex:none;width:${s}px;height:${s}px;border-radius:${r}px;box-sizing:border-box;
+      border:2px solid ${on ? ACCENT : 'rgba(241,240,236,.4)'};background:${on ? ACCENT : 'transparent'};
+      display:flex;align-items:center;justify-content:center">${on
+    ? `<svg width="${g}" height="${g}" viewBox="0 0 24 24" fill="none" stroke="#0F1110"
+         stroke-width="3.6" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 12.5l5 5.5L19.5 6"/></svg>`
+    : ''}</div>`;
+}
+
 function today(){
   try {
     return new Date().toLocaleDateString('de-DE',
@@ -1109,9 +1123,7 @@ function viewHeute(){
       ${preview.map(ex => `
       <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)">
         <div class="tap" ${act('togglePick', ex.i)} style="flex:none;width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center">
-          <div style="width:22px;height:22px;border-radius:11px;border:2px solid ${ex.on ? ACCENT : 'rgba(255,255,255,.22)'};background:${ex.on ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
-            ${ex.on ? '<div style="width:9px;height:9px;border-radius:5px;background:#0F1110"></div>' : ''}
-          </div>
+          ${checkbox(ex.on, 24)}
         </div>
         <div class="tap" ${act('tapEx', ex.i)} style="flex:1;min-width:0;padding:6px 0">
           <div style="font:500 16px/1.25 Barlow,sans-serif;color:${ex.on ? '#F1F0EC' : 'rgba(241,240,236,.34)'};${ex.on ? '' : 'text-decoration:line-through'}">${ex.name}</div>
@@ -1121,7 +1133,7 @@ function viewHeute(){
           <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.02em;color:rgba(241,240,236,${ex.on ? '.8' : '.3'});white-space:nowrap">${ex.scheme}</span>
         </div>
       </div>`).join('')}
-      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">Punkt antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
+      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">Häkchen antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
     </div>
   </div>
 
@@ -1367,15 +1379,13 @@ function viewLive(){
   <div style="padding-top:24px;flex:none">
     <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Aufwärmen · ${sess().name}</div>
     <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${warm.length} SCHRITTE</div>
-    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 5 min · zählt nicht als Satz</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 5 min · antippen zum Abhaken · zählt nicht als Satz</div>
   </div>
 
   <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
     ${warm.map((w, i) => `
     <div class="tap" ${act('warmToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
-      <div style="flex:none;width:26px;height:26px;margin-top:1px;border-radius:13px;border:2px solid ${w.done ? ACCENT : 'rgba(255,255,255,.22)'};background:${w.done ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
-        ${w.done ? '<div style="width:10px;height:10px;border-radius:5px;background:#0F1110"></div>' : ''}
-      </div>
+      <div style="margin-top:1px">${checkbox(w.done, 26)}</div>
       <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${w.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${w.done ? 'text-decoration:line-through' : ''}">${w.text}</div>
     </div>`).join('')}
   </div>
@@ -1392,15 +1402,13 @@ function viewLive(){
   <div style="padding-top:24px;flex:none">
     <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Cool-Down · ${sess().name}</div>
     <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${cool.length} SCHRITTE</div>
-    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 3 min · zählt nicht als Satz</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 3 min · antippen zum Abhaken · zählt nicht als Satz</div>
   </div>
 
   <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
     ${cool.map((c, i) => `
     <div class="tap" ${act('coolToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
-      <div style="flex:none;width:26px;height:26px;margin-top:1px;border-radius:13px;border:2px solid ${c.done ? ACCENT : 'rgba(255,255,255,.22)'};background:${c.done ? ACCENT : 'transparent'};display:flex;align-items:center;justify-content:center">
-        ${c.done ? '<div style="width:10px;height:10px;border-radius:5px;background:#0F1110"></div>' : ''}
-      </div>
+      <div style="margin-top:1px">${checkbox(c.done, 26)}</div>
       <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${c.done ? 'text-decoration:line-through' : ''}">${c.text}</div>
     </div>`).join('')}
   </div>
