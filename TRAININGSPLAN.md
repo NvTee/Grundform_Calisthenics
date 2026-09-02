@@ -334,6 +334,38 @@ Das Cool-Down zählt **nicht** in das Zeitbudget der Einheit. Es kommt oben drau
 
 Ischios auf der Bank: Ferse auf die Bank, Rücken gerade, die Bewegung kommt aus der Hüfte — nicht aus dem runden Rücken.
 
+## Beckenposition und Rumpf
+
+Befund per Selbsttest: anteriore Beckenkippung, Begrenzer ist der Iliopsoas.
+
+**Das ist ein Hebelproblem, keine Schwäche.** Bei gekipptem Becken stehen Rippen und Becken weit auseinander, die Bauchmuskulatur ist dauerhaft auf Länge gezogen und kann kaum Spannung erzeugen. Mehr Bauchtraining in dieser Position macht es nicht besser.
+
+**Gesperrt, nicht gelöscht:** Hollow-Body-Halten, Hängendes Knieheben und Hängendes Beinheben. Alle drei arbeiten den Hüftbeuger in verkürzter Position und verstärken die Kippung, solange die Hüftstreckung fehlt. Sie stehen weiter im Übungskatalog, sind dort als gesperrt markiert und lassen sich von Hand zurückholen — die automatische Progression wählt sie nicht mehr, auch nicht über die Steigerungskette.
+
+**Ersatz:** In Unter A steht statt des Kniehebens der Side Plank. Die Pallof Press in Unter B bleibt — Anti-Rotation ist von der Kippung nicht betroffen.
+
+**Freischalt-Test, alle zwei Wochen.** Flach auf den Rücken, Beine gestreckt, unteren Rücken bewusst auf den Boden drücken. Hebt die Oberschenkelrückseite ab? Ziel ist 0 cm. Sobald der Oberschenkel liegen bleibt, können Hollow Hold und hängendes Beinheben über das Tausch-Sheet zurück in den Plan.
+
+### Ausführung
+
+**Hüftbeuger-Ausfallschritt:** hinteres Knie am Boden, **Fuß flach abgelegt**, Knie weiter unter dem Körper als intuitiv. Gesäß fest anspannen, Becken nach hinten kippen, erst dann minimal nach vorn. Die Dehnung gehört tief in die Leiste. Zieht es im unteren Rücken, ist das Becken gekippt und es wird nichts gedehnt.
+
+**Am Ende jeder Hüftbeuger-Dehnung ausatmen und Rippen senken.** Der Psoas setzt an der Lendenwirbelsäule an — ohne gesenkte Rippen bleibt sie im Hohlkreuz.
+
+**Bei Split Squats und Bulgarian Split Squats** vor jedem Satz Gesäß anspannen und Rippen senken. Gleiche Ursache, gleiche Korrektur.
+
+**Dead Bug:** Der Satz endet, sobald der untere Rücken vom Boden abhebt — unabhängig von der Wiederholungszahl.
+
+### Rumpf-Einheit
+
+Drei Übungen, rund 15 Minuten: Dead Bug einbeinig einzeln, danach Beckenkippung und Side Plank im Supersatz. Kein Aufwärmen, kein Cool-Down — die Einheit ist selbst Mobility-Arbeit.
+
+Sie läuft **außerhalb** der Rotation und verschiebt sie nicht: Ober/Unter bleibt stehen, wo es steht. Zwei- bis dreimal pro Woche. **Nicht direkt vor einer Unterkörper-Einheit** — ein vorermüdeter Rumpf kostet Stabilität bei Split Squats und einbeinigem RDL. Danach oder mit einem Tag Abstand.
+
+**Frequenz schlägt Volumen.** Ansteuerung und Beweglichkeit reagieren auf Wiederholungshäufigkeit, nicht auf Ermüdung pro Einheit — deshalb die Alltag-Liste im Plan-Tab, die nichts loggt und nichts vorschreibt.
+
+**Zeitrahmen:** erste Verbesserungen nach 2–3 Wochen (Ansteuerung), Gewebeanpassung 8–12 Wochen. Bewegt sich nach rund 8 Wochen nichts messbar oder treten Beschwerden im unteren Rücken auf: physiotherapeutisch abklären lassen. Dieser Plan ersetzt keine Untersuchung.
+
 # 4. 12-Wochen-Übersicht
 
 | Woche | Phase | Änderung gegenüber Vorwoche |

@@ -1,3 +1,9 @@
+> **Umgesetzt auf Grundform (HTML), nicht auf Excel.** Übernommen sind §1–§6
+> sinngemäß: Sperre, Ersatzübungen, Rumpf-Einheit außerhalb der Rotation,
+> Alltag-Liste, Doku. **Nicht umgesetzt:** §4 Test-Tracking (Freischalten läuft
+> von Hand über das Tausch-Sheet), §7 und die Abnahmekriterien — sie beziehen
+> sich auf Sheets, Formeln und `build_v4.py`.
+
 # CR-003 — Rumpf, Hüftbeuger und Beckenposition
 
 **Datei:** `Trainingsplan.xlsx`

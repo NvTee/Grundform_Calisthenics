@@ -125,11 +125,14 @@ const DB = [
   { id:'hinge-bridge',  name:'Hüftheben einbeinig',     short:'Hüftheben 1B',  pattern:'hinge', label:'Hüftbeuge',          equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Ferse drücken, Rippen unten',       rest:45,  lvl:1 },
   { id:'hinge-band',    name:'Expander-Good-Morning',   short:'Exp. Hinge',    pattern:'hinge', label:'Hüftbeuge',          equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Spannung aus dem Gesäß',            rest:60,  lvl:1 },
 
-  { id:'core-hang-knee',name:'Hängendes Knieheben',     short:'Knieheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Becken kippen, kein Schwung',       rest:60,  lvl:2, next:'core-hang-leg', prev:'core-plank' },
-  { id:'core-hang-leg', name:'Hängendes Beinheben',     short:'Beinheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Beine gestreckt, langsam zurück',   rest:60,  lvl:3, prev:'core-hang-knee' },
+  { id:'core-hang-knee',name:'Hängendes Knieheben',     short:'Knieheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Becken kippen, kein Schwung',       rest:60,  lvl:2, next:'core-hang-leg', prev:'core-plank', locked:'Verstärkt die Beckenkippung — erst nach dem Becken-Test' },
+  { id:'core-hang-leg', name:'Hängendes Beinheben',     short:'Beinheben',     pattern:'core',  label:'Rumpf',              equip:'Klimmzugstange',      kind:'bw',   unit:'Wiederholungen', cue:'Beine gestreckt, langsam zurück',   rest:60,  lvl:3, prev:'core-hang-knee', locked:'Verstärkt die Beckenkippung — erst nach dem Becken-Test' },
   { id:'core-pallof',   name:'Pallof Press mit Expander',short:'Pallof Press', pattern:'core',  label:'Rumpf',              equip:'Expander',            kind:'bw',   unit:'Wdh je Seite',   cue:'Rumpf gegen Rotation halten',       rest:45,  lvl:2 },
-  { id:'core-hollow',   name:'Hollow-Body-Halten',      short:'Hollow Hold',   pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Rücken flach am Boden',             rest:45,  lvl:2, prev:'core-plank' },
-  { id:'core-plank',    name:'Planke',                  short:'Planke',        pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Gesäß fest, Becken kippen',         rest:45,  lvl:1 },
+  { id:'core-hollow',   name:'Hollow-Body-Halten',      short:'Hollow Hold',   pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Rücken flach am Boden',             rest:45,  lvl:2, prev:'core-plank', locked:'Verstärkt die Beckenkippung — erst nach dem Becken-Test' },
+  { id:'core-plank',    name:'Planke',                  short:'Planke',        pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sekunden',       cue:'Gesäß fest, Becken kippen',         rest:45,  lvl:1, next:'core-sideplank' },
+  { id:'core-tilt',     name:'Beckenkippung im Liegen', short:'Beckenkippung', pattern:'core',  label:'Rumpf',              equip:'Bank',                kind:'bw',   unit:'Atemzüge',       cue:'Ausatmen, Rippen senken',           rest:45,  lvl:1, next:'core-deadbug' },
+  { id:'core-deadbug',  name:'Dead Bug einbeinig',      short:'Dead Bug',      pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Wdh je Seite',   cue:'Satz endet, wenn der Rücken abhebt', rest:60,  lvl:2, prev:'core-tilt' },
+  { id:'core-sideplank',name:'Side Plank',              short:'Side Plank',    pattern:'core',  label:'Rumpf',              equip:'–',                   kind:'bw',   unit:'Sek je Seite',   cue:'Hüfte hoch, Rippen gesenkt',        rest:60,  lvl:2, prev:'core-plank' },
 
   { id:'rdelt-face',    name:'Expander Face Pull',      short:'Face Pull',     pattern:'rdelt', label:'Hintere Schulter',   equip:'Expander',            kind:'bw',   unit:'Wiederholungen', cue:'Hände zu den Ohren, Ellbogen hoch', rest:45,  lvl:2, prev:'rdelt-pullapart' },
   { id:'rdelt-fly',     name:'KH Reverse Fly',          short:'Reverse Fly',   pattern:'rdelt', label:'Hintere Schulter',   equip:'Kurzhanteln',         kind:'load', unit:'Wiederholungen', cue:'Nur Schulterblätter arbeiten',      rest:45,  lvl:2, w:8,  step:2, prev:'rdelt-face' },
@@ -188,7 +191,7 @@ const SESSIONS = [
       { exId:'dl',            role:'einzeln',      sets:4, lo:5,  hi:5,  reps:5,  w:60, prog:'weight' },
       { exId:'squat-bss',     role:'Supersatz 1a', sets:3, lo:8,  hi:10, reps:8,  w:16, prog:'weight' },
       { exId:'rdelt-fly',     role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
-      { exId:'core-hang-knee',role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'core-sideplank',role:'Supersatz 2a', sets:3, lo:25, hi:40, reps:30, w:0,  prog:'reps' },
       { exId:'delt-lat',      role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
     ],
     warm:[
@@ -243,6 +246,18 @@ const SESSIONS = [
       { text:'Tiefe Hocke halten, 60 s' },
       { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
     ]},
+  /* Läuft außerhalb der Rotation (CR-003 §6): 2–3× pro Woche,
+     verschiebt Ober/Unter nicht. Kein Aufwärmen und kein Cool-Down —
+     die Einheit ist selbst Mobility-Arbeit. */
+  { id:'rumpf', name:'RUMPF', kick:'Becken und Rumpf · außer der Reihe', mins:15, shortMins:9,
+    warmMins:0, coolMins:0, extra:true,
+    gear:'Boden · Bank · Matte oder Handtuch', short:[0, 1],
+    slots:[
+      { exId:'core-deadbug',  role:'einzeln',      sets:3, lo:6,  hi:10, reps:8,  w:0, prog:'reps' },
+      { exId:'core-tilt',     role:'Supersatz 1a', sets:3, lo:4,  hi:8,  reps:5,  w:0, prog:'reps' },
+      { exId:'core-sideplank',role:'Supersatz 1b', sets:3, lo:25, hi:40, reps:30, w:0, prog:'reps' },
+    ],
+    warm:[], cool:[] },
 ];
 const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
 
@@ -255,12 +270,17 @@ const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
    die Trainingslasten. */
 const CFG_DEFAULT = { n:2, bw:86 };
 let S = {
-  tab:'heute', rot:0, live:null, sheet:null, draft:null, pick:null,
+  tab:'heute', rot:0, sel:null, live:null, sheet:null, draft:null, pick:null,
   plans: freshPlans(), history:[], suggest:[], notes:[], cfg:{ ...CFG_DEFAULT },
 };
-const sess      = () => SESSIONS[S.rot];
-const curSlots  = () => S.plans[S.rot];
-const nextSess  = () => SESSIONS[(S.rot + 1) % SESSIONS.length];
+/* `rot` ist die Position in der Ober/Unter-Rotation. `sel` zeigt auf
+   eine Einheit außerhalb davon (die Rumpf-Einheit) und ist sonst null.
+   ROT_N zählt nur die Rotations-Einheiten – Extras verschieben sie nicht. */
+const ROT_N     = SESSIONS.filter(x => !x.extra).length;
+const selIdx    = () => (S.live ? S.live.si : (S.sel != null ? S.sel : S.rot));
+const sess      = () => SESSIONS[selIdx()];
+const curSlots  = () => S.plans[selIdx()];
+const nextSess  = () => SESSIONS[(S.rot + 1) % ROT_N];
 let timer = null;
 let wakeLock = null;
 const scrollMemo = {};
@@ -269,7 +289,7 @@ function screenKey(){ return S.live ? 'live' : S.tab; }
 
 function persist(){
   try {
-    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, live:S.live, plans:S.plans,
+    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, sel:S.sel, live:S.live, plans:S.plans,
       pick:S.pick, history:S.history, suggest:S.suggest, notes:S.notes, cfg:S.cfg }));
   } catch(e){}
 }
@@ -280,10 +300,12 @@ function restore(){
     const s = JSON.parse(raw);
     if (!s) return;
     S.tab   = s.tab || 'heute';
-    S.rot   = (typeof s.rot === 'number' && s.rot >= 0 && s.rot < SESSIONS.length) ? s.rot : 0;
-    S.plans = (Array.isArray(s.plans) && s.plans.length === SESSIONS.length
-               && s.plans.every(p => Array.isArray(p) && p.length))
-              ? s.plans : freshPlans();
+    S.rot   = (typeof s.rot === 'number' && s.rot >= 0 && s.rot < ROT_N) ? s.rot : 0;
+    S.sel   = (typeof s.sel === 'number' && s.sel >= 0 && s.sel < SESSIONS.length) ? s.sel : null;
+    const fresh = freshPlans();
+    S.plans = (Array.isArray(s.plans) && s.plans.every(p => Array.isArray(p) && p.length))
+              ? fresh.map((f, i) => s.plans[i] || f)
+              : fresh;
     S.pick  = Array.isArray(s.pick) && s.pick.length
               ? s.pick.filter(i => Number.isInteger(i) && i >= 0 && i < S.plans[S.rot].length)
               : null;
@@ -394,10 +416,10 @@ function milestoneOf(slot){
       pct: Math.round((slot.reps - slot.lo) / Math.max(1, slot.hi - slot.lo) * 100),
     };
   }
-  const nx = ex.next ? byId(ex.next) : null;
+  const nx = chainStep(ex, 'next');
   return {
     name: ex.name,
-    big: ex.kind === 'load' ? num(slot.w) + ' kg' : slot.reps + ' Wdh',
+    big: ex.kind === 'load' ? num(slot.w) + ' kg' : slot.reps + ' ' + unitOf(ex),
     sub: slot.prog === 'weight' ? 'nächste Einheit +' + num(ex.step || 2.5) + ' kg'
          : nx ? 'nächste Einheit: ' + nx.name
          : 'Bereich ausgereizt',
@@ -672,13 +694,18 @@ const A = {
     } catch(e){}
   },
 
+  /* Zwischen Rotation und Rumpf-Einheit umschalten. Die Rotation
+     bleibt dabei stehen, wo sie steht. */
+  selExtra: () => set({ sel: SESSIONS.findIndex(x => x.extra), pick:null }),
+  selRot:   () => set({ sel:null, pick:null }),
+
   tapEx:   i => set({ sheet:{ type:'swap', i } }),
   tapLoad: i => set({ sheet:{ type:'load', i }, draft:{ ...curSlots()[i] } }),
   closeSheet: () => set({ sheet:null, draft:null }),
 
   /* Rotation von Hand setzen – z. B. wenn eine Einheit im Garten
      an der Reihenfolge vorbei gelaufen ist. */
-  pickRot: i => set({ tab:'heute', rot:i, pick:null }),
+  pickRot: i => set({ tab:'heute', rot:i, sel:null, pick:null }),
 
   pickEx: id => {
     const i = S.sheet.i, ex = byId(id);
@@ -687,7 +714,7 @@ const A = {
       const w = ex.kind === 'load' ? (ex.w || 0) : 0;
       return { ...s, exId:id, reps:s.lo, w, prog: ex.kind === 'load' ? 'weight' : 'reps' };
     });
-    set({ plans: S.plans.map((p, k) => (k === S.rot ? slots : p)), sheet:null, draft:null });
+    set({ plans: S.plans.map((p, k) => (k === selIdx() ? slots : p)), sheet:null, draft:null });
   },
 
   wUp:       () => draftBump('w',    draftStep(),  0),
@@ -705,7 +732,7 @@ const A = {
   applyDraft: () => {
     const i = S.sheet.i, d = S.draft;
     const slots = curSlots().map((x, k) => (k === i ? { ...d } : x));
-    set({ plans: S.plans.map((p, k) => (k === S.rot ? slots : p)), sheet:null, draft:null });
+    set({ plans: S.plans.map((p, k) => (k === selIdx() ? slots : p)), sheet:null, draft:null });
   },
 
   inc: () => bump(1),
@@ -780,12 +807,13 @@ function draftBump(key, d, min){
 
 function start(idx, short){
   clearInterval(timer);
+  const si = selIdx();
   const plan = buildPlan(idx);
   const warm = buildWarm(plan);
   acquireWakeLock();
   buzz(20);
   startTimer();
-  set({ live:{ plan, short, mins: estMins(idx), startedAt: Date.now(),
+  set({ live:{ plan, short, si, mins: estMins(idx), startedAt: Date.now(),
                phase: warm.length ? 'warm' : 'work', warm,
                ex:0, set:0, reps:plan[0].target,
                resting:false, rest:0, restMax:1, restEnd:0, done:false, log:[], skipped:[] } });
@@ -793,7 +821,7 @@ function start(idx, short){
 
 function abort(){
   clearInterval(timer); releaseWakeLock();
-  set({ live:null, pick:null });
+  set({ live:null, pick:null, sel:null });
 }
 
 /* Doppelte Progression: erst Wiederholungen im Zielbereich hoch,
@@ -821,7 +849,7 @@ function harder(slot){
   const ex = byId(slot.exId);
   if (slot.prog === 'weight')
     return { ...slot, w: r1(slot.w + (ex.step || 2.5)), reps: slot.lo, hiStreak:0, loStreak:0 };
-  const nx = ex.next ? byId(ex.next) : null;
+  const nx = chainStep(ex, 'next');
   if (!nx) return null;
   return { ...slot, exId:nx.id, w: nx.w || 0, reps: slot.lo, hiStreak:0, loStreak:0,
            prog: nx.kind === 'load' ? 'weight' : 'reps' };
@@ -829,6 +857,15 @@ function harder(slot){
 
 /* Eine Stufe leichter: Gewicht runter, solange die Untergrenze das
    erlaubt – sonst die `prev`-Variante. */
+/* Gesperrte Übungen (CR-003) dürfen nie automatisch gewählt werden.
+   Die Kette wird deshalb weitergelaufen, bis eine freie Stufe kommt.
+   Von Hand bleiben sie im Tausch-Sheet erreichbar. */
+function chainStep(ex, dir){
+  let n = ex[dir] ? byId(ex[dir]) : null;
+  while (n && n.locked) n = n[dir] ? byId(n[dir]) : null;
+  return n;
+}
+
 function easier(slot){
   const ex = byId(slot.exId);
   if (slot.prog === 'weight') {
@@ -838,7 +875,7 @@ function easier(slot){
     if (w >= floor)
       return { ...slot, w, reps: slot.lo, hiStreak:0, loStreak:0 };
   }
-  const pv = ex.prev ? byId(ex.prev) : null;
+  const pv = chainStep(ex, 'prev');
   if (!pv) return null;
   return { ...slot, exId:pv.id, w: pv.w || 0, reps: slot.lo, hiStreak:0, loStreak:0,
            prog: pv.kind === 'load' ? 'weight' : 'reps' };
@@ -910,7 +947,9 @@ const logSlot = (x, plan) =>
 function finish(){
   clearInterval(timer); releaseWakeLock();
   const l = S.live;
-  const rot = S.rot;
+  const si = l ? (l.si != null ? l.si : S.rot) : S.rot;
+  const rot = si;   /* Vorschläge hängen an der Einheit, nicht an der Rotation */
+  const isExtra = !!SESSIONS[si].extra;
   const notes = [], fresh = [];
   const slots = curSlots().map((slot, i) => {
     if (!l) return slot;
@@ -930,8 +969,11 @@ function finish(){
     live:null, tab:'fortschritt', pick:null, history,
     suggest: [...keep, ...fresh],
     notes,
-    plans: S.plans.map((p, k) => (k === rot ? slots : p)),
-    rot: (rot + 1) % SESSIONS.length,
+    plans: S.plans.map((p, k) => (k === si ? slots : p)),
+    /* Die Rumpf-Einheit läuft außer der Reihe und schiebt die
+       Rotation nicht weiter (CR-003 §6). */
+    rot: isExtra ? S.rot : (S.rot + 1) % ROT_N,
+    sel: null,
   });
 }
 
@@ -1030,6 +1072,19 @@ function skipRest(){
   set({ live:{ ...S.live, resting:false, rest:0, restEnd:0 } });
 }
 
+/* Gelegenheiten im Tagesablauf (CR-003 §3). Reine Checkliste, nichts
+   wird geloggt: Frequenz schlägt hier Volumen. */
+const ALLTAG = [
+  { when:'Abends im Bett',        what:'Rippenatmung auf dem Rücken, 10 Atemzüge', dur:'2 min',  kern:true },
+  { when:'Wasser kocht',          what:'Hüftbeuger-Ausfallschritt, beide Seiten',  dur:'90 s',   kern:true },
+  { when:'Zeit auf dem Boden',    what:'Dead Bug einbeinig, 2 × 8 je Seite',       dur:'3 min',  kern:true },
+  { when:'Zähneputzen',           what:'Einbeinstand, Becken neutral',             dur:'2 min',  kern:false },
+  { when:'Am Schreibtisch',       what:'Rippenatmung im Sitzen, 10 Atemzüge',      dur:'1 min',  kern:false },
+  { when:'Türrahmen im Vorbeigehen', what:'Brustdehnung, beide Seiten',            dur:'60 s',   kern:false },
+  { when:'Wartezeit im Stehen',   what:'Gesäß fest, Rippen senken, 5 Atemzüge',    dur:'30 s',   kern:false },
+  { when:'Vorm Aufstehen',        what:'Tiefe Hocke halten',                       dur:'60 s',   kern:false },
+];
+
 /* ── Rendering ────────────────────────────────────────────── */
 const act = (name, arg) =>
   `data-act="${name}"` + (arg !== undefined ? ` data-arg="${arg}"` : '');
@@ -1046,6 +1101,11 @@ const miniStepper = (action, plus) => `
    eine Einfachauswahl, hier ist aber jede Zeile unabhängig an/aus.
    Der leere Zustand hat eine sichtbare Kontur, damit erkennbar
    bleibt, dass man überhaupt tippen kann. */
+/* Kurzform der Maßeinheit für die Anzeige. Nicht jede Übung zählt
+   Wiederholungen – Side Plank sind Sekunden, Beckenkippung Atemzüge. */
+const UNIT_SHORT = { 'Wiederholungen':'Wdh', 'Sekunden':'Sek' };
+const unitOf = ex => UNIT_SHORT[ex.unit] || ex.unit;
+
 function checkbox(on, size){
   const s = size || 24, r = Math.round(s * 0.3), g = Math.round(s * 0.6);
   return `<div style="flex:none;width:${s}px;height:${s}px;border-radius:${r}px;box-sizing:border-box;
@@ -1073,27 +1133,29 @@ function viewHeute(){
   const preview = curSlots().map((s, i) => {
     const x = slotView(s);
     const on = pick.includes(i);
-    const auto = s.reps < s.hi ? '+1 Wdh'
+    const auto = s.reps < s.hi ? '+1'
       : x.prog === 'weight'    ? '+' + num(x.step || 2.5) + ' kg'
-      : x.next                 ? 'dann ' + byId(x.next).short
+      : chainStep(x, 'next')   ? 'dann ' + chainStep(x, 'next').short
                                : 'Bereich oben';
     return { i, on, name:x.name, scheme:x.scheme, role:x.role,
-             prog: on ? x.role + ' · Ziel ' + s.reps + ' Wdh · ' + auto
+             prog: on ? x.role + ' · Ziel ' + s.reps + ' ' + unitOf(x) + ' · ' + auto
                       : 'gestrichen · zählt heute nicht' };
   });
   const mins = estMins(pick);
-  const segs = SESSIONS.map((s, i) =>
-    `<div style="flex:1;height:6px;border-radius:3px;background:${i === S.rot ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
+  const extra = !!se.extra;
+  const segs = SESSIONS.filter(x => !x.extra).map((s, i) =>
+    `<div style="flex:1;height:6px;border-radius:3px;background:${!extra && i === S.rot ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
 
   return `
 <div style="padding:14px 22px 28px">
   <div style="display:flex;align-items:baseline;justify-content:space-between">
     <div class="kick">${today()}</div>
-    <div class="kick kick-a">Rotation ${S.rot + 1}/${SESSIONS.length}</div>
+    <div class="kick kick-a">${extra ? 'Außer der Reihe' : 'Rotation ' + (S.rot + 1) + '/' + ROT_N}</div>
   </div>
 
   <div style="display:flex;align-items:center;gap:10px;margin-top:16px">${segs}</div>
-  <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:9px">Es zählt die Reihenfolge, nicht der Kalender · nichts wird nachgeholt</div>
+  <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:9px">${extra ? 'Verschiebt die Rotation nicht · ' + SESSIONS[S.rot].name + ' bleibt als nächstes dran'
+        : 'Es zählt die Reihenfolge, nicht der Kalender · nichts wird nachgeholt'}</div>
 
   ${S.suggest.map((sg, i) => `
   <div class="card" style="margin-top:18px;border:1px solid rgba(255,77,23,.45);padding:16px 18px">
@@ -1143,6 +1205,13 @@ function viewHeute(){
     <div class="tap" ${act('startShort')} style="height:60px;border-radius:16px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
       <span class="cd" style="font-weight:600;font-size:19px;letter-spacing:.1em;color:rgba(241,240,236,.72)">KURZVERSION · ${se.shortMins} MIN</span>
     </div>
+    ${extra
+      ? `<div class="tap" ${act('selRot')} style="height:48px;display:flex;align-items:center;justify-content:center">
+           <span class="cd" style="font-weight:600;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:rgba(241,240,236,.45)">Zurück zur Rotation</span>
+         </div>`
+      : `<div class="tap" ${act('selExtra')} style="height:48px;display:flex;align-items:center;justify-content:center">
+           <span class="cd" style="font-weight:600;font-size:15px;letter-spacing:.12em;text-transform:uppercase;color:rgba(241,240,236,.45)">Rumpf-Einheit · ${SESSIONS.find(x => x.extra).mins} min · außer der Reihe</span>
+         </div>`}
   </div>
 
   ${(() => { const m = milestoneOf(curSlots()[0]); return `
@@ -1165,7 +1234,7 @@ function viewPlan(){
   <div style="font:500 15px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px;max-width:320px">Keine Wochentage. Bei 3–4 Einheiten pro Woche dauert ein Durchlauf 7–9 Tage.</div>
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
-    ${SESSIONS.map((s, i) => {
+    ${SESSIONS.filter(x => !x.extra).map((s, i) => {
       const on   = i === S.rot;
       const sl   = S.plans[i];
       const list = sl.map(x => byId(x.exId).short).join(' · ');
@@ -1188,6 +1257,20 @@ function viewPlan(){
   <div style="margin-top:22px;padding:16px 18px;border-radius:16px;background:rgba(255,77,23,.09);border:1px solid rgba(255,77,23,.22)">
     <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.8)">Termin geplatzt? Die nächste Einheit ist trotzdem die nächste in dieser Liste – nichts wird nachgeholt. Einheit antippen, um die Position von Hand zu setzen.</div>
   </div>
+
+  <div class="kick" style="margin-top:30px">Alltag · nebenbei</div>
+  <div style="font:500 13.5px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">Nichts davon wird geloggt. Für Beweglichkeit zählt, wie oft — nicht, wie lang am Stück.</div>
+  <div style="display:flex;flex-direction:column;gap:1px;margin-top:14px">
+    ${ALLTAG.map(a => `
+    <div style="display:flex;align-items:baseline;gap:10px;padding:10px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+      <div style="flex:1;min-width:0">
+        <div style="font:${a.kern ? '600' : '500'} 15px/1.3 Barlow,sans-serif;color:${a.kern ? '#F1F0EC' : 'rgba(241,240,236,.62)'}">${a.what}</div>
+        <div style="font:500 12.5px/1.35 Barlow,sans-serif;color:${a.kern ? ACCENT : 'rgba(241,240,236,.32)'};margin-top:2px">${a.when}</div>
+      </div>
+      <div class="cd" style="flex:none;font-weight:700;font-size:13px;color:rgba(241,240,236,.45);white-space:nowrap">${a.dur}</div>
+    </div>`).join('')}
+  </div>
+  <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);margin-top:10px">Die drei hervorgehobenen sind der Kern · Ziel: Hüftbeuger 5–10 min pro Woche und Seite, Atmung möglichst täglich</div>
 
   <div class="kick" style="margin-top:28px">Aufbau jeder Einheit</div>
   <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:8px">Übung 1 einzeln und frisch, danach zwei Antagonisten-Supersätze. 1–2 Wiederholungen bleiben immer im Tank – kein Satz bis zum Versagen.</div>
@@ -1448,8 +1531,8 @@ function viewLive(){
       const low = Math.min(...got);
       const nx  = p.next ? byId(p.next) : null;
       milestone = p.short + ': ' + got.join(' · ') + (
-          low < p.target        ? ' — Ziel ' + p.target + ' Wdh, Bereich ' + p.lo + '–' + p.hi
-          : low < p.hi          ? ' — nächste Einheit ' + (p.target + 1) + ' Wdh'
+          low < p.target        ? ' — Ziel ' + p.target + ' ' + unitOf(p) + ', Bereich ' + p.lo + '–' + p.hi
+          : low < p.hi          ? ' — nächste Einheit ' + (p.target + 1) + ' ' + unitOf(p)
           : p.prog === 'weight' ? ' — Bereich oben, nächste Einheit schwerer'
           : nx                  ? ' — Bereich oben, nächste Stufe: ' + nx.name
                                 : ' — Bereich oben');
@@ -1481,7 +1564,7 @@ function viewLive(){
   <div style="margin-top:34px;text-align:center">
     <div class="cd" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.4)">Als nächstes</div>
     <div class="cd" style="font-weight:700;font-size:30px;line-height:1.1;margin-top:6px">${ex.short}</div>
-    <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">Satz ${live.set + 1} · Ziel ${ex.target} Wdh</div>
+    <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">Satz ${live.set + 1} · Ziel ${ex.target} ${unitOf(ex)}</div>
   </div>
   <div class="tap press" ${act('skipRest')} style="width:100%;height:74px;border-radius:18px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-top:auto;flex:none">
     <span class="cd" style="font-weight:700;font-size:24px;letter-spacing:.1em;color:rgba(241,240,236,.8)">WEITER</span>
@@ -1540,7 +1623,8 @@ function viewSheet(){
 
   if (S.sheet.type === 'swap') {
     const rank = e => (e.id === cur.id ? -1 : Math.abs(e.lvl - cur.lvl) + (e.equip === cur.equip ? 0 : 0.5));
-    const same  = DB.filter(e => e.pattern === cur.pattern).sort((a, b) => rank(a) - rank(b));
+    const same  = DB.filter(e => e.pattern === cur.pattern)
+      .sort((a, b) => (a.locked ? 1 : 0) - (b.locked ? 1 : 0) || rank(a) - rank(b));
     const other = DB.filter(e => e.pattern !== cur.pattern && e.equip === cur.equip).slice(0, 3);
 
     inner = `
@@ -1553,15 +1637,16 @@ function viewSheet(){
   <div class="scroll" style="padding:14px 0 4px;display:flex;flex-direction:column;gap:8px">
     ${same.map(e => {
       const isCur = e.id === cur.id;
-      const badge = isCur ? 'Aktuell' : (Math.abs(e.lvl - cur.lvl) <= 1 ? 'Ähnlich' : '');
+      const badge = isCur ? 'Aktuell' : e.locked ? 'Gesperrt'
+                  : (Math.abs(e.lvl - cur.lvl) <= 1 ? 'Ähnlich' : '');
       return `
     <div class="tap" ${act('pickEx', e.id)} style="border:1px solid ${isCur ? 'rgba(255,77,23,.45)' : 'rgba(255,255,255,.09)'};background:${isCur ? 'rgba(255,77,23,.08)' : 'transparent'};border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:12px;flex:none">
       <div style="flex:1;min-width:0">
-        <div style="font:600 16px/1.25 Barlow,sans-serif;color:#F1F0EC">${e.name}</div>
-        <div style="font:500 13px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.42);margin-top:2px">${e.equip} · ${e.cue}</div>
+        <div style="font:600 16px/1.25 Barlow,sans-serif;color:${e.locked ? 'rgba(241,240,236,.45)' : '#F1F0EC'}">${e.name}</div>
+        <div style="font:500 13px/1.35 Barlow,sans-serif;color:${e.locked ? 'rgba(255,77,23,.75)' : 'rgba(241,240,236,.42)'};margin-top:2px">${e.locked || e.equip + ' · ' + e.cue}</div>
       </div>
-      ${badge ? `<div style="flex:none;padding:4px 9px;border-radius:7px;background:${isCur ? ACCENT : 'rgba(255,77,23,.14)'}">
-        <span class="cd" style="font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${isCur ? '#0F1110' : ACCENT}">${badge}</span>
+      ${badge ? `<div style="flex:none;padding:4px 9px;border-radius:7px;background:${isCur ? ACCENT : e.locked ? 'rgba(255,255,255,.09)' : 'rgba(255,77,23,.14)'}">
+        <span class="cd" style="font-weight:700;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:${isCur ? '#0F1110' : e.locked ? 'rgba(241,240,236,.5)' : ACCENT}">${badge}</span>
       </div>` : ''}
     </div>`;
     }).join('')}
