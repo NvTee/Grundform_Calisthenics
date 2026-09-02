@@ -1,3 +1,8 @@
+> **Überholt durch CR-002 (Abschnitt 1–4).** Übungsauswahl und Dauern stammen
+> jetzt von dort: 45–90 s je Position statt 20–60 s, drei Mobility-Schritte je
+> Einheit statt zwei bis drei mit Atem-Abschluss. Ton, Zeichengrenze und die
+> Regel „nicht geloggt, keine Progression" gelten weiter.
+
 Du erweiterst die Trainings-App **Grundform** um Cool-Down-Programme. Die App hat pro Einheit bereits eine Aufwärm-Phase (`warm`); das Cool-Down ist deren Gegenstück am Ende und fehlt noch. Deine Ausgabe ist ein `cool`-Array pro Einheit, das unverändert in `src/app.src.html` in die vier Einträge von `SESSIONS` eingesetzt wird.
 
 ## Kontext

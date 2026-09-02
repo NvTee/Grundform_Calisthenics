@@ -166,7 +166,7 @@ const byId = id => DB.find(e => e.id === id);
    Überspringen), weil es als erstes weichen soll, wenn die
    Zeit knapp wird. ------------------------------------------ */
 const SESSIONS = [
-  { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:28, shortMins:16,
+  { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:29, shortMins:16, warmMins:6, coolMins:5,
     gear:'Stange · Dip-Stangen · Bank · Expander', short:[0, 1, 2],
     slots:[
       { exId:'pullup',        role:'einzeln',      sets:5, lo:3,  hi:5,  reps:3,  w:0,  prog:'reps' },
@@ -177,16 +177,17 @@ const SESSIONS = [
     ],
     warm:[
       { text:'10 Armkreise vor und zurück, dann 15 Pull-Apart mit dem Expander' },
+      { text:'Schulter-Außenrotation mit Expander, 2 × 15 Wdh', note:'Ellbogen bleiben am Körper' },
       { text:'30 s an der Stange hängen, Schultern aktiv nach unten', for:'pullup' },
       { text:'8 langsame Liegestütze mit Händen auf der Bank', for:'pushup-feet' },
       { text:'2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
     ],
     cool:[
-      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'pullup' },
-      { text:'30 s Brust-Dehnung an der Dip-Stange je Seite', for:'dip' },
-      { text:'40 s ruhig atmen, 4 s ein, 6 s aus' },
+      { text:'Brust an Türrahmen oder Dip-Stange, 2 × 45 s je Seite' },
+      { text:'Brustwirbelsäule über die Bank, 60–90 s', note:'Minimum bei Zeitnot' },
+      { text:'Passiver Hang an der Stange, 2 × 30 s' },
     ]},
-  { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18,
+  { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18, warmMins:5, coolMins:7,
     gear:'Langhantel · Kurzhanteln · Bank · Stange', short:[0, 1, 3],
     slots:[
       { exId:'dl',            role:'einzeln',      sets:4, lo:5,  hi:5,  reps:5,  w:60, prog:'weight' },
@@ -202,11 +203,11 @@ const SESSIONS = [
       { text:'20 s toter Hang zur Vorbereitung des Kniehebens', for:'core-hang-knee' },
     ],
     cool:[
-      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'dl' },
-      { text:'30 s Hüftbeuger-Dehnung im Ausfallschritt je Seite', for:'squat-bss' },
-      { text:'40 s liegen, ruhig ausatmen, Puls senken' },
+      { text:'Hüftbeuger im Ausfallschritt, 2 × 45 s je Seite', note:'Minimum bei Zeitnot' },
+      { text:'Tiefe Hocke halten, 60 s' },
+      { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
     ]},
-  { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:29, shortMins:16,
+  { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:30, shortMins:16, warmMins:6, coolMins:5,
     gear:'Stange · Langhantel · Kurzhanteln', short:[0, 1, 2],
     slots:[
       { exId:'chinup',        role:'einzeln',      sets:5, lo:4,  hi:6,  reps:4,  w:0,  prog:'reps' },
@@ -217,16 +218,17 @@ const SESSIONS = [
     ],
     warm:[
       { text:'15 Pull-Apart mit dem Expander, dann 10 Wandengel' },
+      { text:'Schulter-Außenrotation mit Expander, 2 × 15 Wdh', note:'Ellbogen bleiben am Körper' },
       { text:'30 s hängen, dann 3 Scapula Pull-ups', for:'chinup' },
       { text:'8 Liegestütze Hände erhöht, dann 5 Pike-Liegestütze halber Weg', for:'pushup-pike' },
       { text:'Pendlay-Aufbausätze: 8 Wdh leere Stange', ramp:'row-pendlay' },
     ],
     cool:[
-      { text:'30 s Lat-Dehnung an der Stange je Seite', for:'chinup' },
-      { text:'30 s Schulterdehnung über Kopf, Arm quer, je Seite', for:'pushup-pike' },
-      { text:'40 s Schultern kreisen, dann ruhig ausatmen' },
+      { text:'Brust an Türrahmen oder Dip-Stange, 2 × 45 s je Seite' },
+      { text:'Brustwirbelsäule über die Bank, 60–90 s', note:'Minimum bei Zeitnot' },
+      { text:'Passiver Hang an der Stange, 2 × 30 s' },
     ]},
-  { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17,
+  { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17, warmMins:5, coolMins:7,
     gear:'Kurzhanteln · Langhantel · Bank · Expander', short:[0, 1, 4],
     slots:[
       { exId:'squat-front',   role:'einzeln',      sets:4, lo:6,  hi:8,  reps:6,  w:18, prog:'weight' },
@@ -242,9 +244,9 @@ const SESSIONS = [
       { text:'Front-Rack-Kniebeugen zum Einfühlen', ramp:'squat-front', join:': 5 Wdh mit ' },
     ],
     cool:[
-      { text:'30 s Quadrizeps-Dehnung im Stand je Seite', for:'squat-front' },
-      { text:'30 s Oberschenkelrückseite dehnen, im Stand, je Seite', for:'rdl' },
-      { text:'40 s stehen, ruhig durchatmen, Puls senken' },
+      { text:'Hüftbeuger im Ausfallschritt, 2 × 45 s je Seite', note:'Minimum bei Zeitnot' },
+      { text:'Tiefe Hocke halten, 60 s' },
+      { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
     ]},
 ];
 const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
@@ -380,7 +382,8 @@ function estMins(idx){
   const se = sess(), all = curSlots().map((_, i) => i);
   if (sameIdx(idx, all))              return se.mins;
   if (sameIdx(idx, [...se.short].sort((a, b) => a - b))) return se.shortMins;
-  return 5 + Math.round((se.mins - 5) * setsOf(idx) / Math.max(1, setsOf(all)));
+  const w = se.warmMins || 5;
+  return w + Math.round((se.mins - w) * setsOf(idx) / Math.max(1, setsOf(all)));
 }
 /* Echter Meilenstein einer Übung: wo im Zielbereich sie steht und
    was als nächstes ansteht. Ersetzt die früher fest verdrahteten
@@ -464,7 +467,7 @@ function buildWarm(plan){
     if (link && !plan.some(p => p.id === link)) return null;
     if (!s.ramp) return { text:s.text, done:false };
     const r = rampLoad(plan, s.ramp);
-    return { text: s.text + (r ? (s.join || ', dann 5 Wdh mit ') + r : ''), done:false };
+    return { text: s.text + (r ? (s.join || ', dann 5 Wdh mit ') + r : ''), note:s.note || '', done:false };
   }).filter(Boolean);
 }
 
@@ -475,7 +478,7 @@ function buildCool(plan){
   const steps = sess().cool || [];
   return steps.map(s => {
     if (s.for && !plan.some(p => p.id === s.for)) return null;
-    return { text:s.text, done:false };
+    return { text:s.text, note:s.note || '', done:false };
   }).filter(Boolean);
 }
 
@@ -1379,14 +1382,17 @@ function viewLive(){
   <div style="padding-top:24px;flex:none">
     <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Aufwärmen · ${sess().name}</div>
     <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${warm.length} SCHRITTE</div>
-    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 5 min · antippen zum Abhaken · zählt nicht als Satz</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. ${sess().warmMins} min · antippen zum Abhaken · zählt zur Einheit</div>
   </div>
 
   <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
     ${warm.map((w, i) => `
     <div class="tap" ${act('warmToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
       <div style="margin-top:1px">${checkbox(w.done, 26)}</div>
-      <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${w.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${w.done ? 'text-decoration:line-through' : ''}">${w.text}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font:500 16px/1.4 Barlow,sans-serif;color:${w.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${w.done ? 'text-decoration:line-through' : ''}">${w.text}</div>
+        ${w.note ? `<div style="font:500 12.5px/1.35 Barlow,sans-serif;color:${w.done ? 'rgba(241,240,236,.22)' : ACCENT};margin-top:3px">${w.note}</div>` : ''}
+      </div>
     </div>`).join('')}
   </div>
 
@@ -1402,14 +1408,17 @@ function viewLive(){
   <div style="padding-top:24px;flex:none">
     <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Cool-Down · ${sess().name}</div>
     <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">${cool.length} SCHRITTE</div>
-    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. 3 min · antippen zum Abhaken · zählt nicht als Satz</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">ca. ${sess().coolMins} min · antippen zum Abhaken · zählt nicht zum Zeitbudget</div>
   </div>
 
   <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
     ${cool.map((c, i) => `
     <div class="tap" ${act('coolToggle', i)} style="display:flex;align-items:flex-start;gap:12px;padding:12px 0;border-bottom:1px solid rgba(255,255,255,.055)">
       <div style="margin-top:1px">${checkbox(c.done, 26)}</div>
-      <div style="flex:1;min-width:0;font:500 16px/1.4 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${c.done ? 'text-decoration:line-through' : ''}">${c.text}</div>
+      <div style="flex:1;min-width:0">
+        <div style="font:500 16px/1.4 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.34)' : '#F1F0EC'};${c.done ? 'text-decoration:line-through' : ''}">${c.text}</div>
+        ${c.note ? `<div style="font:500 12.5px/1.35 Barlow,sans-serif;color:${c.done ? 'rgba(241,240,236,.22)' : ACCENT};margin-top:3px">${c.note}</div>` : ''}
+      </div>
     </div>`).join('')}
   </div>
 
