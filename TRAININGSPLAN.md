@@ -313,6 +313,41 @@ In jedem Fall gilt: die Rotation wird nie zurückgesetzt und nie nachgeholt. Es 
 
 ---
 
+## Mobility
+
+**Statisches Dehnen gehört ans Ende, nicht an den Anfang.** Vor dem Training senkt es kurzfristig die Kraftleistung — deshalb steht im Aufwärmen Bewegung und Aktivierung, das Dehnen erst im Cool-Down.
+
+**Die Ausnahme ist die Schulter-Außenrotation.** Sie ist Kräftigung, keine Dehnung, und gehört deshalb ins Aufwärmen von Ober A und Ober B. Zwei Minuten, und die wichtigste Versicherung gegen Schulterprobleme bei Dips und Überkopfdrücken.
+
+**Drei Zielstellen**, weil Schreibtischarbeit und langes Sitzen genau dort zumachen: Hüftbeuger, Brustwirbelsäule, Schulter-Außenrotation.
+
+**Für Dehnung zählt die Gesamtzeit pro Woche, nicht die Anzahl der Wiederholungen.** Kurze Haltezeiten unterschreiten die wirksame Dosis — deshalb 45–90 s je Position statt der 30 s, mit denen der Cool-Down zuerst gebaut war.
+
+| | Cool-Down |
+|---|---|
+| Ober A / Ober B | Brust an Türrahmen oder Dip-Stange 2×45 s je Seite · **Brustwirbelsäule über die Bank 60–90 s** · Passiver Hang 2×30 s |
+| Unter A / Unter B | **Hüftbeuger im Ausfallschritt 2×45 s je Seite** · Tiefe Hocke 60 s · Ischios auf der Bank 2×45 s je Seite |
+
+Die **fett** gesetzten Übungen sind das Minimum bei Zeitnot: Wer nur zwei Minuten hat, macht nur diese eine.
+
+**Der Cool-Down zählt nicht zum Zeitbudget der Einheit.** Er kommt obendrauf, auch bei der Kurzversion. Das Aufwärmen dagegen steckt in den 29–33 Minuten drin.
+
+Ischios auf der Bank: Ferse auf die Bank, Rücken gerade, die Bewegung kommt aus der Hüfte — nicht aus dem runden Rücken.
+
+## Mobility
+
+Statisches Dehnen gehört ans **Ende** der Einheit, nicht an den Anfang: vor dem Training senkt es kurzfristig die Kraftleistung. Deshalb steht im Aufwärmen nur Bewegungsvorbereitung, das Dehnen im Cool-Down.
+
+**Ausnahme Schulter-Außenrotation.** Sie steht im Aufwärmen von Ober A und Ober B, weil sie Kräftigung ist und keine Dehnung. Zwei Minuten, und die wichtigste Versicherung gegen Schulterprobleme bei Dips und Überkopfdrücken.
+
+**Drei Zielstellen**, die Schreibtisch und Kindertragen zumachen: Hüftbeuger, Brustwirbelsäule, Schulter-Außenrotation. Danach ist die Auswahl im Cool-Down sortiert.
+
+**Haltezeiten von 45–90 s statt 30 s.** Für Dehnung zählt die Gesamtzeit pro Woche, nicht die Anzahl der Wiederholungen. Kurze Haltezeiten unterschreiten die wirksame Dosis — deshalb wenige Übungen lang halten statt viele kurz.
+
+**Bei zwei Minuten Zeit** nur die als „Minimum bei Zeitnot" markierte Übung: Brustwirbelsäule über die Bank im Oberkörper-Cool-Down, Hüftbeuger im Ausfallschritt im Unterkörper-Cool-Down.
+
+Das Cool-Down zählt **nicht** in das Zeitbudget der Einheit. Es kommt oben drauf, auch bei der Kurzversion.
+
 # 4. 12-Wochen-Übersicht
 
 | Woche | Phase | Änderung gegenüber Vorwoche |
