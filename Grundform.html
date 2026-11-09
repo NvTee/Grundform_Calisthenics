@@ -151,112 +151,96 @@ const DB = [
 ];
 const byId = id => DB.find(e => e.id === id);
 
-/* ── Die vier Einheiten ───────────────────────────────────────
-   Rotation statt Wochentage: Ober A → Unter A → Ober B →
-   Unter B → Ober A. Es zählt die Reihenfolge, nicht der
-   Kalender. Nichts wird nachgeholt.
-   `role` ist die Ausführungsform: die erste Übung einzeln, der
-   Rest in Antagonisten-Supersätzen. `lo`/`hi` ist der
-   Wdh-Zielbereich, `reps` das aktuelle Ziel darin.
-   `short` sind die drei Übungen der Kurzversion.
+/* ── Die vier Blöcke (CR-004) ─────────────────────────────────
+   Baukasten statt Ober/Unter-Einheiten: vier Blöcke à ~17–21 min
+   in Rotation Ober 1 → Unter 1 → Ober 2 → Unter 2 → Ober 1. Pro Tag
+   1 Block (Minimum) oder 2 – zwei hintereinander sind durch die
+   Rotation immer Ober + Unter, also Ganzkörper. Es zählt die
+   Reihenfolge, nicht der Kalender. Nichts wird nachgeholt.
+   Jeder Block: zwei Antagonisten-Supersätze à 3 Runden. `rest` am
+   b-Slot ist die Pause nach der Runde und schlägt die Pause aus
+   dem Katalog – sonst bekäme Kreuzheben die 45 s vom Face Pull.
+   `lo`/`hi` ist der Wdh-Zielbereich, `reps` das aktuelle Ziel.
    `warm` sind die Aufwärm-Schritte. `for` bindet einen Schritt an
    eine Übung – ist sie gestrichen, entfällt der Schritt. `ramp`
-   rechnet die aktuelle Arbeitslast dieser Übung in den Text
-   ein, statt ein Gewicht fest zu verdrahten.
-   `cool` sind die Cool-Down-Schritte nach dem letzten Satz –
-   gleiches `for`-Prinzip, kein `ramp`, kein Tracking, kein
-   Ziel. Kürzer als das Aufwärmen und optional (Link zum
-   Überspringen), weil es als erstes weichen soll, wenn die
-   Zeit knapp wird. ------------------------------------------ */
+   rechnet die aktuelle Arbeitslast dieser Übung in den Text ein.
+   Schritte ohne `for`/`ramp` sind allgemeines Aufwärmen und
+   entfallen beim zweiten Block des Tages.
+   `cool` sind die Cool-Down-Schritte – nur nach dem letzten Block
+   des Tages, optional, ohne Tracking. ------------------------- */
+const COOL_OBER = [
+  { text:'Brust an Türrahmen oder Dip-Stange, 2 × 45 s je Seite' },
+  { text:'Brustwirbelsäule über die Bank, 60–90 s', note:'Minimum bei Zeitnot' },
+  { text:'Passiver Hang an der Stange, 2 × 30 s' },
+];
+const COOL_UNTER = [
+  { text:'Hüftbeuger im Ausfallschritt, 2 × 45 s je Seite', note:'Minimum bei Zeitnot' },
+  { text:'Tiefe Hocke halten, 60 s' },
+  { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
+];
 const SESSIONS = [
-  { id:'oberA', name:'OBER A', kick:'Oberkörper · Zug zuerst', mins:29, shortMins:16, warmMins:6, coolMins:5,
-    gear:'Stange · Dip-Stangen · Bank · Expander', short:[0, 1, 2],
+  { id:'o1', name:'OBER 1', kick:'Oberkörper · Rücken zuerst', mins:17, warmMins:2, coolMins:5,
+    gear:'Stange · Dip-Stangen · Expander',
     slots:[
-      { exId:'pullup',        role:'einzeln',      sets:5, lo:3,  hi:5,  reps:3,  w:0,  prog:'reps' },
-      { exId:'dip',           role:'Supersatz 1a', sets:3, lo:6,  hi:8,  reps:6,  w:0,  prog:'reps' },
-      { exId:'row-inv',       role:'Supersatz 1b', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
-      { exId:'pushup-feet',   role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
-      { exId:'rdelt-face',    role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:0,  prog:'reps' },
+      { exId:'pullup',        role:'Supersatz 1a', sets:3, lo:3,  hi:5,  reps:3,  w:0,  prog:'reps' },
+      { exId:'pushup-pike',   role:'Supersatz 1b', sets:3, lo:6,  hi:10, reps:6,  w:0,  prog:'reps', rest:90 },
+      { exId:'row-inv',       role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'pushup-diamond',role:'Supersatz 2b', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps', rest:60 },
     ],
     warm:[
-      { text:'10 Armkreise vor und zurück, dann 15 Pull-Apart mit dem Expander' },
-      { text:'Schulter-Außenrotation mit Expander, 2 × 15 Wdh', note:'Ellbogen bleiben am Körper' },
-      { text:'30 s an der Stange hängen, Schultern aktiv nach unten', for:'pullup' },
-      { text:'8 langsame Liegestütze mit Händen auf der Bank', for:'pushup-feet' },
-      { text:'2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
+      { text:'15 Pull-Apart, dann Schulter-Außenrotation mit Expander, 15 Wdh', note:'Ellbogen bleiben am Körper' },
+      { text:'30 s an der Stange hängen, dann 2 Klimmzüge nur negativ, je 3 s ablassen', for:'pullup' },
+      { text:'5 Pike-Liegestütze mit halbem Weg', for:'pushup-pike' },
     ],
-    cool:[
-      { text:'Brust an Türrahmen oder Dip-Stange, 2 × 45 s je Seite' },
-      { text:'Brustwirbelsäule über die Bank, 60–90 s', note:'Minimum bei Zeitnot' },
-      { text:'Passiver Hang an der Stange, 2 × 30 s' },
-    ]},
-  { id:'unterA', name:'UNTER A', kick:'Beine · Hüftbeuge zuerst', mins:33, shortMins:18, warmMins:5, coolMins:7,
-    gear:'Langhantel · Kurzhanteln · Bank · Stange', short:[0, 1, 3],
+    cool: COOL_OBER },
+  { id:'u1', name:'UNTER 1', kick:'Beine · Hüftbeuge zuerst', mins:21, warmMins:3, coolMins:7,
+    gear:'Langhantel · Kurzhanteln · Bank · Expander',
     slots:[
-      { exId:'dl',            role:'einzeln',      sets:4, lo:5,  hi:5,  reps:5,  w:60, prog:'weight' },
-      { exId:'squat-bss',     role:'Supersatz 1a', sets:3, lo:8,  hi:10, reps:8,  w:16, prog:'weight' },
-      { exId:'rdelt-fly',     role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
-      { exId:'core-sideplank',role:'Supersatz 2a', sets:3, lo:25, hi:40, reps:30, w:0,  prog:'reps' },
-      { exId:'delt-lat',      role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight' },
+      { exId:'dl',            role:'Supersatz 1a', sets:3, lo:5,  hi:5,  reps:5,  w:60, prog:'weight' },
+      { exId:'rdelt-face',    role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:0,  prog:'reps', rest:120 },
+      { exId:'squat-bss',     role:'Supersatz 2a', sets:3, lo:8,  hi:10, reps:8,  w:16, prog:'weight' },
+      { exId:'curl-db',       role:'Supersatz 2b', sets:3, lo:8,  hi:12, reps:8,  w:14, prog:'weight', rest:60 },
     ],
     warm:[
       { text:'10 Hüftheben zweibeinig, dann 10 Hüftkreise je Seite' },
-      { text:'8 Split Squats ohne Last je Seite', for:'squat-bss' },
       { text:'Kreuzheben-Aufbausätze: 5 Wdh leere Stange', ramp:'dl' },
-      { text:'20 s toter Hang zur Vorbereitung des Kniehebens', for:'core-hang-knee' },
+      { text:'8 Split Squats ohne Last je Seite', for:'squat-bss' },
     ],
-    cool:[
-      { text:'Hüftbeuger im Ausfallschritt, 2 × 45 s je Seite', note:'Minimum bei Zeitnot' },
-      { text:'Tiefe Hocke halten, 60 s' },
-      { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
-    ]},
-  { id:'oberB', name:'OBER B', kick:'Oberkörper · Druck über Kopf', mins:30, shortMins:16, warmMins:6, coolMins:5,
-    gear:'Stange · Langhantel · Kurzhanteln', short:[0, 1, 2],
+    cool: COOL_UNTER },
+  { id:'o2', name:'OBER 2', kick:'Oberkörper · Brust zuerst', mins:17, warmMins:2, coolMins:5,
+    gear:'Dip-Stangen · Stange · Bank · Langhantel',
     slots:[
-      { exId:'chinup',        role:'einzeln',      sets:5, lo:4,  hi:6,  reps:4,  w:0,  prog:'reps' },
-      { exId:'pushup-pike',   role:'Supersatz 1a', sets:3, lo:6,  hi:10, reps:6,  w:0,  prog:'reps' },
-      { exId:'row-pendlay',   role:'Supersatz 1b', sets:3, lo:5,  hi:8,  reps:5,  w:40, prog:'weight' },
-      { exId:'pushup-diamond',role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
-      { exId:'curl-db',       role:'Supersatz 2b', sets:3, lo:8,  hi:12, reps:8,  w:14, prog:'weight' },
+      { exId:'dip',           role:'Supersatz 1a', sets:3, lo:6,  hi:8,  reps:6,  w:0,  prog:'reps' },
+      { exId:'chinup',        role:'Supersatz 1b', sets:3, lo:4,  hi:6,  reps:4,  w:0,  prog:'reps', rest:90 },
+      { exId:'pushup-feet',   role:'Supersatz 2a', sets:3, lo:8,  hi:12, reps:8,  w:0,  prog:'reps' },
+      { exId:'row-pendlay',   role:'Supersatz 2b', sets:3, lo:5,  hi:8,  reps:5,  w:40, prog:'weight', rest:60 },
     ],
     warm:[
       { text:'15 Pull-Apart mit dem Expander, dann 10 Wandengel' },
-      { text:'Schulter-Außenrotation mit Expander, 2 × 15 Wdh', note:'Ellbogen bleiben am Körper' },
-      { text:'30 s hängen, dann 3 Scapula Pull-ups', for:'chinup' },
-      { text:'8 Liegestütze Hände erhöht, dann 5 Pike-Liegestütze halber Weg', for:'pushup-pike' },
+      { text:'8 Liegestütze mit Händen auf der Bank, dann 5 Dips mit halbem Weg', for:'dip' },
       { text:'Pendlay-Aufbausätze: 8 Wdh leere Stange', ramp:'row-pendlay' },
     ],
-    cool:[
-      { text:'Brust an Türrahmen oder Dip-Stange, 2 × 45 s je Seite' },
-      { text:'Brustwirbelsäule über die Bank, 60–90 s', note:'Minimum bei Zeitnot' },
-      { text:'Passiver Hang an der Stange, 2 × 30 s' },
-    ]},
-  { id:'unterB', name:'UNTER B', kick:'Beine · Kniebeuge zuerst', mins:32, shortMins:17, warmMins:5, coolMins:7,
-    gear:'Kurzhanteln · Langhantel · Bank · Expander', short:[0, 1, 4],
+    cool: COOL_OBER },
+  { id:'u2', name:'UNTER 2', kick:'Beine · Kniebeuge zuerst', mins:19, warmMins:2, coolMins:7,
+    gear:'Kurzhanteln · Langhantel · Expander',
     slots:[
-      { exId:'squat-front',   role:'einzeln',      sets:4, lo:6,  hi:8,  reps:6,  w:18, prog:'weight' },
-      { exId:'rdl',           role:'Supersatz 1a', sets:3, lo:8,  hi:10, reps:8,  w:50, prog:'weight' },
-      { exId:'rdelt-face',    role:'Supersatz 1b', sets:3, lo:12, hi:15, reps:12, w:0,  prog:'reps' },
-      { exId:'stepup',        role:'Supersatz 2a', sets:3, lo:8,  hi:10, reps:8,  w:14, prog:'weight' },
-      { exId:'core-pallof',   role:'Supersatz 2b', sets:3, lo:10, hi:12, reps:10, w:0,  prog:'reps' },
+      { exId:'squat-front',   role:'Supersatz 1a', sets:3, lo:6,  hi:8,  reps:6,  w:18, prog:'weight' },
+      { exId:'core-pallof',   role:'Supersatz 1b', sets:3, lo:10, hi:12, reps:10, w:0,  prog:'reps', rest:120 },
+      { exId:'rdl',           role:'Supersatz 2a', sets:3, lo:8,  hi:10, reps:8,  w:50, prog:'weight' },
+      { exId:'delt-lat',      role:'Supersatz 2b', sets:3, lo:12, hi:15, reps:12, w:8,  prog:'weight', rest:60 },
     ],
     warm:[
-      { text:'10 Hüftkreise je Seite, dann 10 Knöchel-Wippen je Seite' },
-      { text:'10 Kniebeugen ohne Last, 3 s abwärts', for:'squat-front' },
-      { text:'8 Hüftheben zweibeinig, dann 5 RDL mit leerer Stange', for:'rdl' },
+      { text:'10 Hüftkreise je Seite, dann 10 Kniebeugen ohne Last, 3 s abwärts' },
       { text:'Front-Rack-Kniebeugen zum Einfühlen', ramp:'squat-front', join:': 5 Wdh mit ' },
+      { text:'5 RDL mit leerer Stange', for:'rdl' },
     ],
-    cool:[
-      { text:'Hüftbeuger im Ausfallschritt, 2 × 45 s je Seite', note:'Minimum bei Zeitnot' },
-      { text:'Tiefe Hocke halten, 60 s' },
-      { text:'Ischios auf der Bank, 2 × 45 s je Seite', note:'Ferse auf die Bank, Rücken gerade, aus der Hüfte bewegen' },
-    ]},
+    cool: COOL_UNTER },
   /* Läuft außerhalb der Rotation (CR-003 §6): 2–3× pro Woche,
      verschiebt Ober/Unter nicht. Kein Aufwärmen und kein Cool-Down —
      die Einheit ist selbst Mobility-Arbeit. */
-  { id:'rumpf', name:'RUMPF', kick:'Becken und Rumpf · außer der Reihe', mins:15, shortMins:9,
+  { id:'rumpf', name:'RUMPF', kick:'Becken und Rumpf · außer der Reihe', mins:15,
     warmMins:0, coolMins:0, extra:true,
-    gear:'Boden · Bank · Matte oder Handtuch', short:[0, 1],
+    gear:'Boden · Bank · Matte oder Handtuch',
     slots:[
       { exId:'core-deadbug',  role:'einzeln',      sets:3, lo:6,  hi:10, reps:8,  w:0, prog:'reps' },
       { exId:'core-tilt',     role:'Supersatz 1a', sets:3, lo:4,  hi:8,  reps:5,  w:0, prog:'reps' },
@@ -273,11 +257,80 @@ const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
    Zielbereichs, ab der die Schwierigkeit springt. `cfg.bw` ist das
    Körpergewicht – es geht NUR in den Fortschritts-Score ein, nie in
    die Trainingslasten. */
-const CFG_DEFAULT = { n:2, bw:86 };
+/* `cfg.weekGoal` ist das Wochenziel in Blöcken (Mo–So) für Zähler
+   und Serie auf dem Heute-Screen. */
+const CFG_DEFAULT = { n:2, bw:86, weekGoal:6 };
+/* `blocks` ist die Wahl auf dem Heute-Screen: 1 oder 2 Blöcke. */
 let S = {
-  tab:'heute', rot:0, sel:null, live:null, sheet:null, draft:null, pick:null,
+  tab:'heute', rot:0, sel:null, live:null, sheet:null, draft:null, pick:null, blocks:2,
   plans: freshPlans(), history:[], suggest:[], notes:[], cfg:{ ...CFG_DEFAULT },
 };
+
+/* ── Migration Ober/Unter → Blöcke (CR-004) ──────────────────
+   `PLAN_VER` 2 = Blockmodell. Ältere Stände tragen keinen
+   `planVer`. Die Blöcke laufen mit ihrer eigenen Übungsauswahl;
+   übernommen wird der Stand (Wdh, Last, Streaks) je Übung:
+   1. Der alte Slot laut OLD_MAP, wenn dort dieselbe Übung steht
+      oder eine Variante aus ihrer Kette (`next` immer, `prev` nur
+      zwischen Körpergewichts-Übungen – sonst würde Hüftheben den
+      Kreuzheben-Slot übernehmen).
+   2. Sonst irgendein noch freier alter Slot mit genau der Übung
+      (von Hand getauschte Übungen landen so im richtigen Block).
+   3. Sonst die Startwerte des Blocks.
+   Dieselbe Familien-Regel ordnet die alten Verlaufseinträge den
+   Block-Slots zu, damit die Fortschritts-Kurven nicht abreißen. */
+const PLAN_VER = 2;
+const OLD_IDS = ['oberA', 'unterA', 'oberB', 'unterB'];
+const OLD_MAP = {
+  oberA:  ['o1#0', 'o2#0', 'o1#2', 'o2#2', 'u1#1'],
+  unterA: ['u1#0', 'u1#2', null,   null,   'u2#3'],
+  oberB:  ['o2#1', 'o1#1', 'o2#3', 'o1#3', 'u1#3'],
+  unterB: ['u2#0', 'u2#2', null,   null,   'u2#1'],
+};
+const BLOCK_KEYS = SESSIONS.filter(x => !x.extra).flatMap(x => x.slots.map((_, k) => x.id + '#' + k));
+const defOf = nk => { const [sid, k] = nk.split('#'); return SESSIONS.find(x => x.id === sid).slots[+k].exId; };
+function chainIds(id, dir){
+  const out = [], seen = new Set([id]);
+  for (let e = byId(id); e && e[dir] && !seen.has(e[dir]); e = byId(e[dir])) { seen.add(e[dir]); out.push(e[dir]); }
+  return out;
+}
+function sameFamily(defId, id){
+  if (id === defId) return true;
+  if (chainIds(defId, 'next').includes(id)) return true;
+  const d = byId(defId), c = byId(id);
+  return !!(d && c && d.kind === 'bw' && c.kind === 'bw' && chainIds(defId, 'prev').includes(id));
+}
+function migratePlans(old){
+  const fresh = freshPlans();
+  const oldAt = ok => { const [sid, j] = ok.split('#'); const oi = OLD_IDS.indexOf(sid); return old[oi] && old[oi][+j]; };
+  const newSrc = {};
+  OLD_IDS.forEach(sid => OLD_MAP[sid].forEach((nk, j) => { if (nk) newSrc[nk] = sid + '#' + j; }));
+  const allOld = OLD_IDS.flatMap((sid, oi) => (old[oi] || []).map((_, j) => sid + '#' + j));
+  const pick = {}, used = new Set();
+  BLOCK_KEYS.forEach(nk => {
+    const src = newSrc[nk], o = src && oldAt(src);
+    if (o && sameFamily(defOf(nk), o.exId)) { pick[nk] = src; used.add(src); }
+  });
+  BLOCK_KEYS.forEach(nk => {
+    if (pick[nk]) return;
+    const src = allOld.find(ok => !used.has(ok) && oldAt(ok) && oldAt(ok).exId === defOf(nk));
+    if (src) { pick[nk] = src; used.add(src); }
+  });
+  Object.entries(pick).forEach(([nk, src]) => {
+    const [sid, k] = nk.split('#');
+    const si = SESSIONS.findIndex(x => x.id === sid);
+    const f = fresh[si][+k];
+    const slot = { ...oldAt(src), role:f.role, sets:f.sets };
+    delete slot.rest;
+    if (f.rest) slot.rest = f.rest;
+    fresh[si][+k] = slot;
+  });
+  /* Rumpf-Einheit stand schon vorher an Index 4. */
+  const ri = SESSIONS.findIndex(x => x.extra);
+  if (Array.isArray(old[4]) && old[4].length) fresh[ri] = old[4];
+  return fresh;
+}
+
 /* `rot` ist die Position in der Ober/Unter-Rotation. `sel` zeigt auf
    eine Einheit außerhalb davon (die Rumpf-Einheit) und ist sonst null.
    ROT_N zählt nur die Rotations-Einheiten – Extras verschieben sie nicht. */
@@ -294,7 +347,7 @@ function screenKey(){ return S.live ? 'live' : S.tab; }
 
 function persist(){
   try {
-    localStorage.setItem(STORE, JSON.stringify({ tab:S.tab, rot:S.rot, sel:S.sel, live:S.live, plans:S.plans,
+    localStorage.setItem(STORE, JSON.stringify({ planVer:PLAN_VER, blocks:S.blocks, tab:S.tab, rot:S.rot, sel:S.sel, live:S.live, plans:S.plans,
       pick:S.pick, history:S.history, suggest:S.suggest, notes:S.notes, cfg:S.cfg }));
   } catch(e){}
 }
@@ -308,9 +361,12 @@ function restore(){
     S.rot   = (typeof s.rot === 'number' && s.rot >= 0 && s.rot < ROT_N) ? s.rot : 0;
     S.sel   = (typeof s.sel === 'number' && s.sel >= 0 && s.sel < SESSIONS.length) ? s.sel : null;
     const fresh = freshPlans();
-    S.plans = (Array.isArray(s.plans) && s.plans.every(p => Array.isArray(p) && p.length))
-              ? fresh.map((f, i) => s.plans[i] || f)
-              : fresh;
+    const okPlans = Array.isArray(s.plans) && s.plans.every(p => Array.isArray(p) && p.length);
+    const migrate = okPlans && s.planVer !== PLAN_VER;
+    S.plans = !okPlans ? fresh
+            : migrate  ? migratePlans(s.plans)
+            :            fresh.map((f, i) => s.plans[i] || f);
+    S.blocks = s.blocks === 1 ? 1 : 2;
     S.pick  = Array.isArray(s.pick) && s.pick.length
               ? s.pick.filter(i => Number.isInteger(i) && i >= 0 && i < S.plans[S.rot].length)
               : null;
@@ -328,6 +384,12 @@ function restore(){
       const left = Math.ceil(((S.live.restEnd || 0) - Date.now()) / 1000);
       if (left > 0) { S.live.rest = left; }
       else { S.live.resting = false; S.live.rest = 0; }
+    }
+    /* Nach der Migration passen Rotation, Auswahl, Vorschläge und
+       eine laufende Einheit nicht mehr zu den Indizes – neu ab Ober 1. */
+    if (migrate) {
+      Object.assign(S, { rot:0, sel:null, pick:null, suggest:[], live:null });
+      persist();
     }
     // Gesamtzeit läuft ebenfalls weiter, also Timer wieder anwerfen.
     if (S.live && !S.live.done) startTimer();
@@ -371,6 +433,7 @@ function slotView(s){
     : (s.w > 0 ? '+' + num(s.w) + ' kg Rucksack' : 'Körpergewicht');
   return {
     ...ex, sets:s.sets, target:s.reps, lo:s.lo, hi:s.hi, w:s.w, prog:s.prog, role:s.role,
+    rest: s.rest || ex.rest,
     scheme: s.sets + ' × ' + range(s) +
             (ex.kind === 'load' ? ' · ' + num(s.w) + ' kg' : (s.w > 0 ? ' · +' + num(s.w) + ' kg' : '')),
     detail: load + ' · ' + ex.cue,
@@ -397,13 +460,11 @@ function pickIdx(){
 const sameIdx = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
 const setsOf  = idx => idx.reduce((a, i) => a + curSlots()[i].sets, 0);
 
-/* Zeitbudget: die dokumentierten Werte für die volle Einheit und
-   die Kurzversion stehen fest, freie Auswahl wird über die
-   Satzzahl geschätzt. */
+/* Zeitbudget: der dokumentierte Wert für den vollen Block steht
+   fest, freie Auswahl wird über die Satzzahl geschätzt. */
 function estMins(idx){
   const se = sess(), all = curSlots().map((_, i) => i);
   if (sameIdx(idx, all))              return se.mins;
-  if (sameIdx(idx, [...se.short].sort((a, b) => a - b))) return se.shortMins;
   const w = se.warmMins || 5;
   return w + Math.round((se.mins - w) * setsOf(idx) / Math.max(1, setsOf(all)));
 }
@@ -447,7 +508,11 @@ function historyEntry(l){
     ts: Date.now(), session: sess().name, sessionId: sess().id,
     /* Die beim Abschluss eingefrorene Dauer – nicht neu rechnen,
        sonst zählt die Zeit auf dem Abschluss-Screen mit. */
-    durMs: l.durMs != null ? l.durMs : (l.startedAt ? Date.now() - l.startedAt : null),
+    /* `startedAt` ist der Start des Trainingstags (Gesamt-Timer),
+       `blockAt` der Start dieses Blocks – gespeichert wird die
+       Dauer des Blocks. */
+    durMs: !l.startedAt ? null
+         : (l.durMs != null ? l.startedAt + l.durMs : Date.now()) - (l.blockAt || l.startedAt),
     doneSets: l.log.length, totalSets: l.plan.reduce((a, p) => a + p.sets, 0),
     exCount: exs.length, planCount: l.plan.length,
     skipped: [...skipped].map(i => l.plan[i].short),
@@ -482,10 +547,11 @@ function rampLoad(plan, exId){
 
 /* Aufwärm-Schritte für den tatsächlich gewählten Plan. Schritte zu
    gestrichenen Übungen fallen weg. */
-function buildWarm(plan){
+function buildWarm(plan, chained){
   const steps = sess().warm || [];
   return steps.map(s => {
     const link = s.for || s.ramp;
+    if (chained && !link) return null;
     if (link && !plan.some(p => p.id === link)) return null;
     if (!s.ramp) return { text:s.text, done:false };
     const r = rampLoad(plan, s.ramp);
@@ -510,6 +576,8 @@ function buildCool(plan){
    Cool-Downs soll der Bildschirm an bleiben, auch ohne Berührung
    (40-s-Halten liest sich sonst nicht ab). */
 function coolOrDone(plan, extra, l){
+  /* Zweiter Block geplant: Übergang statt Cool-Down. */
+  if (l && l.chain > 0 && !sess().extra) return { ...extra, phase:'next', resting:false };
   const cool = buildCool(plan);
   if (cool.length) return { ...extra, phase:'cool', cool, resting:false };
   releaseWakeLock();
@@ -541,7 +609,22 @@ const histEx = () => S.history.filter(h => Array.isArray(h.ex) && h.ex.length);
    Klimmzug-mit-Zusatzlast und damit eine neue ID. Der Slot bleibt
    derselbe, also bleibt die Reihe zusammenhängend und der
    Stufenwechsel wird als Marker sichtbar statt als Abbruch. */
-const slotKey = (h, e) => h.sessionId + '#' + e.slotIdx;
+/* Alte Ober/Unter-Einträge laufen auf den Block-Slot ihrer
+   Übungsfamilie – zuerst der Slot laut OLD_MAP, sonst der erste
+   passende. Ohne Treffer bleibt der alte Schlüssel (eigene Kurve). */
+const keyMemo = new Map();
+const slotKey = (h, e) => {
+  const k = h.sessionId + '#' + e.slotIdx;
+  const m = OLD_MAP[h.sessionId];
+  if (!m) return k;
+  const mk = k + '#' + e.id;
+  if (!keyMemo.has(mk)) {
+    const pos = m[e.slotIdx];
+    keyMemo.set(mk, pos && sameFamily(defOf(pos), e.id) ? pos
+                    : BLOCK_KEYS.find(nk => sameFamily(defOf(nk), e.id)) || k);
+  }
+  return keyMemo.get(mk);
+};
 
 function exSeries(key, cfg){
   const out = [];
@@ -666,8 +749,11 @@ const A = {
   goPlan:        () => set({ tab:'plan' }),
   goFortschritt: () => set({ tab:'fortschritt' }),
 
-  startFull:  () => start(pickIdx(), false),
-  startShort: () => { S.pick = null; start([...sess().short].sort((a, b) => a - b), true); },
+  startFull:  () => {
+    const n = sess().extra ? 1 : S.blocks;
+    start(pickIdx(), { chain: n - 1, dayTot: n });
+  },
+  setBlocks:  b => { buzz(15); set({ blocks: b === 1 ? 1 : 2 }); },
 
   /* Übung für heute streichen bzw. zurückholen. Die letzte
      verbleibende lässt sich nicht abwählen. */
@@ -789,9 +875,11 @@ const A = {
   cfgNDown: () => set({ cfg:{ ...S.cfg, n: Math.max(1, S.cfg.n - 1) } }),
   cfgBwUp:   () => set({ cfg:{ ...S.cfg, bw: Math.min(200, S.cfg.bw + 1) } }),
   cfgBwDown: () => set({ cfg:{ ...S.cfg, bw: Math.max(40, S.cfg.bw - 1) } }),
+  cfgGoalUp:   () => set({ cfg:{ ...S.cfg, weekGoal: Math.min(14, S.cfg.weekGoal + 1) } }),
+  cfgGoalDown: () => set({ cfg:{ ...S.cfg, weekGoal: Math.max(1,  S.cfg.weekGoal - 1) } }),
   pickChart: id => set({ chartEx: id }),
 
-  completeSet, skipRest, skipEx, endHere, abort, finish,
+  completeSet, skipRest, skipEx, endHere, abort, finish, chainGo, chainStop,
 };
 
 function draftStep(){ const dex = byId(S.draft.exId); return dex.step || 1; }
@@ -810,15 +898,20 @@ function draftBump(key, d, min){
   set({});
 }
 
-function start(idx, short){
+/* `o.chain` = wie viele Blöcke danach noch geplant sind,
+   `o.dayStart` hält den Gesamt-Timer über die Blöcke hinweg,
+   `o.dayN`/`o.dayTot` = Position im Trainingstag. */
+function start(idx, o = {}){
   clearInterval(timer);
   const si = selIdx();
   const plan = buildPlan(idx);
-  const warm = buildWarm(plan);
+  const warm = buildWarm(plan, !!o.chained);
   acquireWakeLock();
   buzz(20);
   startTimer();
-  set({ live:{ plan, short, si, mins: estMins(idx), startedAt: Date.now(),
+  const now = Date.now();
+  set({ live:{ plan, si, mins: estMins(idx), startedAt: o.dayStart || now, blockAt: now,
+               chain: o.chain || 0, dayN: o.dayN || 0, dayTot: o.dayTot || 1, dayNotes: o.dayNotes || [],
                phase: warm.length ? 'warm' : 'work', warm,
                ex:0, set:0, reps:plan[0].target,
                resting:false, rest:0, restMax:1, restEnd:0, done:false, log:[], skipped:[] } });
@@ -949,9 +1042,11 @@ const logSlot = (x, plan) =>
   (x.slotIdx !== undefined ? x.slotIdx
    : (plan && plan[x.ex] && plan[x.ex].slotIdx !== undefined) ? plan[x.ex].slotIdx : x.ex);
 
-function finish(){
-  clearInterval(timer); releaseWakeLock();
-  const l = S.live;
+/* Abschluss eines Blocks: Progression, Verlauf, Vorschläge,
+   Rotation. Gibt den Patch zurück, statt ihn zu setzen – `finish`
+   und `chainGo` teilen sich das. Muss laufen, solange `S.live`
+   noch der Block ist (sess()/curSlots() hängen daran). */
+function commit(l){
   const si = l ? (l.si != null ? l.si : S.rot) : S.rot;
   const rot = si;   /* Vorschläge hängen an der Einheit, nicht an der Rotation */
   const isExtra = !!SESSIONS[si].extra;
@@ -970,16 +1065,44 @@ function finish(){
   const history = l ? [...S.history, historyEntry(l)].slice(-HISTORY_MAX) : S.history;
   /* Alte Vorschläge zum selben Slot ersetzen, nicht stapeln. */
   const keep = S.suggest.filter(x => !fresh.some(f => f.rot === x.rot && f.slotIdx === x.slotIdx));
-  set({
-    live:null, tab:'fortschritt', pick:null, history,
+  return {
+    history,
     suggest: [...keep, ...fresh],
-    notes,
+    notes: [...((l && l.dayNotes) || []), ...notes],
     plans: S.plans.map((p, k) => (k === si ? slots : p)),
     /* Die Rumpf-Einheit läuft außer der Reihe und schiebt die
        Rotation nicht weiter (CR-003 §6). */
     rot: isExtra ? S.rot : (S.rot + 1) % ROT_N,
-    sel: null,
+  };
+}
+
+function finish(){
+  clearInterval(timer); releaseWakeLock();
+  set({ ...commit(S.live), live:null, tab:'fortschritt', pick:null, sel:null });
+}
+
+/* Nächsten Block anhängen: den laufenden abschließen (eigener
+   Verlaufseintrag, Rotation +1) und den nächsten der Rotation
+   direkt starten. Gesamt-Timer läuft durch, allgemeines Aufwärmen
+   entfällt, Cool-Down kommt erst nach dem letzten Block. */
+function chainGo(){
+  const l = S.live;
+  if (!l || SESSIONS[l.si].extra) return;
+  clearInterval(timer);
+  const patch = commit({ ...l, durMs: Date.now() - l.startedAt });
+  Object.assign(S, patch, { live:null, sel:null, pick:null });
+  const dayN = (l.dayN || 0) + 1;
+  start(S.plans[S.rot].map((_, i) => i), {
+    chained:true, dayStart:l.startedAt, dayN, dayTot: Math.max(l.dayTot || 1, dayN + 1),
+    chain: Math.max(0, (l.chain || 0) - 1), dayNotes: patch.notes,
   });
+}
+/* Vom Übergang aus doch aufhören: ins Cool-Down dieses Blocks. */
+function chainStop(){
+  const l = S.live; if (!l) return;
+  const nl = { ...l, chain:0, dayTot:(l.dayN || 0) + 1 };
+  buzz(20);
+  set({ live:{ ...nl, ...coolOrDone(l.plan, {}, nl) } });
 }
 
 function bump(d){
@@ -1132,6 +1255,36 @@ function fmtDate(ts){
   catch(e){ return ''; }
 }
 
+/* ── Wochenziel und Serie (CR-004) ────────────────────────────
+   Woche = Montag bis Sonntag, Ortszeit. Gezählt werden Blöcke der
+   Rotation; eine alte Ober/Unter-Einheit zählt als zwei Blöcke,
+   die Rumpf-Einheit gar nicht. Serie = Wochen in Folge mit
+   erreichtem Ziel. Die laufende Woche zählt mit, sobald das Ziel
+   steht, bricht die Serie aber nicht, solange sie noch läuft. */
+function weekStart(ts){
+  const d = new Date(ts);
+  d.setHours(0, 0, 0, 0);
+  d.setDate(d.getDate() - (d.getDay() + 6) % 7);
+  return d.getTime();
+}
+function prevWeek(ws){ const d = new Date(ws); d.setDate(d.getDate() - 7); return weekStart(d.getTime()); }
+function weekStats(){
+  const blockIds = new Set(SESSIONS.filter(x => !x.extra).map(x => x.id));
+  const per = new Map();
+  S.history.forEach(h => {
+    const n = blockIds.has(h.sessionId) ? 1 : OLD_MAP[h.sessionId] ? 2 : 0;
+    if (!n) return;
+    const k = weekStart(h.ts);
+    per.set(k, (per.get(k) || 0) + n);
+  });
+  const goal = Math.max(1, S.cfg.weekGoal || CFG_DEFAULT.weekGoal);
+  const cur = weekStart(Date.now());
+  const n = per.get(cur) || 0;
+  let streak = n >= goal ? 1 : 0;
+  for (let w = prevWeek(cur); (per.get(w) || 0) >= goal; w = prevWeek(w)) streak++;
+  return { n, goal, streak };
+}
+
 function viewHeute(){
   const se = sess();
   const pick = pickIdx();
@@ -1148,6 +1301,13 @@ function viewHeute(){
   });
   const mins = estMins(pick);
   const extra = !!se.extra;
+  const two = !extra && S.blocks === 2;
+  const nb = nextSess();
+  /* Zweiter Block ohne allgemeines Aufwärmen, ~1 min weniger. */
+  const mins2 = mins + nb.mins - 1;
+  const wk = weekStats();
+  const pips = Array.from({ length: Math.max(wk.goal, wk.n) }, (_, i) =>
+    `<div style="flex:1;height:6px;border-radius:3px;background:${i < wk.n ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
   const segs = SESSIONS.filter(x => !x.extra).map((s, i) =>
     `<div style="flex:1;height:6px;border-radius:3px;background:${!extra && i === S.rot ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
 
@@ -1161,6 +1321,12 @@ function viewHeute(){
   <div style="display:flex;align-items:center;gap:10px;margin-top:16px">${segs}</div>
   <div style="font:500 13px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:9px">${extra ? 'Verschiebt die Rotation nicht · ' + SESSIONS[S.rot].name + ' bleibt als nächstes dran'
         : 'Es zählt die Reihenfolge, nicht der Kalender · nichts wird nachgeholt'}</div>
+
+  <div style="display:flex;align-items:baseline;justify-content:space-between;margin-top:22px">
+    <div class="kick">Diese Woche · ${wk.n} von ${wk.goal} Blöcken</div>
+    <div class="kick${wk.streak ? ' kick-a' : ''}">Serie · ${wk.streak} ${wk.streak === 1 ? 'Woche' : 'Wochen'}</div>
+  </div>
+  <div style="display:flex;gap:5px;margin-top:9px">${pips}</div>
 
   ${S.suggest.map((sg, i) => `
   <div class="card" style="margin-top:18px;border:1px solid rgba(255,77,23,.45);padding:16px 18px">
@@ -1177,9 +1343,18 @@ function viewHeute(){
     </div>
   </div>`).join('')}
 
-  <div class="card" style="margin-top:26px;overflow:hidden">
+  ${extra ? '' : `
+  <div style="display:flex;gap:10px;margin-top:26px">
+    ${[1, 2].map(b => { const on = S.blocks === b; return `
+    <div class="tap" ${act('setBlocks', b)} style="flex:1;height:60px;border-radius:14px;border:1px solid ${on ? ACCENT : 'rgba(255,255,255,.14)'};background:${on ? 'rgba(255,77,23,.12)' : 'transparent'};display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px">
+      <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.08em;color:${on ? '#F1F0EC' : 'rgba(241,240,236,.6)'}">${b === 1 ? '1 BLOCK' : '2 BLÖCKE'}</span>
+      <span style="font:500 12px Barlow,sans-serif;color:rgba(241,240,236,${on ? '.6' : '.38'})">ca. ${b === 1 ? mins : mins2} min</span>
+    </div>`; }).join('')}
+  </div>`}
+
+  <div class="card" style="margin-top:${extra ? 26 : 14}px;overflow:hidden">
     <div style="padding:22px 22px 18px">
-      <div class="kick kick-a">Als nächstes · ${se.kick}</div>
+      <div class="kick kick-a">${two ? 'Block 1 · ' : 'Als nächstes · '}${se.kick}</div>
       <div class="cd" style="font-weight:700;font-size:46px;line-height:1;margin-top:6px">${se.name}</div>
       <div style="font:500 15px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px">${pick.length} von ${curSlots().length} Übungen · ca. ${mins} min · ${se.gear}</div>
     </div>
@@ -1202,13 +1377,18 @@ function viewHeute(){
     </div>
   </div>
 
+  ${two ? `
+  <div class="card" style="margin-top:12px;padding:16px 22px">
+    <div class="kick">Block 2 · ${nb.kick}</div>
+    <div class="cd" style="font-weight:700;font-size:26px;line-height:1;margin-top:5px">${nb.name}</div>
+    <div style="font:500 13.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${S.plans[(S.rot + 1) % ROT_N].map(x => byId(x.exId).short).join(' · ')}</div>
+    <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:6px">Ohne allgemeines Aufwärmen · nach Block 1 lässt sich immer noch aufhören</div>
+  </div>` : ''}
+
   <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
     <div class="tap press primary" ${act('startFull')} style="height:78px">
       <span style="font-size:28px">${pick.length === curSlots().length ? 'TRAINING STARTEN'
         : pick.length === 1 ? '1 ÜBUNG STARTEN' : pick.length + ' ÜBUNGEN STARTEN'}</span>
-    </div>
-    <div class="tap" ${act('startShort')} style="height:60px;border-radius:16px;border:1px solid rgba(255,255,255,.16);display:flex;align-items:center;justify-content:center">
-      <span class="cd" style="font-weight:600;font-size:19px;letter-spacing:.1em;color:rgba(241,240,236,.72)">KURZVERSION · ${se.shortMins} MIN</span>
     </div>
     ${extra
       ? `<div class="tap" ${act('selRot')} style="height:48px;display:flex;align-items:center;justify-content:center">
@@ -1234,16 +1414,15 @@ function viewHeute(){
 function viewPlan(){
   return `
 <div style="padding:14px 22px 28px">
-  <div class="kick">Ober A → Unter A → Ober B → Unter B</div>
+  <div class="kick">${SESSIONS.filter(x => !x.extra).map(x => x.name).join(' → ')}</div>
   <div class="cd" style="font-weight:700;font-size:44px;line-height:1;margin-top:4px">ROTATION</div>
-  <div style="font:500 15px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px;max-width:320px">Keine Wochentage. Bei 3–4 Einheiten pro Woche dauert ein Durchlauf 7–9 Tage.</div>
+  <div style="font:500 15px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px;max-width:330px">Keine Wochentage. Pro Tag 1 oder 2 Blöcke – zwei hintereinander sind immer Ober + Unter, also Ganzkörper.</div>
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-top:24px">
     ${SESSIONS.filter(x => !x.extra).map((s, i) => {
       const on   = i === S.rot;
       const sl   = S.plans[i];
       const list = sl.map(x => byId(x.exId).short).join(' · ');
-      const kurz = s.short.map(k => byId(sl[k].exId).short).join(' · ');
       return `
     <div class="tap" ${act('pickRot', i)} style="background:#191C19;border:1px solid ${on ? 'rgba(255,77,23,.5)' : 'rgba(255,255,255,.08)'};border-radius:18px;padding:18px 20px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
@@ -1251,16 +1430,13 @@ function viewPlan(){
         <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:${on ? ACCENT : 'rgba(241,240,236,.35)'};white-space:nowrap">${on ? 'Als nächstes' : 'Position ' + (i + 1)}</div>
       </div>
       <div style="font:500 13.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${list}</div>
-      <div style="display:flex;gap:12px;margin-top:10px">
-        <div style="flex:none;white-space:nowrap;font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.45)">ca. ${s.mins} min</div>
-        <div style="flex:1;min-width:0;font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.35)">Kurz ${s.shortMins} min: ${kurz}</div>
-      </div>
+      <div style="margin-top:10px;white-space:nowrap;font:500 12.5px Barlow,sans-serif;color:rgba(241,240,236,.45)">ca. ${s.mins} min · ${s.kick}</div>
     </div>`;
     }).join('')}
   </div>
 
   <div style="margin-top:22px;padding:16px 18px;border-radius:16px;background:rgba(255,77,23,.09);border:1px solid rgba(255,77,23,.22)">
-    <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.8)">Termin geplatzt? Die nächste Einheit ist trotzdem die nächste in dieser Liste – nichts wird nachgeholt. Einheit antippen, um die Position von Hand zu setzen.</div>
+    <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.8)">Termin geplatzt? Der nächste Block ist trotzdem der nächste in dieser Liste – nichts wird nachgeholt. Block antippen, um die Position von Hand zu setzen.</div>
   </div>
 
   <div class="kick" style="margin-top:30px">Alltag · nebenbei</div>
@@ -1277,8 +1453,8 @@ function viewPlan(){
   </div>
   <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);margin-top:10px">Die drei hervorgehobenen sind der Kern · Ziel: Hüftbeuger 5–10 min pro Woche und Seite, Atmung möglichst täglich</div>
 
-  <div class="kick" style="margin-top:28px">Aufbau jeder Einheit</div>
-  <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:8px">Übung 1 einzeln und frisch, danach zwei Antagonisten-Supersätze. 1–2 Wiederholungen bleiben immer im Tank – kein Satz bis zum Versagen.</div>
+  <div class="kick" style="margin-top:28px">Aufbau jedes Blocks</div>
+  <div style="font:500 14px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:8px">Zwei Antagonisten-Supersätze à 3 Runden. 1–3 Wiederholungen bleiben immer im Tank – kein Satz bis zum Versagen.</div>
 
   <div class="kick" style="margin-top:28px">Einstellungen</div>
   <div style="display:flex;gap:10px;margin-top:12px">
@@ -1299,7 +1475,18 @@ function viewPlan(){
       </div>
     </div>
   </div>
-  <div style="font:500 13px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:9px">So viele Einheiten am oberen Ende des Zielbereichs, bevor die Schwierigkeit steigt. Das Körpergewicht geht nur in den Fortschritts-Score ein, nie in die Trainingslasten.</div>
+  <div style="display:flex;gap:10px;margin-top:10px">
+    <div style="flex:1;border:1px solid rgba(255,255,255,.1);border-radius:16px;padding:12px 14px">
+      <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">Wochenziel · Blöcke</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:6px">
+        ${miniStepper('cfgGoalDown', false)}
+        <span class="cd num" style="font-weight:700;font-size:28px;line-height:1">${S.cfg.weekGoal}</span>
+        ${miniStepper('cfgGoalUp', true)}
+      </div>
+    </div>
+    <div style="flex:1"></div>
+  </div>
+  <div style="font:500 13px/1.45 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:9px">Wochenziel: so viele Blöcke von Montag bis Sonntag, Grundlage für die Serie. So viele Einheiten am oberen Ende des Zielbereichs, bevor die Schwierigkeit steigt. Das Körpergewicht geht nur in den Fortschritts-Score ein, nie in die Trainingslasten.</div>
 </div>`;
 }
 
@@ -1429,9 +1616,10 @@ function viewLive(){
 
   const warming = live.phase === 'warm';
   const cooling = live.phase === 'cool';
+  const between = live.phase === 'next';
   const lastEx = live.ex + 1 >= plan.length;
   const cutStyle = 'font-weight:600;font-size:13px;letter-spacing:.13em;text-transform:uppercase;color:rgba(241,240,236,.38);padding:6px 0';
-  const cut = live.done ? '' : warming ? `
+  const cut = (live.done || between) ? '' : warming ? `
   <div style="display:flex;align-items:center;justify-content:flex-end;margin-top:10px">
     <div class="tap cd" ${act('warmGo')} style="${cutStyle}">Aufwärmen überspringen</div>
   </div>` : cooling ? `
@@ -1449,7 +1637,7 @@ function viewLive(){
     <div class="tap cd" ${act('abort')} style="font-weight:600;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4);padding:6px 0">Abbrechen</div>
     <div style="display:flex;align-items:baseline;gap:10px">
       <div class="cd num" style="font-weight:700;font-size:15px;color:${live.done ? 'rgba(241,240,236,.4)' : ACCENT}">${mmss(live.done && live.durMs ? Math.round(live.durMs / 1000) : elapsed(live))}</div>
-      <div class="cd" style="font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4)">${sess().name}${live.short ? ' · Kurz' : ''}</div>
+      <div class="cd" style="font-weight:700;font-size:14px;letter-spacing:.14em;text-transform:uppercase;color:rgba(241,240,236,.4)">${sess().name}${live.dayTot > 1 ? ' · ' + ((live.dayN || 0) + 1) + '/' + live.dayTot : ''}</div>
     </div>
   </div>
   <div style="display:flex;gap:5px;margin-top:12px">${segs}</div>
@@ -1483,6 +1671,30 @@ function viewLive(){
     <span style="font-size:28px">${offen ? 'LOS' : 'AUFWÄRMEN FERTIG'}</span>
   </div>
 </div>`;
+  } else if (between && !live.done) {
+    const nb = nextSess();
+    const nSlots = S.plans[(S.rot + 1) % ROT_N];
+    body = `
+<div style="flex:1;display:flex;flex-direction:column;padding:0 22px 14px;min-height:0">
+  <div style="padding-top:24px;flex:none">
+    <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Block ${(live.dayN || 0) + 1} fertig · ${doneSets} von ${totalSets} Sätzen</div>
+    <div class="cd" style="font-weight:700;font-size:40px;line-height:1;margin-top:6px">WEITER MIT ${nb.name}</div>
+    <div style="font:500 14px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${nb.kick} · ca. ${nb.mins - 1} min · ${nb.gear}</div>
+  </div>
+
+  <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
+    ${nSlots.map(sl => { const x = slotView(sl); return `
+    <div style="padding:11px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+      <div style="font:500 16px/1.3 Barlow,sans-serif">${x.name}</div>
+      <div style="font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.4);margin-top:2px">${x.role} · ${x.scheme}</div>
+    </div>`; }).join('')}
+  </div>
+
+  <div class="tap press primary" ${act('chainGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
+    <span style="font-size:28px">WEITER</span>
+  </div>
+  <div class="tap cd" ${act('chainStop')} style="flex:none;text-align:center;margin-top:8px;${cutStyle}">Hier aufhören · Cool-Down</div>
+</div>`;
   } else if (cooling && !live.done) {
     const cool = live.cool || [];
     const offen = cool.filter(c => !c.done).length;
@@ -1508,6 +1720,7 @@ function viewLive(){
   <div class="tap press primary" ${act('coolGo')} style="height:82px;border-radius:20px;flex:none;margin-top:14px">
     <span style="font-size:28px">${offen ? 'WEITER' : 'FERTIG'}</span>
   </div>
+  ${sess().extra ? '' : `<div class="tap cd" ${act('chainGo')} style="flex:none;text-align:center;margin-top:8px;${cutStyle}">Noch einen Block anhängen · ${nextSess().name}</div>`}
 </div>`;
   } else if (live.done) {
     /* Gemessene Dauer, wenn vorhanden – die Schätzung aus dem
@@ -1525,6 +1738,7 @@ function viewLive(){
       + (plan.length - skipped.length) + ' von ' + plan.length + ' Übungen'
       + (cutNames.length ? ' · gestrichen: ' + cutNames.join(', ') : '')
       + ' · als nächstes ' + nextSess().name;
+    const dayLabel = live.dayTot > 1 ? live.dayTot + ' Blöcke abgeschlossen' : 'Block abgeschlossen';
 
     /* Meilenstein-Zeile für die erste vollständig gemachte Übung. */
     const iDone = plan.findIndex((e, i) =>
@@ -1544,7 +1758,7 @@ function viewLive(){
     }
     body = `
 <div style="flex:1;display:flex;flex-direction:column;justify-content:center;padding:0 26px 40px;overflow-y:auto">
-  <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">Einheit abgeschlossen</div>
+  <div class="cd kick-a" style="font-weight:700;font-size:13px;letter-spacing:.2em;text-transform:uppercase">${sess().extra ? 'Einheit abgeschlossen' : dayLabel}</div>
   <div class="cd" style="font-weight:700;font-size:76px;line-height:.92;margin-top:10px">${doneMin}<span style="font-size:38px"> min</span></div>
   <div style="font:500 16px/1.5 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:10px">${summary}</div>
   <div class="card" style="margin-top:28px;padding:20px;border-radius:18px">
