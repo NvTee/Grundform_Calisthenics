@@ -1,7 +1,7 @@
 # Grundform
 
 Calisthenics-Trainingsplan als **eine einzige HTML-Datei** — kein Server, kein
-Account, keine Installation. Vier Einheiten in Rotation, doppelte Progression,
+Account, keine Installation. Vier Blöcke in Rotation, doppelte Progression,
 Aufwärmen und Verlauf, ausgelegt auf Heimtraining ohne Rack.
 
 ## Aufs Handy bringen
@@ -38,10 +38,18 @@ Alles aus dem Prototyp, plus das, was auf einem echten Gerät dazugehört:
 - **Safe-Area** für Statusleiste und Gestenleiste, kein Doppeltipp-Zoom,
   kein Overscroll-Bounce.
 
-- **Vier Einheiten in Rotation** — Ober A → Unter A → Ober B → Unter B → Ober A.
-  Es zählt die Reihenfolge, nicht der Kalender: nach jeder abgeschlossenen
-  Einheit rückt die Rotation vor, Ausfälle werden nicht nachgeholt. Im
-  Plan-Tab lässt sich die Position von Hand setzen.
+- **Vier Blöcke in Rotation** (CR-004) — Ober 1 → Unter 1 → Ober 2 → Unter 2.
+  Pro Tag 1 oder 2 Blöcke à ~17–21 min, zwei Blöcke sind immer Ganzkörper.
+  Nach Block 1 kommt ein Übergang „Weiter mit …“; spontan anhängen geht
+  auch aus dem Cool-Down. Es zählt die Reihenfolge, nicht der Kalender,
+  Ausfälle werden nicht nachgeholt. Im Plan-Tab lässt sich die Position von
+  Hand setzen.
+- **Wochenziel und Serie** — Blöcke von Montag bis Sonntag (Default 6),
+  dazu die Zahl der Wochen in Folge mit erreichtem Ziel.
+- **Supersätze sichtbar, nächste Übung vorab** — Heute- und Plan-Tab zeigen
+  die Paare als Gruppe mit Runden und Pause. Im Training steht unter jedem
+  Satz und in jeder Pause, was danach kommt (Übung, Satz, Ziel, Last,
+  Gerät).
 - **Doppelte Progression** — jeder Slot hat einen Wdh-Zielbereich (`lo`/`hi`).
   Alle Sätze am Ziel → nächste Einheit eine Wdh mehr; am oberen Ende dann
   Gewicht (`step`) bzw. die nächste Stufe (`next`) und im Bereich unten

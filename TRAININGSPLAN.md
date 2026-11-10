@@ -1,6 +1,6 @@
 # GRUNDFORM — Trainingsplan
 
-Kalibriert auf: 86 kg Körpergewicht · 30 Liegestütze / 5 Klimmzüge Obergriff / 12 Dips · 3–4 Einheiten pro Woche à 30–40 min
+Kalibriert auf: 86 kg Körpergewicht · 30 Liegestütze / 5 Klimmzüge Obergriff / 12 Dips · 3–5 Trainingstage pro Woche, je 1–2 Blöcke à ~17–21 min
 Equipment: Kurzhanteln, Klimmzugstange, Dip-Stangen, Hantelbank, Langhantel, Expander · **kein Rack**
 
 Wer andere Ausgangswerte hat, verschiebt die Startlasten im Übungskatalog entsprechend — die Reiz-Schwellen in Abschnitt 1 sind auf 86 kg Körpergewicht bezogen und wandern mit.
@@ -129,109 +129,95 @@ Rückschritt: `curl-band` · Reise/Schlechtwetter: `curl-band`
 
 ---
 
-# 2. Die vier Einheiten
+# 2. Die vier Blöcke
 
-## Ober A
+Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 min in Rotation **Ober 1 → Unter 1 → Ober 2 → Unter 2**. Pro Tag 1 Block (Minimum, zählt immer) oder 2 Blöcke (~38–40 min inkl. Cool-Down). Zwei Blöcke hintereinander sind durch die Rotation immer Ober + Unter, also Ganzkörper.
 
-| # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
-|---|---|---|---|---|---|---|---|
-| 1 | Klimmzug Obergriff | einzeln | 5 | 3–5 | Körpergewicht | reps | 90 s |
-| 2 | Dips | Supersatz 1a | 3 | 6–8 | Körpergewicht | reps | – |
-| 3 | Ruderzug unter Stange | Supersatz 1b | 3 | 8–12 | Körpergewicht | reps | 60 s |
-| 4 | Liegestütze Füße erhöht | Supersatz 2a | 3 | 8–12 | Körpergewicht | reps | – |
-| 5 | Expander Face Pull | Supersatz 2b | 3 | 12–15 | mittleres Band | reps | 45 s |
+**Supersätze.** Jeder Block besteht aus zwei Supersätzen. In der Spalte *Rolle* stehen die Partner: **1a + 1b** bilden Supersatz 1, **2a + 2b** Supersatz 2. Sie laufen im Wechsel, Satz für Satz (1a → 45 s Wechsel → 1b → Pause → 1a …), 3 Runden. Die *Pause* steht beim b-Partner und gilt nach jeder Runde.
 
-**Warum diese Auswahl.** Klimmzüge sind mit 5 Wdh das schwächste Glied und bekommen deshalb den frischen Slot — niedrige Wdh über 5 Sätze statt Sätze bis zum Versagen. Dips folgen unerschöpft, die beiden Liegestütz-Varianten stehen bewusst später, weil sie am wenigsten von Frische abhängen. Face Pull deckt die hintere Schulter ohne Zeitkosten ab.
-
-**Zeitbudget.** Aufwärmen 5 + Klimmzüge (5x10 s Arbeit + 4x90 s Pause = 7,0) + Paar 1 (3 Runden à 165 s − letzte Pause = 7,3) + Übergang 1 + Paar 2 (3 Runden à 170 s − letzte Pause = 7,5) = **28 min**. Anlaufphase ca. 23 min.
-
-**Kurzversion (~18 min).** Klimmzug (4x3) → Dips + Ruderzug als Supersatz. Aufwärmen auf 3 min kürzen: 3 + 5,5 + 7,3 ≈ 16 min.
-
-**Aufwärmen.** 1) 10 Armkreise vor/zurück + 15 Pull-Apart. 2) 30 s Hängen an der Stange, Schultern aktiv. 3) 8 langsame Liegestütze Hände erhöht. 4) 2 Klimmzüge nur Negativ, 3 s ablassen.
-
-## Unter A
+## Ober 1 — Rücken zuerst (~17 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
-| 1 | Kreuzheben | einzeln | 4 | 5 | 60 kg | weight | 150 s |
-| 2 | Bulgarian Split Squat | Supersatz 1a | 3 | 8–10 je Seite | 2x16 kg | weight | – |
-| 3 | KH Reverse Fly | Supersatz 1b | 3 | 12–15 | 2x8 kg | weight | 60 s |
-| 4 | Hängendes Knieheben | Supersatz 2a | 3 | 8–12 | Körpergewicht | reps | – |
-| 5 | KH Seitheben | Supersatz 2b | 3 | 12–15 | 2x8 kg | weight | 45 s |
+| 1 | Klimmzug Obergriff | **Supersatz 1a** | 3 | 3–5 | Körpergewicht | reps | – |
+| 2 | Pike-Liegestütze | **Supersatz 1b** | 3 | 6–10 | Körpergewicht | reps | 90 s |
+| 3 | Ruderzug unter Stange | **Supersatz 2a** | 3 | 8–12 | Körpergewicht | reps | – |
+| 4 | Diamant-Liegestütze | **Supersatz 2b** | 3 | 8–12 | Körpergewicht | reps | 60 s |
 
-**Warum diese Auswahl.** Kreuzheben ist die einzige Übung, die ohne Rack echte Ganzkörperlast erlaubt, und steht deshalb vorn und schwer. Der Bulgarian Split Squat liefert bei 2x16 kg auf einem Bein mehr Reiz als jede zweibeinige Variante mit 24-kg-Hanteln. Reverse Fly und Seitheben sind die einzigen KH-Isolationen über ihrer Schwelle und kosten in der Beinpause nichts.
+**Aufwärmen.** 1) 15 Pull-Apart + Schulter-Außenrotation. 2) 30 s Hängen, 2 Negativ-Klimmzüge. 3) 5 Pike-Liegestütze mit halbem Weg.
 
-**Zeitbudget.** Aufwärmen 5 + Kreuzheben (4x20 s + 3x150 s + 1 min Scheibenwechsel = 10,0) + Paar 1 (3 Runden à 215 s − letzte Pause = 9,8) + Paar 2 (3 Runden à 150 s − letzte Pause = 6,8) + Übergänge 1,5 = **33 min**. Anlaufphase ca. 27 min.
-
-**Kurzversion (~18 min).** Kreuzheben (3x5) → Bulgarian Split Squat + Knieheben als Supersatz. 3 + 7 + 8 ≈ 18 min.
-
-**Aufwärmen.** 1) 10 Hüftheben zweibeinig + 10 Hüftkreise je Seite. 2) 8 Split Squats ohne Last je Seite. 3) Kreuzheben-Aufbausätze: 5x leere Stange, 5x 65 % der Arbeitslast (bei 60 kg → 40 kg). 4) 20 s toter Hang zur Vorbereitung des Knieheben.
-
-## Ober B
+## Unter 1 — Hüftbeuge zuerst (~21 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
-| 1 | Klimmzug Kammgriff | einzeln | 5 | 4–6 | Körpergewicht | reps | 90 s |
-| 2 | Pike-Liegestütze | Supersatz 1a | 3 | 6–10 | Körpergewicht | reps | – |
-| 3 | Pendlay Row | Supersatz 1b | 3 | 5–8 | 40 kg | weight | 90 s |
-| 4 | Diamant-Liegestütze | Supersatz 2a | 3 | 8–12 | Körpergewicht | reps | – |
-| 5 | KH Bizeps-Curl | Supersatz 2b | 3 | 8–12 | 2x14 kg | weight | 45 s |
+| 1 | Kreuzheben | **Supersatz 1a** | 3 | 5 | 60 kg | weight | – |
+| 2 | Expander Face Pull | **Supersatz 1b** | 3 | 12–15 | mittleres Band | reps | 120 s |
+| 3 | Bulgarian Split Squat | **Supersatz 2a** | 3 | 8–10 je Seite | 2x16 kg | weight | – |
+| 4 | KH Bizeps-Curl | **Supersatz 2b** | 3 | 8–12 | 2x14 kg | weight | 60 s |
 
-**Warum diese Auswahl.** Zweite vertikale Zug-Dosis pro Rotation, im Kammgriff etwas stärker und damit mit höherem Wdh-Bereich als Ober A. Pike-Liegestütze ersetzen das Schulterdrücken, das mit 24-kg-Hanteln unter der 25-kg-Schwelle liegt. Pendlay Row bringt vom Boden aus die schwere horizontale Zuglast, die der Ruderzug am eigenen Körpergewicht nicht liefert.
+**Aufwärmen.** 1) 10 Hüftheben + 10 Hüftkreise je Seite. 2) Kreuzheben-Aufbausätze: leere Stange, 65 % der Arbeitslast. 3) 8 Split Squats ohne Last je Seite. Kreuzheben ≤ RPE 8.
 
-**Zeitbudget.** Aufwärmen 5 + Klimmzüge (5x12 s + 4x90 s = 7,0) + Paar 1 (3 Runden à 175 s − letzte Pause = 7,5) + Paar 2 (3 Runden à 170 s − letzte Pause = 7,5) + Übergänge 1,5 = **29 min**. Anlaufphase ca. 24 min.
-
-**Kurzversion (~18 min).** Klimmzug Kammgriff (4x4) → Pike-Liegestütze + Pendlay Row als Supersatz. 3 + 5,5 + 7,5 ≈ 16 min.
-
-**Aufwärmen.** 1) 15 Pull-Apart + 10 Wandengel. 2) 30 s Hängen, dann 3 Scapula Pull-ups. 3) 8 Liegestütze Hände erhöht, 5 Pike-Liegestütze mit halbem Weg. 4) Pendlay Row: 8x leere Stange, 5x 65 % der Arbeitslast (bei 40 kg → 25 kg).
-
-## Unter B
+## Ober 2 — Brust zuerst (~17 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
-| 1 | KH-Front-Rack-Kniebeuge | einzeln | 4 | 6–8 | 2x18 kg | weight | 120 s |
-| 2 | Rumänisches Kreuzheben | Supersatz 1a | 3 | 8–10 | 50 kg | weight | – |
-| 3 | Expander Face Pull | Supersatz 1b | 3 | 12–15 | mittleres Band | reps | 60 s |
-| 4 | KH-Step-up auf Bank | Supersatz 2a | 3 | 8–10 je Seite | 2x14 kg | weight | – |
-| 5 | Pallof Press mit Expander | Supersatz 2b | 3 | 10–12 je Seite | mittleres Band | reps | 45 s |
+| 1 | Dips | **Supersatz 1a** | 3 | 6–8 | Körpergewicht | reps | – |
+| 2 | Klimmzug Kammgriff | **Supersatz 1b** | 3 | 4–6 | Körpergewicht | reps | 90 s |
+| 3 | Liegestütze Füße erhöht | **Supersatz 2a** | 3 | 8–12 | Körpergewicht | reps | – |
+| 4 | Pendlay Row | **Supersatz 2b** | 3 | 5–8 | 40 kg | weight | 60 s |
 
-**Warum diese Auswahl.** Kniebeuge-Muster als schwere Erstübung, ohne Rack über die Front-Rack-Position gelöst. RDL ist der echte Antagonist dazu und deckt die Hüftbeuge in höheren Wdh ab als Kreuzheben. Step-up ergänzt eine einbeinige, gelenkfreundliche Kniebeuge-Variante; Pallof Press liefert die Anti-Rotations-Dosis, die Beinheben nicht abdeckt.
+**Aufwärmen.** 1) 15 Pull-Apart + 10 Wandengel. 2) 8 Liegestütze Hände erhöht + 5 halbe Dips. 3) Pendlay-Aufbausätze: leere Stange, 65 %.
 
-**Zeitbudget.** Aufwärmen 5 + Front-Rack-Kniebeuge (4x30 s + 3x120 s = 8,0) + Paar 1 (3 Runden à 170 s − letzte Pause = 7,5) + Paar 2 (3 Runden à 210 s − letzte Pause = 9,7) + Übergänge 1,5 = **32 min**. Anlaufphase ca. 26 min.
+## Unter 2 — Kniebeuge zuerst (~19 min)
 
-**Kurzversion (~18 min).** Front-Rack-Kniebeuge (3x6) → RDL + Pallof Press als Supersatz. 3 + 6 + 8 ≈ 17 min.
+| # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
+|---|---|---|---|---|---|---|---|
+| 1 | KH-Front-Rack-Kniebeuge | **Supersatz 1a** | 3 | 6–8 | 2x18 kg | weight | – |
+| 2 | Pallof Press mit Expander | **Supersatz 1b** | 3 | 10–12 je Seite | mittleres Band | reps | 120 s |
+| 3 | Rumänisches Kreuzheben | **Supersatz 2a** | 3 | 8–10 | 50 kg | weight | – |
+| 4 | KH Seitheben | **Supersatz 2b** | 3 | 12–15 | 2x8 kg | weight | 60 s |
 
-**Aufwärmen.** 1) 10 Hüftkreise + 10 Knöchel-Wippen je Seite. 2) 10 Kniebeugen ohne Last, 3 s abwärts. 3) 8 Hüftheben zweibeinig, dann 5 RDL mit leerer Stange. 4) 5 Front-Rack-Kniebeugen mit 45 % der Arbeitslast je Hantel (bei 2x18 kg → 2x8 kg).
+**Aufwärmen.** 1) 10 Hüftkreise + 10 Kniebeugen ohne Last, 3 s abwärts. 2) Front-Rack-Aufbausatz: 5 Wdh mit 45 %. 3) 5 RDL mit leerer Stange.
 
-## Musterabdeckung über die vier Einheiten
+**Ohne Rack:** Schwere Kniebeugen laufen über Kurzhanteln (Bulgarian Split Squat, Front-Rack). Die Isolationsübungen stehen in den U-Blöcken und füllen die langen Beinpausen.
 
-| Muster | Ober A | Unter A | Ober B | Unter B | Dosen/Rotation |
+**Zweiter Block des Tages:** Das allgemeine Aufwärmen entfällt, nur die übungsspezifischen Schritte bleiben. Cool-Down nur nach dem letzten Block.
+
+## Musterabdeckung
+
+| Muster | Ober 1 | Unter 1 | Ober 2 | Unter 2 | Sätze/Durchlauf |
 |---|---|---|---|---|---|
-| vpull | Klimmzug OG | – | Klimmzug KG | – | 2 |
-| hpull | Ruderzug BW | – | Pendlay Row | – | 2 |
-| hpush | LS Füße hoch | – | Diamant-LS | – | 2 |
-| vpush | Dips | – | Pike-LS | – | 2 |
-| squat | – | Bulg. Split | – | Front-Sq. + Step-up | 3 |
-| hinge | – | Kreuzheben | – | RDL | 2 |
-| core | – | Knieheben | – | Pallof Press | 2 |
-| hintere Schulter | Face Pull | Reverse Fly | – | Face Pull | 3 |
+| vpull | Klimmzug OG | – | Klimmzug KG | – | 6 |
+| hpull | Ruderzug BW | – | Pendlay Row | – | 6 |
+| vpush | Pike-LS | – | Dips | – | 6 |
+| hpush | Diamant-LS | – | LS Füße hoch | – | 6 |
+| squat | – | Bulg. Split | – | Front-Rack | 6 |
+| hinge | – | Kreuzheben | – | RDL | 6 |
+| Rumpf | – | – | – | Pallof Press | 3 (+ Rumpf-Einheit) |
+| hintere Schulter | – | Face Pull | – | – | 3 |
+| seitliche Schulter | – | – | – | Seitheben | 3 |
+| Armbeuger | – | Curl | – | – | 3 |
 
-Alle acht geforderten Muster sind abgedeckt. Zusätzlich: seitliche Schulter (1x), Armbeuger (1x).
+| Woche | Blöcke | Sätze pro Hauptmuster/Woche | Reize pro Muster/Woche |
+|---|---|---|---|
+| 3× à 2 Blöcke | 6 | ~9 | 3 |
+| 5× à 1 Block | 5 | ~7–8 | 2–3 |
+| 4× à 2 Blöcke | 8 | ~12 | 4 |
 
 ## Supersatz-Paare: Antagonisten-Prüfung
 
-| Einheit | Paar | Verhältnis | Vorerschöpfung von 1b/2b durch 1a/2a? |
+| Block | Paar | Verhältnis | Vorerschöpfung des Partners? |
 |---|---|---|---|
-| Ober A | Dips / Ruderzug | vpush ↔ hpull, echte Antagonisten | nein — Druck vs. Zug |
-| Ober A | LS Füße hoch / Face Pull | hpush ↔ hintere Schulter | nein — Gegenspieler der Brust |
-| Unter A | Bulg. Split / Reverse Fly | Bein ↔ Oberkörper, nicht konkurrierend | nein — kein gemeinsamer Muskel |
-| Unter A | Knieheben / Seitheben | Rumpf ↔ Schulter | nein — Griffkraft unkritisch bei 12–15 Wdh mit 8 kg |
-| Ober B | Pike-LS / Pendlay Row | vpush ↔ hpull, echte Antagonisten | nein |
-| Ober B | Diamant-LS / KH Curl | Trizeps ↔ Bizeps, echte Antagonisten | nein |
-| Unter B | RDL / Face Pull | Hüftbeuge ↔ hintere Schulter | nein — RDL belastet den oberen Rücken nur isometrisch |
-| Unter B | Step-up / Pallof Press | Bein ↔ Anti-Rotation | nein |
+| Ober 1 | Klimmzug OG / Pike-LS | vpull ↔ vpush, echte Antagonisten | nein |
+| Ober 1 | Ruderzug / Diamant-LS | hpull ↔ hpush | nein |
+| Unter 1 | Kreuzheben / Face Pull | Hüftbeuge ↔ hintere Schulter | nein — Face Pull ist leicht und füllt die Pause |
+| Unter 1 | Bulg. Split / Curl | Bein ↔ Arm | gering — Griff bei 2x16 kg unkritisch |
+| Ober 2 | Dips / Klimmzug KG | vpush ↔ vpull, echte Antagonisten | nein |
+| Ober 2 | LS Füße hoch / Pendlay Row | hpush ↔ hpull, echte Antagonisten | nein |
+| Unter 2 | Front-Rack / Pallof Press | Kniebeuge ↔ Anti-Rotation | nein |
+| Unter 2 | RDL / Seitheben | Hüftbeuge ↔ seitliche Schulter | nein |
 
-**Rotationsfrequenz.** Ober A → Unter A → Ober B → Unter B ist ein Durchlauf von 4 Einheiten, also 7 Tage bei 4x/Woche und 9–10 Tage bei 3x/Woche. Pro Muster ergibt das 2 Dosen je 7–10 Tage = **1,4–2,0x pro Woche**. Für „sichtbar athletisch und belastbar" reicht das bei sauberer Progression aus, weil Anfangsfortschritt bei einem Wiedereinsteiger nicht volumenlimitiert ist. Für maximales Muskelwachstum ab etwa Monat 6 ist es zu wenig — dann wäre eine 3er-Rotation (Ober / Unter / Ganzkörper) die nächste Stufe.
+**Frequenz.** Bei gleichem Wochenvolumen ist die Verteilung für Muskelaufbau egal, für Kraft hilft öfter (Pelland 2026, Saric 2019). Pro Einheit flacht der Ertrag ab ~2 Sätzen je Übung (Kraft) bzw. ~11 Sätzen je Muskel (Wachstum) ab (Remmert 2025). Kurze, häufige Blöcke verschenken also nichts. Begründung und Quellen: `Change Requests/CR-004-baukasten.md`.
 
 ---
 
@@ -298,14 +284,14 @@ Wenn zwei oder mehr Übungen gleichzeitig stagnieren, ist es kein Übungsproblem
 
 **Alle 4–5 Aufbauwochen, hier Woche 8 und Woche 12.** Begründung in einem Satz: bei nur 4 Einheiten pro 7–10 Tage staut sich Ermüdung langsam, aber Gelenke und Sehnen eines Wiedereinsteigers hinken der Muskelkraft hinterher — der Rhythmus schützt die Sehnen, nicht die Muskeln.
 
-Deload-Inhalt: gleiche Übungen, **ein Satz weniger**, Wiederholungen am unteren Ende des Bereichs, Lasten −20 %, RPE ≤ 6, keine Zusatzlast, keine neue Variante. Dauer: eine Rotation (4 Einheiten).
+Deload-Inhalt: gleiche Übungen, **ein Satz weniger**, Wiederholungen am unteren Ende des Bereichs, Lasten −20 %, RPE ≤ 6, keine Zusatzlast, keine neue Variante. Dauer: eine Woche.
 
 ## Ausfall-Regel
 
 | Ausfall | Vorgehen |
 |---|---|
 | Einzelne Einheit | Nichts. Nächste Einheit in der Rotation, kein Nachholen. |
-| 1 Woche | Weiter in der Rotation. Für **eine Rotation**: ein Satz weniger, gleiche Lasten, RPE ≤ 7. Dann volle Vorgaben. |
+| 1 Woche | Weiter in der Rotation. Für **eine Woche**: ein Satz weniger, gleiche Lasten, RPE ≤ 7. Dann volle Vorgaben. |
 | 2 Wochen | Lasten −10 %, **eine volle Anlaufwoche** (alle Einheiten mit einem Satz weniger, RPE ≤ 7, keine Zusatzlast), dann zurück auf den Stand vor dem Ausfall. |
 | 3+ Wochen | Komplette Anlaufphase über 2 Wochen, Lasten −15 %, Startvorgaben aus dem Katalog. |
 
@@ -400,5 +386,5 @@ Sie läuft **außerhalb** der Rotation und verschiebt sie nicht: Ober/Unter blei
 | 9 | **Dips als `vpush` eingeordnet** | Biomechanisch eher ein steiles Drücken; in dieser Musterlogik übernehmen Dips und Pike-Liegestütze gemeinsam das vertikale Drücken, weil das KH-Schulterdrücken unter der Schwelle liegt. Für den Übungstausch in der App heißt das: Dips ↔ Pike-LS ↔ Expander-Drücken sind untereinander tauschbar. |
 | 10 | **Optionaler Finisher** | Nicht Teil der 5-Slot-Struktur. Wenn nach einer Oberkörper-Einheit noch 3 Minuten übrig sind: 2 Sätze `curl-db` oder `dip-bench` als Supersatz, Pause 45 s. Zählt nicht zur Progression und wird bei Zeitdruck als Erstes gestrichen. |
 | 11 | **Aufwärmen ist im Zeitbudget enthalten** | 4–5 Minuten, spezifisch je Einheit. In der Kurzversion auf 3 Minuten reduziert. |
-| 12 | **Rotationsfrequenz** | Bewusst akzeptiert: 1,4–2,0 Dosen pro Muster und Woche. Reicht für die 12 Wochen. Ab Block 3 (ca. Monat 6) empfohlen: Wechsel auf eine 3er-Rotation, sonst limitiert die Frequenz das Ergebnis. |
+| 12 | **Rotationsfrequenz** | Erledigt mit CR-004: Blöcke statt Einheiten, ~3 Reize pro Muster und Woche bei 3× à 2 Blöcken. |
 | 13 | **Retest in Woche 12** | Selbst gesetzt, weil die Startvorgaben für Block 2 sonst geraten wären. Der Test läuft als letzte Einheit des Deloads, jeweils **ein** Maximalsatz pro Übung, mit 3 Minuten Pause dazwischen. |

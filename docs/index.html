@@ -436,7 +436,7 @@ function slotView(s){
     : (s.w > 0 ? '+' + num(s.w) + ' kg Rucksack' : 'Körpergewicht');
   return {
     ...ex, sets:s.sets, target:s.reps, lo:s.lo, hi:s.hi, w:s.w, prog:s.prog, role:s.role,
-    rest: s.rest || ex.rest,
+    rest: s.rest || ex.rest, load,
     scheme: s.sets + ' × ' + range(s) +
             (ex.kind === 'load' ? ' · ' + num(s.w) + ' kg' : (s.w > 0 ? ' · +' + num(s.w) + ' kg' : '')),
     detail: load + ' · ' + ex.cue,
@@ -1298,9 +1298,23 @@ function viewHeute(){
       : x.prog === 'weight'    ? '+' + num(x.step || 2.5) + ' kg'
       : chainStep(x, 'next')   ? 'dann ' + chainStep(x, 'next').short
                                : 'Bereich oben';
-    return { i, on, name:x.name, scheme:x.scheme, role:x.role,
-             prog: on ? x.role + ' · Ziel ' + s.reps + ' ' + unitOf(x) + ' · ' + auto
+    const m = /Supersatz\s*(\d+)([ab])/i.exec(x.role || '');
+    const tag = m ? m[2].toUpperCase() : x.role;
+    return { i, on, name:x.name, scheme:x.scheme, role:x.role, pair: m ? m[1] : null,
+             sets:x.sets, rest:x.rest,
+             prog: on ? tag + ' · Ziel ' + s.reps + ' ' + unitOf(x) + ' · ' + auto
                       : 'gestrichen · zählt heute nicht' };
+  });
+  /* Supersätze als Gruppe zeigen (Feedback Punkt 6): Kopfzeile mit
+     Runden und Pause, Akzent-Linie links. Einzelübungen bleiben
+     ohne Rahmen. Die Pause nach der Runde ist die des letzten
+     Partners – so läuft sie auch im Training. */
+  const groups = [];
+  preview.forEach(ex => {
+    const key = ex.pair ? 'p' + ex.pair : 'e' + ex.i;
+    let g = groups.find(x => x.key === key);
+    if (!g) groups.push(g = { key, pair: ex.pair, items: [] });
+    g.items.push(ex);
   });
   const mins = estMins(pick);
   const extra = !!se.extra;
@@ -1363,7 +1377,8 @@ function viewHeute(){
     </div>
     <div style="height:1px;background:rgba(255,255,255,.08)"></div>
     <div style="padding:6px 22px 14px">
-      ${preview.map(ex => `
+      ${groups.map(g => {
+        const rows = g.items.map(ex => `
       <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)">
         <div class="tap" ${act('togglePick', ex.i)} style="flex:none;width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center">
           ${checkbox(ex.on, 24)}
@@ -1375,8 +1390,17 @@ function viewHeute(){
         <div class="tap" ${act('tapLoad', ex.i)} style="flex:none;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,${ex.on ? '.16' : '.07'})">
           <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.02em;color:rgba(241,240,236,${ex.on ? '.8' : '.3'});white-space:nowrap">${ex.scheme}</span>
         </div>
-      </div>`).join('')}
-      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">Häkchen antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
+      </div>`).join('');
+        if (!g.pair || g.items.length < 2) return rows;
+        const last = g.items[g.items.length - 1];
+        const rounds = Math.max(...g.items.map(x => x.sets));
+        return `
+      <div style="margin-top:12px">
+        <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:${ACCENT}">Supersatz ${g.pair} · im Wechsel · ${rounds} Runden · Pause ${last.rest} s</div>
+        <div style="border-left:2px solid rgba(255,77,23,.55);padding-left:12px;margin-top:4px">${rows}</div>
+      </div>`;
+      }).join('')}
+      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">A und B laufen im Wechsel, Satz für Satz · Häkchen antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
     </div>
   </div>
 
@@ -1425,7 +1449,18 @@ function viewPlan(){
     ${SESSIONS.filter(x => !x.extra).map((s, i) => {
       const on   = i === S.rot;
       const sl   = S.plans[i];
-      const list = sl.map(x => byId(x.exId).short).join(' · ');
+      /* Paare als „1 · A + B" je Zeile (Feedback Punkt 6). */
+      const prs = [];
+      sl.forEach(x => {
+        const m = /Supersatz\s*(\d+)/i.exec(x.role || '');
+        const key = m ? m[1] : null;
+        const g = key && prs.find(p => p.key === key);
+        if (g) g.names.push(byId(x.exId).short);
+        else prs.push({ key, names:[byId(x.exId).short] });
+      });
+      const list = prs.map(p => p.key
+        ? `<div><span style="color:${ACCENT};font-weight:600">Supersatz ${p.key}</span> · ${p.names.join(' + ')}</div>`
+        : `<div>${p.names.join(' · ')}</div>`).join('');
       return `
     <div class="tap" ${act('pickRot', i)} style="background:#191C19;border:1px solid ${on ? 'rgba(255,77,23,.5)' : 'rgba(255,255,255,.08)'};border-radius:18px;padding:18px 20px">
       <div style="display:flex;align-items:baseline;justify-content:space-between;gap:12px">
@@ -1598,6 +1633,35 @@ function viewTabs(){
   ${tab('fortschritt','Fortschritt','goFortschritt')}
 </div>`;
 }
+
+/* „Danach"-Vorschau (Feedback Punkt 5): was nach dem Schritt
+   (`ex`, `set`) dran ist – Übung, Satz, Ziel, Last, Gerät –, damit
+   Hanteln und Stange schon vorbereitet werden können. Am Ende des
+   Blocks: nächster Block bzw. Cool-Down. */
+function upcoming(l, ex, set){
+  const st = nextStep(l, ex, set);
+  if (!st) {
+    if (l.chain > 0 && !sess().extra) return { kick:'Danach · nächster Block', name: nextSess().name, sub: nextSess().kick };
+    const cool = buildCool(l.plan).length;
+    return { kick:'Danach', name: cool ? 'Cool-Down' : 'Fertig', sub: cool ? 'Block ist durch' : '' };
+  }
+  const p = l.plan[st.ex];
+  const gap = st.swap ? 'Wechsel ' + SS_SWAP + ' s' : 'Pause ' + st.rest + ' s';
+  return {
+    kick: 'Danach · ' + gap,
+    name: p.short,
+    sub: 'Satz ' + (st.set + 1) + ' · Ziel ' + p.target + ' ' + unitOf(p)
+         + (p.load ? ' · ' + p.load : '') + (p.equip && p.equip !== '–' ? ' · ' + p.equip : ''),
+  };
+}
+const upcomingCard = u => `
+  <div style="flex:none;border:1px dashed rgba(255,255,255,.16);border-radius:14px;padding:10px 14px;margin-bottom:12px">
+    <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:rgba(241,240,236,.4)">${u.kick}</div>
+    <div style="display:flex;align-items:baseline;gap:8px;margin-top:3px;min-width:0">
+      <div class="cd" style="flex:none;font-weight:700;font-size:19px">${u.name}</div>
+      <div style="flex:1;min-width:0;font:500 12.5px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.5);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${u.sub}</div>
+    </div>
+  </div>`;
 
 function viewLive(){
   const live = S.live, plan = live.plan, ex = plan[live.ex];
@@ -1786,8 +1850,10 @@ function viewLive(){
   <div style="margin-top:34px;text-align:center">
     <div class="cd" style="font-weight:700;font-size:12px;letter-spacing:.18em;text-transform:uppercase;color:rgba(241,240,236,.4)">Als nächstes</div>
     <div class="cd" style="font-weight:700;font-size:30px;line-height:1.1;margin-top:6px">${ex.short}</div>
-    <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">Satz ${live.set + 1} · Ziel ${ex.target} ${unitOf(ex)}</div>
+    <div style="font:500 15px Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:4px">Satz ${live.set + 1} · Ziel ${ex.target} ${unitOf(ex)}${ex.load ? ' · ' + ex.load : ''}</div>
+    ${ex.equip && ex.equip !== '–' ? `<div style="font:500 13px Barlow,sans-serif;color:rgba(241,240,236,.38);margin-top:3px">${ex.equip}</div>` : ''}
   </div>
+  <div style="width:100%;margin-top:26px">${upcomingCard(upcoming(live, live.ex, live.set))}</div>
   <div class="tap press" ${act('skipRest')} style="width:100%;height:74px;border-radius:18px;border:1px solid rgba(255,255,255,.18);display:flex;align-items:center;justify-content:center;margin-top:auto;flex:none">
     <span class="cd" style="font-weight:700;font-size:24px;letter-spacing:.1em;color:rgba(241,240,236,.8)">WEITER</span>
   </div>
@@ -1824,6 +1890,7 @@ function viewLive(){
     </div>
   </div>
 
+  ${upcomingCard(upcoming(live, live.ex, live.set))}
   <div style="display:flex;gap:8px;margin-bottom:16px;flex:none">${chips}</div>
 
   <div class="tap press primary" ${act('completeSet')} style="height:86px;border-radius:20px;flex:none">
