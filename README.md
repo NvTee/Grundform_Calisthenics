@@ -73,6 +73,13 @@ Alles aus dem Prototyp, plus das, was auf einem echten Gerät dazugehört:
   Begründung, zum Übernehmen oder Behalten. Reduktionen respektieren die
   Reiz-Schwellen: statt unter 12 kg Curls zu gehen, wird die leichtere
   Variante vorgeschlagen (`prev`-Kette im Katalog).
+- **Fortschritt auf einen Blick** — oben Blöcke pro Woche gegen das
+  Wochenziel (8 Wochen), darunter jede Übung der Blöcke mit erstem →
+  letztem Eintrag in echten Werten, Mini-Kurve und Badge (▲ +5 kg,
+  ▲ +3 Wdh, ▼ leichter, = seit Start). Die Score-Kurven unten sind
+  zugeklappt.
+- **Letztes Mal** — Satz-Screen, Pause und Heute-Liste zeigen das letzte
+  Ergebnis der Übung, der laufende Satz ist hervorgehoben.
 - **Fortschritts-Charts** — Score je Übung (Wiederholungen × Schwierigkeit,
   Zusatzlast am Körpergewicht relativiert) als Zeitreihe, mit Marker beim
   Stufenwechsel. Dazu ein Workout-Score: prozentuale Abweichung jeder Übung
