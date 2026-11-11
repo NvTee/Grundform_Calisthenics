@@ -39,11 +39,11 @@ Was die Forschung dazu sagt:
 
 ## 1. Blockmodell
 
-- Statt 4 Einheiten à 30–55 min gibt es **4 Blöcke à ~17–21 min**: zwei
+- Statt 4 Einheiten à 30–55 min gibt es **4 Blöcke à ~22–28 min**: zwei
   Antagonisten-Supersätze, je 3 Runden, ohne schwere Einzelübung vorn.
 - Rotation über Blöcke: **O1 → U1 → O2 → U2 → O1 …** Es zählt die
   Reihenfolge, nicht der Kalender, nichts wird nachgeholt.
-- Pro Tag **1 Block** (Minimum, zählt immer) oder **2 Blöcke** (~38–40 min laut Modell, Ziel 35 → Punkt 4).
+- Pro Tag **1 Block** (Minimum, zählt immer) oder **2 Blöcke** (~50–55 min inkl. Cool-Down, korrigiertes Zeitmodell in TRAININGSPLAN §2).
   Durch die Rotation sind zwei Blöcke immer Ober + Unter, also Ganzkörper.
 - **O1 = Rücken zuerst, O2 = Brust zuerst** (deckt Feedback Punkt 3 mit ab).
 
@@ -191,7 +191,7 @@ Musterabdeckung, Antagonisten-Prüfung, Frequenz), §3 Deload/Ausfall, §4
 
 ## Entscheidungen aus dem Review
 
-- 2 Blöcke mit ~38–40 min sind ok. Die Kalibrierung auf gemessene Zeiten
+- 2 Blöcke mit ~38–40 min sind ok. **Korrektur (Punkt 4):** realistisch sind ~50–55 min, siehe Zeitmodell in TRAININGSPLAN §2. Die Kalibrierung auf gemessene Zeiten
   kommt mit Feedback Punkt 4.
 - Seitheben und Curl bleiben drin.
 - Übungsauswahl nach Zweck. Geräte: keine Maschinen, kein Rack, daher

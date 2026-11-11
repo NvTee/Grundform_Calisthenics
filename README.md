@@ -39,7 +39,7 @@ Alles aus dem Prototyp, plus das, was auf einem echten Gerät dazugehört:
   kein Overscroll-Bounce.
 
 - **Vier Blöcke in Rotation** (CR-004) — Ober 1 → Unter 1 → Ober 2 → Unter 2.
-  Pro Tag 1 oder 2 Blöcke à ~17–21 min, zwei Blöcke sind immer Ganzkörper.
+  Pro Tag 1 oder 2 Blöcke à ~22–28 min, zwei Blöcke sind immer Ganzkörper.
   Nach Block 1 kommt ein Übergang „Weiter mit …“; spontan anhängen geht
   auch aus dem Cool-Down. Es zählt die Reihenfolge, nicht der Kalender,
   Ausfälle werden nicht nachgeholt. Im Plan-Tab lässt sich die Position von

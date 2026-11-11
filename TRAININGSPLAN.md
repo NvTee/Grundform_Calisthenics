@@ -1,6 +1,6 @@
 # GRUNDFORM — Trainingsplan
 
-Kalibriert auf: 86 kg Körpergewicht · 30 Liegestütze / 5 Klimmzüge Obergriff / 12 Dips · 3–5 Trainingstage pro Woche, je 1–2 Blöcke à ~17–21 min
+Kalibriert auf: 86 kg Körpergewicht · 30 Liegestütze / 5 Klimmzüge Obergriff / 12 Dips · 3–5 Trainingstage pro Woche, je 1–2 Blöcke à ~22–28 min
 Equipment: Kurzhanteln, Klimmzugstange, Dip-Stangen, Hantelbank, Langhantel, Expander · **kein Rack**
 
 Wer andere Ausgangswerte hat, verschiebt die Startlasten im Übungskatalog entsprechend — die Reiz-Schwellen in Abschnitt 1 sind auf 86 kg Körpergewicht bezogen und wandern mit.
@@ -131,11 +131,11 @@ Rückschritt: `curl-band` · Reise/Schlechtwetter: `curl-band`
 
 # 2. Die vier Blöcke
 
-Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 min in Rotation **Ober 1 → Unter 1 → Ober 2 → Unter 2**. Pro Tag 1 Block (Minimum, zählt immer) oder 2 Blöcke (~38–40 min inkl. Cool-Down). Zwei Blöcke hintereinander sind durch die Rotation immer Ober + Unter, also Ganzkörper.
+Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~22–28 min in Rotation **Ober 1 → Unter 1 → Ober 2 → Unter 2**. Pro Tag 1 Block (Minimum, zählt immer) oder 2 Blöcke (~50–55 min inkl. Cool-Down, siehe Zeitmodell). Zwei Blöcke hintereinander sind durch die Rotation immer Ober + Unter, also Ganzkörper.
 
 **Supersätze.** Jeder Block besteht aus zwei Supersätzen. In der Spalte *Rolle* stehen die Partner: **1a + 1b** bilden Supersatz 1, **2a + 2b** Supersatz 2. Sie laufen im Wechsel, Satz für Satz (1a → 45 s Wechsel → 1b → Pause → 1a …), 3 Runden. Die *Pause* steht beim b-Partner und gilt nach jeder Runde.
 
-## Ober 1 — Rücken zuerst (~17 min)
+## Ober 1 — Rücken zuerst (~22 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
@@ -146,7 +146,7 @@ Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 
 
 **Aufwärmen.** 1) 15 Pull-Apart + Schulter-Außenrotation. 2) 30 s Hängen, 2 Negativ-Klimmzüge. 3) 5 Pike-Liegestütze mit halbem Weg.
 
-## Unter 1 — Hüftbeuge zuerst (~21 min)
+## Unter 1 — Hüftbeuge zuerst (~28 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
@@ -157,7 +157,7 @@ Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 
 
 **Aufwärmen.** 1) 10 Hüftheben + 10 Hüftkreise je Seite. 2) Kreuzheben-Aufbausätze: leere Stange, 65 % der Arbeitslast. 3) 8 Split Squats ohne Last je Seite. Kreuzheben ≤ RPE 8.
 
-## Ober 2 — Brust zuerst (~17 min)
+## Ober 2 — Brust zuerst (~22 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
@@ -168,7 +168,7 @@ Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 
 
 **Aufwärmen.** 1) 15 Pull-Apart + 10 Wandengel. 2) 8 Liegestütze Hände erhöht + 5 halbe Dips. 3) Pendlay-Aufbausätze: leere Stange, 65 %.
 
-## Unter 2 — Kniebeuge zuerst (~19 min)
+## Unter 2 — Kniebeuge zuerst (~26 min)
 
 | # | Übung | Rolle | Sätze | Wdh-Zielbereich | Startlast | prog | Pause |
 |---|---|---|---|---|---|---|---|
@@ -182,6 +182,30 @@ Seit CR-004 ein Baukasten statt vier fester Einheiten: vier Blöcke à ~17–21 
 **Ohne Rack:** Schwere Kniebeugen laufen über Kurzhanteln (Bulgarian Split Squat, Front-Rack). Die Isolationsübungen stehen in den U-Blöcken und füllen die langen Beinpausen.
 
 **Zweiter Block des Tages:** Das allgemeine Aufwärmen entfällt, nur die übungsspezifischen Schritte bleiben. Cool-Down nur nach dem letzten Block.
+
+## Zeitmodell
+
+Gerechnet mit Werten, die sich mit den Messungen decken (alte Einheiten: Plan 28–33 min, gemessen 45–55 min inkl. Cool-Down):
+
+| Baustein | Ansatz |
+|---|---|
+| Satz | 20–35 s, einbeinig bzw. je Seite 55–80 s |
+| Eintragen in der App | 10 s pro Satz |
+| Wechsel im Supersatz | 45 s |
+| Pause | voll nach jeder Runde, auch nach der letzten Runde von Supersatz 1 (Übergang) |
+| Aufbau | 1–1,5 min pro Block (Scheiben, Hanteln, Band) |
+| Aufwärmen | 3–4 min, beim zweiten Block des Tages ~2 min weniger |
+| Cool-Down | 5 min (Ober) bzw. 7 min (Unter), nur nach dem letzten Block |
+
+| Tag | Dauer inkl. Aufwärmen und Cool-Down |
+|---|---|
+| 1 Block Ober | ~27 min |
+| 1 Block Unter | ~33–35 min |
+| 2 Blöcke (Ober + Unter) | ~50–55 min |
+
+Die alten Schätzungen rechneten mit 10–30 s pro Satz, ohne Eintragen und Aufbau, und ließen die Pause am Übergang weg. Die App ersetzt das Modell durch den Median der letzten fünf gemessenen Durchgänge, sobald es zwei vollständige gibt.
+
+**35 min mit 2 Blöcken** gehen nur mit kürzerem Takt: Wechsel 30 s statt 45, Pausen 60/90 s statt 90/120 s und Supersatz 2 mit 2 statt 3 Runden. Das kostet ein Drittel des Volumens von Supersatz 2.
 
 ## Musterabdeckung
 
