@@ -257,7 +257,7 @@ const freshPlans = () => SESSIONS.map(s => s.slots.map(x => ({ ...x })));
 const CFG_DEFAULT = { n:2, bw:86, weekGoal:6 };
 /* `blocks` ist die Wahl auf dem Heute-Screen: 1 oder 2 Blöcke. */
 let S = {
-  tab:'heute', rot:0, sel:null, live:null, sheet:null, draft:null, pick:null, blocks:2,
+  tab:'heute', rot:0, sel:null, live:null, sheet:null, draft:null, pick:null, pick2:null, blocks:2,
   plans: freshPlans(), history:[], suggest:[], notes:[], cfg:{ ...CFG_DEFAULT },
 };
 
@@ -333,7 +333,11 @@ const ROT_N     = SESSIONS.filter(x => !x.extra).length;
 const selIdx    = () => (S.live ? S.live.si : (S.sel != null ? S.sel : S.rot));
 const sess      = () => SESSIONS[selIdx()];
 const curSlots  = () => S.plans[selIdx()];
-const nextSess  = () => SESSIONS[(S.rot + 1) % ROT_N];
+const nextSi    = () => (S.rot + 1) % ROT_N;
+const nextSess  = () => SESSIONS[nextSi()];
+/* Block 2 des Tages (`b:2` im Sheet) hängt an der nächsten Position
+   der Rotation, Block 1 an der gewählten. */
+const sheetSi   = () => (S.sheet && S.sheet.b === 2 ? nextSi() : selIdx());
 let timer = null;
 let wakeLock = null;
 const scrollMemo = {};
@@ -343,7 +347,7 @@ function screenKey(){ return S.live ? 'live' : S.tab; }
 function persist(){
   try {
     localStorage.setItem(STORE, JSON.stringify({ planVer:PLAN_VER, blocks:S.blocks, tab:S.tab, rot:S.rot, sel:S.sel, live:S.live, plans:S.plans,
-      pick:S.pick, history:S.history, suggest:S.suggest, notes:S.notes, cfg:S.cfg }));
+      pick:S.pick, pick2:S.pick2, history:S.history, suggest:S.suggest, notes:S.notes, cfg:S.cfg }));
   } catch(e){}
 }
 function restore(){
@@ -365,6 +369,10 @@ function restore(){
     S.pick  = Array.isArray(s.pick) && s.pick.length
               ? s.pick.filter(i => Number.isInteger(i) && i >= 0 && i < S.plans[S.rot].length)
               : null;
+    const n2 = S.plans[(S.rot + 1) % ROT_N].length;
+    S.pick2 = Array.isArray(s.pick2) && s.pick2.length
+              ? s.pick2.filter(i => Number.isInteger(i) && i >= 0 && i < n2)
+              : null;
     S.history = Array.isArray(s.history) ? s.history.slice(-HISTORY_MAX) : [];
     S.suggest = Array.isArray(s.suggest) ? s.suggest : [];
     S.notes   = Array.isArray(s.notes) ? s.notes : [];
@@ -383,7 +391,7 @@ function restore(){
     /* Nach der Migration passen Rotation, Auswahl, Vorschläge und
        eine laufende Einheit nicht mehr zu den Indizes – neu ab Ober 1. */
     if (migrate) {
-      Object.assign(S, { rot:0, sel:null, pick:null, suggest:[], live:null });
+      Object.assign(S, { rot:0, sel:null, pick:null, pick2:null, suggest:[], live:null });
       persist();
     }
     // Gesamtzeit läuft ebenfalls weiter, also Timer wieder anwerfen.
@@ -447,13 +455,13 @@ function buildPlan(idx){
   });
 }
 /* Gewählte Übungen der nächsten Einheit, Default alle. */
-function pickIdx(){
-  const n = curSlots().length;
-  const p = (S.pick || []).filter(i => i >= 0 && i < n);
-  return p.length ? [...p].sort((a, b) => a - b) : curSlots().map((_, i) => i);
+function pickIdx(si = selIdx(), src = S.pick){
+  const n = S.plans[si].length;
+  const p = (src || []).filter(i => i >= 0 && i < n);
+  return p.length ? [...p].sort((a, b) => a - b) : S.plans[si].map((_, i) => i);
 }
 const sameIdx = (a, b) => a.length === b.length && a.every((x, i) => x === b[i]);
-const setsOf  = idx => idx.reduce((a, i) => a + curSlots()[i].sets, 0);
+const setsOf  = (idx, si = selIdx()) => idx.reduce((a, i) => a + S.plans[si][i].sets, 0);
 
 /* ── Zeitschätzung (Feedback Punkt 4) ─────────────────────────
    Modellwert je Block (`mins`, ohne Cool-Down) aus realistischen
@@ -473,12 +481,12 @@ function blockMins(se){
   return xs.length >= 2 ? Math.round(xs[Math.floor(xs.length / 2)]) : se.mins;
 }
 /* Freie Auswahl wird über die Satzzahl skaliert. */
-function estMins(idx){
-  const se = sess(), all = curSlots().map((_, i) => i);
+function estMins(idx, si = selIdx()){
+  const se = SESSIONS[si], all = S.plans[si].map((_, i) => i);
   const m = blockMins(se);
   if (sameIdx(idx, all)) return m;
   const w = se.warmMins || 3;
-  return w + Math.round((m - w) * setsOf(idx) / Math.max(1, setsOf(all)));
+  return w + Math.round((m - w) * setsOf(idx, si) / Math.max(1, setsOf(all, si)));
 }
 /* Echter Meilenstein einer Übung: wo im Zielbereich sie steht und
    was als nächstes ansteht. Ersetzt die früher fest verdrahteten
@@ -760,6 +768,14 @@ function tick(){
 const elapsed = l => (l && l.startedAt ? Math.floor((Date.now() - l.startedAt) / 1000) : 0);
 const mmss = sec => Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
 
+function togglePickAt(si, key, i){
+  const cur = pickIdx(si, S[key]);
+  const next = cur.includes(i) ? cur.filter(k => k !== i) : [...cur, i].sort((a, b) => a - b);
+  if (!next.length) return;
+  buzz(15);
+  set({ [key]: next });
+}
+
 const A = {
   goHeute:       () => set({ tab:'heute' }),
   goPlan:        () => set({ tab:'plan' }),
@@ -767,19 +783,15 @@ const A = {
 
   startFull:  () => {
     const n = sess().extra ? 1 : S.blocks;
-    start(pickIdx(), { chain: n - 1, dayTot: n });
+    start(pickIdx(), { chain: n - 1, dayTot: n,
+                       chainPick: n > 1 ? pickIdx(nextSi(), S.pick2) : null });
   },
   setBlocks:  b => { buzz(15); set({ blocks: b === 1 ? 1 : 2 }); },
 
   /* Übung für heute streichen bzw. zurückholen. Die letzte
      verbleibende lässt sich nicht abwählen. */
-  togglePick: i => {
-    const cur = pickIdx();
-    const next = cur.includes(i) ? cur.filter(k => k !== i) : [...cur, i].sort((a, b) => a - b);
-    if (!next.length) return;
-    buzz(15);
-    set({ pick: next });
-  },
+  togglePick:  i => togglePickAt(selIdx(), 'pick', i),
+  togglePick2: i => togglePickAt(nextSi(), 'pick2', i),
 
   /* Export: der komplette Zustand als JSON. Auf dem iPhone ist die
      Zwischenablage im Standalone-Modus unzuverlässig, deshalb immer
@@ -803,25 +815,27 @@ const A = {
 
   /* Zwischen Rotation und Rumpf-Einheit umschalten. Die Rotation
      bleibt dabei stehen, wo sie steht. */
-  selExtra: () => set({ sel: SESSIONS.findIndex(x => x.extra), pick:null }),
-  selRot:   () => set({ sel:null, pick:null }),
+  selExtra: () => set({ sel: SESSIONS.findIndex(x => x.extra), pick:null, pick2:null }),
+  selRot:   () => set({ sel:null, pick:null, pick2:null }),
 
-  tapEx:   i => set({ sheet:{ type:'swap', i } }),
-  tapLoad: i => set({ sheet:{ type:'load', i }, draft:{ ...curSlots()[i] } }),
+  tapEx:   i => set({ sheet:{ type:'swap', i, b:1 } }),
+  tapLoad: i => set({ sheet:{ type:'load', i, b:1 }, draft:{ ...S.plans[selIdx()][i] } }),
+  tapEx2:   i => set({ sheet:{ type:'swap', i, b:2 } }),
+  tapLoad2: i => set({ sheet:{ type:'load', i, b:2 }, draft:{ ...S.plans[nextSi()][i] } }),
   closeSheet: () => set({ sheet:null, draft:null }),
 
   /* Rotation von Hand setzen – z. B. wenn eine Einheit im Garten
      an der Reihenfolge vorbei gelaufen ist. */
-  pickRot: i => set({ tab:'heute', rot:i, sel:null, pick:null }),
+  pickRot: i => set({ tab:'heute', rot:i, sel:null, pick:null, pick2:null }),
 
   pickEx: id => {
-    const i = S.sheet.i, ex = byId(id);
-    const slots = curSlots().map((s, k) => {
+    const i = S.sheet.i, ex = byId(id), si = sheetSi();
+    const slots = S.plans[si].map((s, k) => {
       if (k !== i) return s;
       const w = ex.kind === 'load' ? (ex.w || 0) : 0;
       return { ...s, exId:id, reps:s.lo, w, prog: ex.kind === 'load' ? 'weight' : 'reps' };
     });
-    set({ plans: S.plans.map((p, k) => (k === selIdx() ? slots : p)), sheet:null, draft:null });
+    set({ plans: S.plans.map((p, k) => (k === si ? slots : p)), sheet:null, draft:null });
   },
 
   wUp:       () => draftBump('w',    draftStep(),  0),
@@ -837,9 +851,9 @@ const A = {
   setProgWeight: () => set({ draft:{ ...S.draft, prog:'weight' } }),
   setProgReps:   () => set({ draft:{ ...S.draft, prog:'reps'   } }),
   applyDraft: () => {
-    const i = S.sheet.i, d = S.draft;
-    const slots = curSlots().map((x, k) => (k === i ? { ...d } : x));
-    set({ plans: S.plans.map((p, k) => (k === selIdx() ? slots : p)), sheet:null, draft:null });
+    const i = S.sheet.i, d = S.draft, si = sheetSi();
+    const slots = S.plans[si].map((x, k) => (k === i ? { ...d } : x));
+    set({ plans: S.plans.map((p, k) => (k === si ? slots : p)), sheet:null, draft:null });
   },
 
   inc: () => bump(1),
@@ -928,6 +942,7 @@ function start(idx, o = {}){
   startTimer();
   const now = Date.now();
   set({ live:{ plan, si, mins: estMins(idx), startedAt: o.dayStart || now, blockAt: now,
+               chainPick: o.chainPick || null,
                chain: o.chain || 0, dayN: o.dayN || 0, dayTot: o.dayTot || 1, dayNotes: o.dayNotes || [],
                phase: warm.length ? 'warm' : 'work', warm,
                ex:0, set:0, reps:plan[0].target,
@@ -936,7 +951,7 @@ function start(idx, o = {}){
 
 function abort(){
   clearInterval(timer); releaseWakeLock();
-  set({ live:null, pick:null, sel:null });
+  set({ live:null, pick:null, pick2:null, sel:null });
 }
 
 /* Doppelte Progression: erst Wiederholungen im Zielbereich hoch,
@@ -1095,7 +1110,7 @@ function commit(l){
 
 function finish(){
   clearInterval(timer); releaseWakeLock();
-  set({ ...commit(S.live), live:null, tab:'fortschritt', pick:null, sel:null });
+  set({ ...commit(S.live), live:null, tab:'fortschritt', pick:null, pick2:null, sel:null });
 }
 
 /* Nächsten Block anhängen: den laufenden abschließen (eigener
@@ -1107,9 +1122,11 @@ function chainGo(){
   if (!l || SESSIONS[l.si].extra) return;
   clearInterval(timer);
   const patch = commit({ ...l, durMs: Date.now() - l.startedAt });
-  Object.assign(S, patch, { live:null, sel:null, pick:null });
+  Object.assign(S, patch, { live:null, sel:null, pick:null, pick2:null });
   const dayN = (l.dayN || 0) + 1;
-  start(S.plans[S.rot].map((_, i) => i), {
+  const all = S.plans[S.rot].map((_, i) => i);
+  const cp = (l.chainPick || []).filter(i => all.includes(i));
+  start(cp.length ? cp : all, {
     chained:true, dayStart:l.startedAt, dayN, dayTot: Math.max(l.dayTot || 1, dayN + 1),
     chain: Math.max(0, (l.chain || 0) - 1), dayNotes: patch.notes,
   });
@@ -1334,10 +1351,14 @@ function weekStats(){
   return { n, goal, streak };
 }
 
-function viewHeute(){
-  const se = sess();
-  const pick = pickIdx();
-  const preview = curSlots().map((s, i) => {
+/* Eine Block-Liste auf dem Heute-Screen: Zeilen mit Häkchen, Name
+   (tauschen) und Last/Sätze – für Block 1 und Block 2 gleich. `b`
+   wählt die Aktionen (`…2` für Block 2) und die Streich-Auswahl. */
+function blockList(si, b){
+  const se = SESSIONS[si], slots = S.plans[si];
+  const sfx = b === 2 ? '2' : '';
+  const pick = pickIdx(si, b === 2 ? S.pick2 : S.pick);
+  const preview = slots.map((s, i) => {
     const x = slotView(s);
     const on = pick.includes(i);
     const auto = s.reps < s.hi ? '+1'
@@ -1363,14 +1384,47 @@ function viewHeute(){
     if (!g) groups.push(g = { key, pair: ex.pair, items: [] });
     g.items.push(ex);
   });
+  const html = groups.map(g => {
+        const rows = g.items.map(ex => `
+      <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)">
+        <div class="tap" ${act('togglePick' + sfx, ex.i)} style="flex:none;width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center">
+          ${checkbox(ex.on, 24)}
+        </div>
+        <div class="tap" ${act('tapEx' + sfx, ex.i)} style="flex:1;min-width:0;padding:6px 0">
+          <div style="font:500 16px/1.25 Barlow,sans-serif;color:${ex.on ? '#F1F0EC' : 'rgba(241,240,236,.34)'};${ex.on ? '' : 'text-decoration:line-through'}">${ex.name}</div>
+          <div style="font:500 12px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:2px">${ex.prog}</div>
+          ${ex.last && ex.on ? `<div style="font:500 12px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:2px">${ex.last}</div>` : ''}
+        </div>
+        <div class="tap" ${act('tapLoad' + sfx, ex.i)} style="flex:none;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,${ex.on ? '.16' : '.07'})">
+          <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.02em;color:rgba(241,240,236,${ex.on ? '.8' : '.3'});white-space:nowrap">${ex.scheme}</span>
+        </div>
+      </div>`).join('');
+        if (!g.pair || g.items.length < 2) return rows;
+        const last = g.items[g.items.length - 1];
+        const rounds = Math.max(...g.items.map(x => x.sets));
+        return `
+      <div style="margin-top:12px">
+        <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:${ACCENT}">Supersatz ${g.pair} · im Wechsel · ${rounds} Runden · Pause ${last.rest} s</div>
+        <div style="border-left:2px solid rgba(255,77,23,.55);padding-left:12px;margin-top:4px">${rows}</div>
+      </div>`;
+      }).join('');
+  return { pick, html };
+}
+
+function viewHeute(){
+  const se = sess();
+  const b1 = blockList(selIdx(), 1);
+  const pick = b1.pick;
   const mins = estMins(pick);
   const extra = !!se.extra;
   const two = !extra && S.blocks === 2;
-  const nb = nextSess();
+  const nb = nextSess(), si2 = nextSi();
+  const b2 = two ? blockList(si2, 2) : null;
+  const blk2 = two ? estMins(b2.pick, si2) - CHAIN_SAVE : 0;
   /* Angezeigt wird die ganze Trainingszeit wie sie der Timer misst:
      Blöcke plus Cool-Down nach dem letzten. */
   const day1 = mins + (se.coolMins || 0);
-  const mins2 = mins + blockMins(nb) - CHAIN_SAVE + (nb.coolMins || 0);
+  const mins2 = mins + blk2 + (nb.coolMins || 0);
   const wk = weekStats();
   const pips = Array.from({ length: Math.max(wk.goal, wk.n) }, (_, i) =>
     `<div style="flex:1;height:6px;border-radius:3px;background:${i < wk.n ? ACCENT : 'rgba(255,255,255,.13)'}"></div>`).join('');
@@ -1426,40 +1480,23 @@ function viewHeute(){
     </div>
     <div style="height:1px;background:rgba(255,255,255,.08)"></div>
     <div style="padding:6px 22px 14px">
-      ${groups.map(g => {
-        const rows = g.items.map(ex => `
-      <div style="display:flex;align-items:center;gap:6px;padding:7px 0;border-bottom:1px solid rgba(255,255,255,.055)">
-        <div class="tap" ${act('togglePick', ex.i)} style="flex:none;width:44px;height:44px;margin-left:-10px;display:flex;align-items:center;justify-content:center">
-          ${checkbox(ex.on, 24)}
-        </div>
-        <div class="tap" ${act('tapEx', ex.i)} style="flex:1;min-width:0;padding:6px 0">
-          <div style="font:500 16px/1.25 Barlow,sans-serif;color:${ex.on ? '#F1F0EC' : 'rgba(241,240,236,.34)'};${ex.on ? '' : 'text-decoration:line-through'}">${ex.name}</div>
-          <div style="font:500 12px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:2px">${ex.prog}</div>
-          ${ex.last && ex.on ? `<div style="font:500 12px/1.3 Barlow,sans-serif;color:rgba(241,240,236,.45);margin-top:2px">${ex.last}</div>` : ''}
-        </div>
-        <div class="tap" ${act('tapLoad', ex.i)} style="flex:none;padding:8px 10px;border-radius:10px;border:1px solid rgba(255,255,255,${ex.on ? '.16' : '.07'})">
-          <span class="cd" style="font-weight:700;font-size:17px;letter-spacing:.02em;color:rgba(241,240,236,${ex.on ? '.8' : '.3'});white-space:nowrap">${ex.scheme}</span>
-        </div>
-      </div>`).join('');
-        if (!g.pair || g.items.length < 2) return rows;
-        const last = g.items[g.items.length - 1];
-        const rounds = Math.max(...g.items.map(x => x.sets));
-        return `
-      <div style="margin-top:12px">
-        <div class="cd" style="font-weight:700;font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:${ACCENT}">Supersatz ${g.pair} · im Wechsel · ${rounds} Runden · Pause ${last.rest} s</div>
-        <div style="border-left:2px solid rgba(255,77,23,.55);padding-left:12px;margin-top:4px">${rows}</div>
-      </div>`;
-      }).join('')}
+      ${b1.html}
       <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.3);padding:10px 0 2px">A und B laufen im Wechsel, Satz für Satz · Häkchen antippen streicht die Übung für heute · Name tauschen · Zahl für Last und Sätze</div>
     </div>
   </div>
 
   ${two ? `
-  <div class="card" style="margin-top:12px;padding:16px 22px">
-    <div class="kick">Block 2 · ${nb.kick}</div>
-    <div class="cd" style="font-weight:700;font-size:26px;line-height:1;margin-top:5px">${nb.name}</div>
-    <div style="font:500 13.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.5);margin-top:6px">${S.plans[(S.rot + 1) % ROT_N].map(x => byId(x.exId).short).join(' · ')}</div>
-    <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:6px">Ohne allgemeines Aufwärmen · nach Block 1 lässt sich immer noch aufhören</div>
+  <div class="card" style="margin-top:12px;overflow:hidden">
+    <div style="padding:20px 22px 16px">
+      <div class="kick kick-a">Block 2 · ${nb.kick}</div>
+      <div class="cd" style="font-weight:700;font-size:46px;line-height:1;margin-top:6px">${nb.name}</div>
+      <div style="font:500 15px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.55);margin-top:8px">${b2.pick.length} von ${S.plans[si2].length} Übungen · ca. ${blk2} min${nb.coolMins ? ' + Cool-Down' : ''} · ${nb.gear}</div>
+      <div style="font:500 12.5px/1.4 Barlow,sans-serif;color:rgba(241,240,236,.32);margin-top:6px">Ohne allgemeines Aufwärmen · nach Block 1 lässt sich immer noch aufhören</div>
+    </div>
+    <div style="height:1px;background:rgba(255,255,255,.08)"></div>
+    <div style="padding:6px 22px 14px">
+      ${b2.html}
+    </div>
   </div>` : ''}
 
   <div style="display:flex;flex-direction:column;gap:12px;margin-top:22px">
@@ -1888,7 +1925,7 @@ function viewLive(){
   </div>
 
   <div class="scroll" data-key="live" style="flex:1;min-height:0;margin-top:18px">
-    ${nSlots.map(sl => { const x = slotView(sl); return `
+    ${nSlots.filter((_, i) => !live.chainPick || live.chainPick.includes(i)).map(sl => { const x = slotView(sl); return `
     <div style="padding:11px 0;border-bottom:1px solid rgba(255,255,255,.055)">
       <div style="font:500 16px/1.3 Barlow,sans-serif">${x.name}</div>
       <div style="font:500 12.5px/1.35 Barlow,sans-serif;color:rgba(241,240,236,.4);margin-top:2px">${x.role} · ${x.scheme}</div>
@@ -2048,7 +2085,7 @@ function viewSheet(){
   if (!S.sheet) return '';
   /* Das Export-Sheet hängt an keiner Übung – erst auflösen, wenn ein
      Slot-Index da ist. */
-  const slot = S.sheet.i !== undefined ? curSlots()[S.sheet.i] : null;
+  const slot = S.sheet.i !== undefined ? S.plans[sheetSi()][S.sheet.i] : null;
   const cur = slot ? byId(slot.exId) : null;
   let inner;
 
